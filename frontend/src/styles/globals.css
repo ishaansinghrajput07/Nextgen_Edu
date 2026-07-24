@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/* ================= Base ================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  background: #ffffff;
+  color: #0f172a;
+  transition: 0.35s ease;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ================= Utilities ================= */
+
+.gradient-text {
+  background: linear-gradient(
+    90deg,
+    #7c3aed,
+    #06b6d4
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #e5e7eb;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: 0.35s;
+}
+
+.glass:hover {
+  transform: translateY(-4px);
+}
+
+/* ================= Scrollbar ================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0891b2;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #06b6d4;
+}
+
+/* ================= Logo ================= */
+
+.animate-glow {
+  animation: logoGlow 2s ease-in-out infinite;
+}
+
+@keyframes logoGlow {
+  0% {
+    text-shadow:
+      0 0 5px #fff,
+      0 0 10px #fff,
+      0 0 15px #1962af;
+  }
+
+  50% {
+    text-shadow:
+      0 0 10px #fff,
+      0 0 20px #fff,
+      0 0 30px #1962af,
+      0 0 40px #1962af;
+  }
+
+  100% {
+    text-shadow:
+      0 0 5px #fff,
+      0 0 10px #fff,
+      0 0 15px #1962af;
+  }
+}
+
+/* ================= Image ================= */
+
+.logo-glow {
+  animation: imageGlow 2s ease-in-out infinite;
+}
+
+@keyframes imageGlow {
+  0% {
+    filter: drop-shadow(0 0 5px #fff);
+  }
+
+  50% {
+    filter:
+      drop-shadow(0 0 8px #fff)
+      drop-shadow(0 0 12px #fff);
+  }
+
+  100% {
+    filter: drop-shadow(0 0 5px #fff);
+  }
+}

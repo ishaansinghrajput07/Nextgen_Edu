@@ -1,0 +1,54 @@
+/* Root */
+
+#root{
+  width:100%;
+  min-height:100vh;
+}
+
+/* Images */
+
+img{
+  display:block;
+  max-width:100%;
+  height:auto;
+}
+
+/* Buttons */
+
+button{
+  font:inherit;
+  border:none;
+  outline:none;
+  cursor:pointer;
+}
+
+/* Form */
+
+input,
+textarea,
+select{
+  font:inherit;
+}
+
+/* Lists */
+
+ul,
+ol{
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+
+/* Selection */
+
+::selection{
+  background:rgba(6,182,212,.25);
+  color:inherit;
+}
+
+/* Focus */
+
+*:focus-visible{
+  outline:2px solid #06b6d4;
+  outline-offset:3px;
+}
