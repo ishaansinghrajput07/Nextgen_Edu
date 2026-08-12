@@ -1,6 +1,5 @@
 import Notification from "../models/notification.model.js";
 
-
 // ======================================================
 // CREATE NOTIFICATION
 // Reusable Function
@@ -23,16 +22,11 @@ export const createNotification = async ({
   createdBy = null,
 }) => {
   try {
-
     if (!title || !message || !receiver) {
-      throw new Error(
-        "Title, message and receiver are required"
-      );
+      throw new Error("Title, message and receiver are required");
     }
 
-
     const notification = await Notification.create({
-
       title,
 
       message,
@@ -49,648 +43,378 @@ export const createNotification = async ({
 
       createdBy,
 
-      isRead:false,
-
+      isRead: false,
     });
 
-
     return notification;
-
-
-  } catch(error){
-
-    console.log(
-      "CREATE NOTIFICATION ERROR:",
-      error.message
-    );
+  } catch (error) {
+    console.log("CREATE NOTIFICATION ERROR:", error.message);
 
     return null;
-
   }
 };
-
-
-
 
 // ======================================================
 // MULTIPLE NOTIFICATIONS
 // ======================================================
 
-export const createMultipleNotifications = async({
+export const createMultipleNotifications = async ({
+  title,
 
-title,
+  message,
 
-message,
+  receivers = [],
 
-receivers=[],
+  receiverModel = "Auth",
 
-receiverModel="Auth",
+  type = "System",
 
-type="System",
+  icon = "Bell",
 
-icon="Bell",
+  link = "",
 
-link="",
+  createdBy = null,
+}) => {
+  try {
+    if (!receivers.length) return [];
 
-createdBy=null,
+    const data = receivers.map((receiver) => ({
+      title,
 
-})=>{
+      message,
 
+      receiver,
 
-try{
+      receiverModel,
 
+      type,
 
-if(!receivers.length)
-return [];
+      icon,
 
+      link,
 
-const data = receivers.map((receiver)=>({
+      createdBy,
 
-title,
+      isRead: false,
+    }));
 
-message,
+    return await Notification.insertMany(data);
+  } catch (error) {
+    console.log("MULTIPLE NOTIFICATION ERROR:", error.message);
 
-receiver,
-
-receiverModel,
-
-type,
-
-icon,
-
-link,
-
-createdBy,
-
-isRead:false,
-
-}));
-
-
-return await Notification.insertMany(data);
-
-
-
-}catch(error){
-
-
-console.log(
-"MULTIPLE NOTIFICATION ERROR:",
-error.message
-);
-
-
-return [];
-
-}
-
+    return [];
+  }
 };
-
-
-
 
 // ======================================================
 // SEND NOTIFICATION
 // ======================================================
 
-export const sendNotification = async(data)=>{
+export const sendNotification = async (data) => {
+  try {
+    return await createNotification(data);
+  } catch (error) {
+    console.log("SEND NOTIFICATION ERROR:", error.message);
 
-
-try{
-
-return await createNotification(data);
-
-
-}catch(error){
-
-console.log(
-"SEND NOTIFICATION ERROR:",
-error.message
-);
-
-
-return null;
-
-}
-
+    return null;
+  }
 };
-
-
-
 
 // ======================================================
 // ADMIN NOTIFICATION
 // ======================================================
 
-export const sendAdminNotification = async({
+export const sendAdminNotification = async ({
+  adminId,
 
-adminId,
+  title,
 
-title,
+  message,
 
-message,
+  type = "System",
 
-type="System",
+  link = "",
 
-link="",
+  createdBy = null,
+}) => {
+  return await sendNotification({
+    title,
 
-createdBy=null,
+    message,
 
-})=>{
+    receiver: adminId,
 
+    receiverModel: "Auth",
 
-return await sendNotification({
+    type,
 
-title,
+    icon: "ShieldCheck",
 
-message,
+    link,
 
-receiver:adminId,
-
-receiverModel:"Auth",
-
-type,
-
-icon:"ShieldCheck",
-
-link,
-
-createdBy,
-
-});
-
-
+    createdBy,
+  });
 };
-
-
-
-
 
 // ======================================================
 // COUNSELLOR NOTIFICATION
 // ======================================================
 
+export const sendCounsellorNotification = async ({
+  counsellorId,
 
-export const sendCounsellorNotification = async({
+  title,
 
-counsellorId,
+  message,
 
-title,
+  type = "System",
 
-message,
+  link = "",
 
-type="System",
+  createdBy = null,
+}) => {
+  return await sendNotification({
+    title,
 
-link="",
+    message,
 
-createdBy=null,
+    receiver: counsellorId,
 
-})=>{
+    receiverModel: "Counsellor",
 
+    type,
 
-return await sendNotification({
+    icon: "Users",
 
-title,
+    link,
 
-message,
-
-receiver:counsellorId,
-
-receiverModel:"Counsellor",
-
-type,
-
-icon:"Users",
-
-link,
-
-createdBy,
-
-});
-
-
+    createdBy,
+  });
 };
-
-
-
 
 // ======================================================
 // GET MY NOTIFICATIONS
 // ======================================================
 
-export const getMyNotifications = async(req,res)=>{
+export const getMyNotifications = async (req, res) => {
+  try {
+    const notifications = await Notification.find({
+      receiver: req.user._id,
+    })
 
-try{
+      .sort({
+        createdAt: -1,
+      })
+      .limit(50);
 
+    return res.status(200).json({
+      success: true,
 
-const notifications =
-await Notification.find({
+      count: notifications.length,
 
-receiver:req.user._id,
+      notifications,
+    });
+  } catch (error) {
+    console.log("GET NOTIFICATIONS ERROR:", error);
 
-})
+    return res.status(500).json({
+      success: false,
 
-.sort({
-
-createdAt:-1
-
-})
-.limit(50);
-
-
-
-return res.status(200).json({
-
-success:true,
-
-count:notifications.length,
-
-notifications,
-
-});
-
-
-
-}catch(error){
-
-
-console.log(
-"GET NOTIFICATIONS ERROR:",
-error
-);
-
-
-return res.status(500).json({
-
-success:false,
-
-message:"Server Error",
-
-});
-
-
-}
-
+      message: "Server Error",
+    });
+  }
 };
-
-
-
 
 // ======================================================
 // MARK SINGLE READ
 // ======================================================
 
+export const markNotificationAsRead = async (req, res) => {
+  try {
+    const notification = await Notification.findOne({
+      _id: req.params.id,
 
-export const markNotificationAsRead = async(req,res)=>{
+      receiver: req.user._id,
+    });
 
-try{
+    if (!notification) {
+      return res.status(404).json({
+        success: false,
 
+        message: "Notification not found",
+      });
+    }
 
-const notification =
-await Notification.findOne({
+    notification.isRead = true;
 
-_id:req.params.id,
+    notification.readAt = new Date();
 
-receiver:req.user._id,
+    await notification.save();
 
-});
+    return res.status(200).json({
+      success: true,
 
+      message: "Notification read",
 
+      notification,
+    });
+  } catch (error) {
+    console.log("READ NOTIFICATION ERROR:", error);
 
-if(!notification){
+    return res.status(500).json({
+      success: false,
 
-return res.status(404).json({
-
-success:false,
-
-message:"Notification not found"
-
-});
-
-}
-
-
-
-notification.isRead=true;
-
-notification.readAt=new Date();
-
-
-await notification.save();
-
-
-
-return res.status(200).json({
-
-success:true,
-
-message:"Notification read",
-
-notification,
-
-});
-
-
-
-}catch(error){
-
-
-console.log(
-"READ NOTIFICATION ERROR:",
-error
-);
-
-
-return res.status(500).json({
-
-success:false,
-
-message:"Server Error"
-
-});
-
-
-}
-
+      message: "Server Error",
+    });
+  }
 };
-
-
-
 
 // ======================================================
 // MARK ALL READ
 // ======================================================
 
+export const markAllNotificationsAsRead = async (req, res) => {
+  try {
+    await Notification.updateMany(
+      {
+        receiver: req.user._id,
 
-export const markAllNotificationsAsRead = async(req,res)=>{
+        isRead: false,
+      },
 
-try{
+      {
+        $set: {
+          isRead: true,
 
+          readAt: new Date(),
+        },
+      },
+    );
 
-await Notification.updateMany(
+    return res.status(200).json({
+      success: true,
 
-{
+      message: "All notifications read",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
 
-receiver:req.user._id,
-
-isRead:false,
-
-},
-
-{
-
-$set:{
-
-isRead:true,
-
-readAt:new Date(),
-
-}
-
-}
-
-);
-
-
-
-return res.status(200).json({
-
-success:true,
-
-message:"All notifications read",
-
-});
-
-
-
-}catch(error){
-
-
-return res.status(500).json({
-
-success:false,
-
-message:"Server Error"
-
-});
-
-
-}
-
+      message: "Server Error",
+    });
+  }
 };
-
-
-
 
 // ======================================================
 // UNREAD COUNT
 // ======================================================
 
+export const getUnreadNotificationCount = async (req, res) => {
+  try {
+    const count = await Notification.countDocuments({
+      receiver: req.user._id,
 
-export const getUnreadNotificationCount = async(req,res)=>{
+      isRead: false,
+    });
 
-try{
+    return res.status(200).json({
+      success: true,
 
+      count,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
 
-const count =
-await Notification.countDocuments({
-
-receiver:req.user._id,
-
-isRead:false,
-
-});
-
-
-
-return res.status(200).json({
-
-success:true,
-
-count,
-
-});
-
-
-
-}catch(error){
-
-
-return res.status(500).json({
-
-success:false,
-
-message:"Server Error"
-
-});
-
-}
-
-
+      message: "Server Error",
+    });
+  }
 };
-
-
-
 
 // ======================================================
 // DELETE SINGLE
 // ======================================================
 
+export const deleteNotification = async (req, res) => {
+  try {
+    const notification = await Notification.findOne({
+      _id: req.params.id,
 
-export const deleteNotification = async(req,res)=>{
+      receiver: req.user._id,
+    });
 
-try{
+    if (!notification) {
+      return res.status(404).json({
+        success: false,
 
+        message: "Notification not found",
+      });
+    }
 
-const notification =
-await Notification.findOne({
+    await notification.deleteOne();
 
-_id:req.params.id,
+    return res.status(200).json({
+      success: true,
 
-receiver:req.user._id,
+      message: "Notification deleted",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
 
-});
-
-
-
-if(!notification){
-
-return res.status(404).json({
-
-success:false,
-
-message:"Notification not found"
-
-});
-
-}
-
-
-
-await notification.deleteOne();
-
-
-
-return res.status(200).json({
-
-success:true,
-
-message:"Notification deleted"
-
-});
-
-
-
-}catch(error){
-
-
-return res.status(500).json({
-
-success:false,
-
-message:"Server Error"
-
-});
-
-
-}
-
+      message: "Server Error",
+    });
+  }
 };
-
-
-
 
 // ======================================================
 // DELETE ALL
 // ======================================================
 
+export const deleteAllNotifications = async (req, res) => {
+  try {
+    await Notification.deleteMany({
+      receiver: req.user._id,
+    });
 
-export const deleteAllNotifications = async(req,res)=>{
+    return res.status(200).json({
+      success: true,
 
-try{
+      message: "All notifications deleted",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
 
-
-await Notification.deleteMany({
-
-receiver:req.user._id,
-
-});
-
-
-
-return res.status(200).json({
-
-success:true,
-
-message:"All notifications deleted"
-
-});
-
-
-}catch(error){
-
-
-return res.status(500).json({
-
-success:false,
-
-message:"Server Error"
-
-});
-
-
-}
-
+      message: "Server Error",
+    });
+  }
 };
-
-
-
 
 // ======================================================
 // DELETE READ ONLY
 // ======================================================
 
+export const deleteReadNotifications = async (req, res) => {
+  try {
+    const result = await Notification.deleteMany({
+      receiver: req.user._id,
 
-export const deleteReadNotifications = async(req,res)=>{
+      isRead: true,
+    });
 
-try{
+    return res.status(200).json({
+      success: true,
 
+      message: "Read notifications deleted",
 
-const result =
-await Notification.deleteMany({
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
 
-receiver:req.user._id,
-
-isRead:true,
-
-});
-
-
-
-return res.status(200).json({
-
-success:true,
-
-message:"Read notifications deleted",
-
-deletedCount:
-result.deletedCount,
-
-});
-
-
-}catch(error){
-
-
-return res.status(500).json({
-
-success:false,
-
-message:"Server Error"
-
-});
-
-
-}
-
+      message: "Server Error",
+    });
+  }
 };

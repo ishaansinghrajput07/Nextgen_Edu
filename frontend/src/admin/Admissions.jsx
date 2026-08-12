@@ -1,78 +1,39 @@
 import { useEffect, useState } from "react";
 
-import {
-  Users,
-  IndianRupee,
-  BadgePercent,
-  GraduationCap,
-} from "lucide-react";
-
-
+import { Users, IndianRupee, BadgePercent, GraduationCap } from "lucide-react";
 
 export default function Admissions() {
+  const [students, setStudents] = useState([]);
 
-
-  const [students,setStudents] = useState([]);
-
-
-
-  useEffect(()=>{
-
-    const data = JSON.parse(
-      localStorage.getItem("students") || "[]"
-    );
-
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem("students") || "[]");
 
     setStudents(data);
-
-
-  },[]);
-
-
-
-
+  }, []);
 
   const totalStudents = students.length;
 
-
-
   const totalFees = students.reduce(
-    (total,student)=>
-      total + Number(student.fee || 0),
-    0
+    (total, student) => total + Number(student.fee || 0),
+    0,
   );
-
-
 
   const totalCommission = students.reduce(
-    (total,student)=>
-      total + Number(student.commission || 0),
-    0
+    (total, student) => total + Number(student.commission || 0),
+    0,
   );
 
-
-
-
-
   return (
-
-<div
-className="
+    <div
+      className="
 space-y-8
 "
->
+    >
+      {/* Page Header */}
 
-
-
-
-
-{/* Page Header */}
-
-
-<div>
-
-<h1
-className="
+      <div>
+        <h1
+          className="
 text-3xl
 
 md:text-4xl
@@ -92,40 +53,25 @@ bg-clip-text
 text-transparent
 
 "
->
+        >
+          Admissions & Commission
+        </h1>
 
-Admissions & Commission
-
-</h1>
-
-
-<p
-className="
+        <p
+          className="
 text-slate-500
 
 mt-2
 "
->
+        >
+          Manage student admissions, fees and commission tracking
+        </p>
+      </div>
 
-Manage student admissions, fees and commission tracking
+      {/* Stats Cards */}
 
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-{/* Stats Cards */}
-
-
-
-<div
-className="
+      <div
+        className="
 grid
 
 grid-cols-1
@@ -137,18 +83,11 @@ xl:grid-cols-4
 gap-5
 
 "
->
+      >
+        {/* Total Students */}
 
-
-
-
-
-{/* Total Students */}
-
-
-<div
-
-className="
+        <div
+          className="
 bg-white/70
 
 backdrop-blur-xl
@@ -183,13 +122,9 @@ transition-all
 duration-300
 
 "
-
->
-
-
-<div
-
-className="
+        >
+          <div
+            className="
 h-14
 
 w-14
@@ -208,36 +143,23 @@ items-center
 justify-center
 
 "
+          >
+            <Users className="text-cyan-600" />
+          </div>
 
->
-
-<Users
-
-className="text-cyan-600"
-
-/>
-
-</div>
-
-
-
-<div>
-
-<p
-className="
+          <div>
+            <p
+              className="
 text-sm
 
 text-slate-500
 "
->
+            >
+              Total Students
+            </p>
 
-Total Students
-
-</p>
-
-
-<h2
-className="
+            <h2
+              className="
 text-2xl
 
 font-bold
@@ -245,32 +167,16 @@ font-bold
 text-slate-800
 
 "
->
+            >
+              {totalStudents}
+            </h2>
+          </div>
+        </div>
 
-{totalStudents}
+        {/* Total Fees */}
 
-</h2>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-{/* Total Fees */}
-
-
-
-<div
-
-className="
+        <div
+          className="
 bg-white/70
 
 backdrop-blur-xl
@@ -305,13 +211,9 @@ transition-all
 duration-300
 
 "
-
->
-
-
-<div
-
-className="
+        >
+          <div
+            className="
 h-14
 
 w-14
@@ -330,36 +232,23 @@ items-center
 justify-center
 
 "
+          >
+            <IndianRupee className="text-sky-600" />
+          </div>
 
->
-
-<IndianRupee
-
-className="text-sky-600"
-
-/>
-
-</div>
-
-
-
-<div>
-
-<p
-className="
+          <div>
+            <p
+              className="
 text-sm
 
 text-slate-500
 "
->
+            >
+              Admission Fees
+            </p>
 
-Admission Fees
-
-</p>
-
-
-<h2
-className="
+            <h2
+              className="
 text-2xl
 
 font-bold
@@ -367,32 +256,16 @@ font-bold
 text-slate-800
 
 "
->
+            >
+              ₹{totalFees}
+            </h2>
+          </div>
+        </div>
 
-₹{totalFees}
+        {/* Commission */}
 
-</h2>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* Commission */}
-
-
-<div
-
-className="
+        <div
+          className="
 bg-white/70
 
 backdrop-blur-xl
@@ -427,14 +300,9 @@ transition-all
 duration-300
 
 "
-
->
-
-
-
-<div
-
-className="
+        >
+          <div
+            className="
 h-14
 
 w-14
@@ -453,40 +321,23 @@ items-center
 justify-center
 
 "
+          >
+            <BadgePercent className="text-emerald-600" />
+          </div>
 
->
-
-<BadgePercent
-
-className="text-emerald-600"
-
-/>
-
-
-</div>
-
-
-
-
-<div>
-
-<p
-className="
+          <div>
+            <p
+              className="
 text-sm
 
 text-slate-500
 "
->
+            >
+              Total Commission
+            </p>
 
-Total Commission
-
-</p>
-
-
-
-<h2
-
-className="
+            <h2
+              className="
 text-2xl
 
 font-bold
@@ -494,33 +345,16 @@ font-bold
 text-slate-800
 
 "
->
+            >
+              ₹{totalCommission}
+            </h2>
+          </div>
+        </div>
 
-₹{totalCommission}
+        {/* Courses */}
 
-</h2>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-{/* Courses */}
-
-
-<div
-
-className="
+        <div
+          className="
 bg-white/70
 
 backdrop-blur-xl
@@ -555,14 +389,9 @@ transition-all
 duration-300
 
 "
-
->
-
-
-
-<div
-
-className="
+        >
+          <div
+            className="
 h-14
 
 w-14
@@ -581,38 +410,23 @@ items-center
 justify-center
 
 "
+          >
+            <GraduationCap className="text-purple-600" />
+          </div>
 
->
-
-<GraduationCap
-
-className="text-purple-600"
-
-/>
-
-</div>
-
-
-
-
-<div>
-
-<p
-className="
+          <div>
+            <p
+              className="
 text-sm
 
 text-slate-500
 "
->
+            >
+              Courses
+            </p>
 
-Courses
-
-</p>
-
-
-<h2
-
-className="
+            <h2
+              className="
 text-2xl
 
 font-bold
@@ -620,43 +434,17 @@ font-bold
 text-slate-800
 
 "
->
+            >
+              {new Set(students.map((item) => item.course)).size}
+            </h2>
+          </div>
+        </div>
+      </div>
 
-{new Set(
-students.map(
-(item)=>item.course
-)
-).size}
+      {/* Table Card */}
 
-</h2>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-{/* Table Card */}
-
-
-
-<div
-
-className="
+      <div
+        className="
 bg-white/70
 
 
@@ -677,14 +465,9 @@ shadow-[0_25px_80px_rgba(14,165,233,.12)]
 overflow-hidden
 
 "
-
->
-
-
-
-<div
-
-className="
+      >
+        <div
+          className="
 p-6
 
 border-b
@@ -692,13 +475,9 @@ border-b
 border-slate-100
 
 "
-
->
-
-
-<h2
-
-className="
+        >
+          <h2
+            className="
 text-xl
 
 font-bold
@@ -706,102 +485,53 @@ font-bold
 text-slate-800
 
 "
->
+          >
+            Admission Records
+          </h2>
+        </div>
 
-Admission Records
-
-</h2>
-
-
-</div>
-
-
-
-
-<div
-className="
+        <div
+          className="
 overflow-x-auto
 
 "
->
-
-
-<table
-
-className="
+        >
+          <table
+            className="
 w-full
 
 min-w-[900px]
 
 "
->
-
-
-<thead>
-
-
-<tr
-
-className="
+          >
+            <thead>
+              <tr
+                className="
 bg-sky-50/70
 
 text-slate-600
 
 "
+              >
+                <th className="p-5 text-left">Student</th>
 
->
+                <th className="p-5 text-left">University</th>
 
+                <th className="p-5 text-left">Course</th>
 
-<th className="p-5 text-left">
-Student
-</th>
+                <th className="p-5 text-left">Fee</th>
 
+                <th className="p-5 text-left">Commission</th>
 
-<th className="p-5 text-left">
-University
-</th>
-
-
-<th className="p-5 text-left">
-Course
-</th>
-
-
-<th className="p-5 text-left">
-Fee
-</th>
-
-
-<th className="p-5 text-left">
-Commission
-</th>
-
-
-<th className="p-5 text-left">
-Status
-</th>
-
-
-</tr>
-
-
-</thead>
-<tbody>
-
-
-{
-
-students.length > 0 ? (
-
-
-students.map((student)=>(
-  
-
-<tr
-
-key={student.id}
-
-className="
+                <th className="p-5 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {students.length > 0 ? (
+                students.map((student) => (
+                  <tr
+                    key={student.id}
+                    className="
 border-t
 
 border-slate-100
@@ -815,26 +545,17 @@ transition-all
 duration-300
 
 "
+                  >
+                    {/* Student */}
 
->
-
-
-{/* Student */}
-
-
-<td
-
-className="
+                    <td
+                      className="
 p-5
 
 "
-
->
-
-
-<div
-
-className="
+                    >
+                      <div
+                        className="
 flex
 
 items-center
@@ -842,13 +563,9 @@ items-center
 gap-3
 
 "
-
->
-
-
-<div
-
-className="
+                      >
+                        <div
+                          className="
 h-11
 
 w-11
@@ -877,80 +594,44 @@ text-white
 font-bold
 
 "
+                        >
+                          {student.name
 
->
+                            ?.charAt(0)
 
-{
+                            ?.toUpperCase()}
+                        </div>
 
-student.name
-
-?.charAt(0)
-
-?.toUpperCase()
-
-}
-
-</div>
-
-
-
-<div>
-
-
-<p
-
-className="
+                        <div>
+                          <p
+                            className="
 font-semibold
 
 text-slate-800
 
 "
+                          >
+                            {student.name}
+                          </p>
 
->
-
-{student.name}
-
-</p>
-
-
-<p
-
-className="
+                          <p
+                            className="
 text-xs
 
 text-slate-500
 
 "
+                          >
+                            Student
+                          </p>
+                        </div>
+                      </div>
+                    </td>
 
->
+                    {/* University */}
 
-Student
-
-</p>
-
-
-</div>
-
-
-
-</div>
-
-
-</td>
-
-
-
-
-
-
-
-{/* University */}
-
-
-
-<td
-
-className="
+                    <td
+                      className="
 p-5
 
 text-slate-700
@@ -958,35 +639,20 @@ text-slate-700
 font-medium
 
 "
+                    >
+                      {student.university || "-"}
+                    </td>
 
->
+                    {/* Course */}
 
-{student.university || "-"}
-
-</td>
-
-
-
-
-
-
-{/* Course */}
-
-
-
-<td
-
-className="
+                    <td
+                      className="
 p-5
 
 "
-
->
-
-
-<span
-
-className="
+                    >
+                      <span
+                        className="
 px-3
 
 py-1.5
@@ -1007,30 +673,15 @@ text-sm
 font-medium
 
 "
+                      >
+                        {student.course || "-"}
+                      </span>
+                    </td>
 
->
+                    {/* Fee */}
 
-{student.course || "-"}
-
-</span>
-
-
-</td>
-
-
-
-
-
-
-
-
-{/* Fee */}
-
-
-
-<td
-
-className="
+                    <td
+                      className="
 p-5
 
 font-semibold
@@ -1038,38 +689,20 @@ font-semibold
 text-slate-700
 
 "
+                    >
+                      ₹{student.fee || 0}
+                    </td>
 
->
+                    {/* Commission */}
 
-₹{student.fee || 0}
-
-</td>
-
-
-
-
-
-
-
-
-
-{/* Commission */}
-
-
-
-<td
-
-className="
+                    <td
+                      className="
 p-5
 
 "
-
->
-
-
-<span
-
-className="
+                    >
+                      <span
+                        className="
 px-3
 
 py-1.5
@@ -1090,41 +723,21 @@ font-semibold
 text-sm
 
 "
+                      >
+                        ₹{student.commission || 0}
+                      </span>
+                    </td>
 
->
+                    {/* Status */}
 
-₹{student.commission || 0}
-
-</span>
-
-
-</td>
-
-
-
-
-
-
-
-
-
-{/* Status */}
-
-
-
-<td
-
-className="
+                    <td
+                      className="
 p-5
 
 "
-
->
-
-
-<span
-
-className={`
+                    >
+                      <span
+                        className={`
 
 px-4
 
@@ -1142,77 +755,33 @@ font-semibold
 
 
 ${
-student.status === "Approved"
-
-?
-
-"bg-emerald-100 text-emerald-700"
-
-:
-
-student.status === "Pending"
-
-?
-
-"bg-yellow-100 text-yellow-700"
-
-:
-
-"bg-slate-100 text-slate-600"
-
+  student.status === "Approved"
+    ? "bg-emerald-100 text-emerald-700"
+    : student.status === "Pending"
+      ? "bg-yellow-100 text-yellow-700"
+      : "bg-slate-100 text-slate-600"
 }
 
 `}
-
->
-
-
-{student.status || "Pending"}
-
-
-</span>
-
-
-
-</td>
-
-
-
-
-
-</tr>
-
-
-
-))
-
-
-)
-
-:(
-
-
-<tr>
-
-
-<td
-
-colSpan="6"
-
-
-className="
+                      >
+                        {student.status || "Pending"}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="
 p-12
 
 text-center
 
 "
-
->
-
-
-<div
-
-className="
+                  >
+                    <div
+                      className="
 flex
 
 flex-col
@@ -1222,13 +791,9 @@ items-center
 gap-3
 
 "
-
->
-
-
-<div
-
-className="
+                    >
+                      <div
+                        className="
 h-16
 
 w-16
@@ -1247,29 +812,18 @@ items-center
 justify-center
 
 "
-
->
-
-
-<GraduationCap
-
-className="
+                      >
+                        <GraduationCap
+                          className="
 text-cyan-600
 
 "
+                          size={30}
+                        />
+                      </div>
 
-size={30}
-
-/>
-
-
-</div>
-
-
-
-<h3
-
-className="
+                      <h3
+                        className="
 text-lg
 
 font-semibold
@@ -1277,67 +831,28 @@ font-semibold
 text-slate-700
 
 "
+                      >
+                        No Admissions Found
+                      </h3>
 
->
-
-No Admissions Found
-
-</h3>
-
-
-
-<p
-
-className="
+                      <p
+                        className="
 text-slate-500
 
 text-sm
 
 "
-
->
-
-Student admission records will appear here.
-
-</p>
-
-
-
-</div>
-
-
-
-</td>
-
-
-</tr>
-
-
-)
-
-
-}
-
-
-</tbody>
-
-
-</table>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-
+                      >
+                        Student admission records will appear here.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
-
 }

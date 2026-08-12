@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import CountUp from "./CountUp";
+import CountUp from "../../home/Stats/CountUp"
 
 export default function StatsCard({
   icon: Icon,

@@ -6,178 +6,100 @@ import {
   UserCheck,
   TrendingUp,
   UserPlus,
+  Power,
 } from "lucide-react";
 
+import { Link } from "react-router-dom";
 
-import {
-  Link
-} from "react-router-dom";
-
-
-import {
-  useEffect,
-  useState
-} from "react";
-
+import { useEffect, useState } from "react";
 
 import axios from "axios";
 
-
-
-
-
 export default function Counsellors() {
-
-
-  const [performance,setPerformance] = useState([]);
-
+  const [performance, setPerformance] = useState([]);
 
   const token = localStorage.getItem("token");
 
-
-
-
-
-  useEffect(()=>{
-
+  useEffect(() => {
     loadData();
+  }, []);
 
-  },[]);
-
-
-
-
-
-
-
-  const loadData = async()=>{
-
-
-    try{
-
-
+  const loadData = async () => {
+    try {
       const res = await axios.get(
-
-        "http://localhost:8000/api/v1/counsellor/allcounsellor",
+        "http://localhost:8000/api/v1/counsellor/admin/allcounsellor",
 
         {
-
-          headers:{
-
-            Authorization:`Bearer ${token}`
-
-          }
-
-        }
-
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
 
-
-
-      if(res.data.success){
-
-        setPerformance(
-          res.data.counsellors
-        );
-
+      if (res.data.success) {
+        setPerformance(res.data.counsellors);
       }
-
-
-
-    }
-
-    catch(error){
-
+    } catch (error) {
       console.log(error);
-
     }
-
-
   };
 
-
-
-
-
-
-
-
-  const deleteCounsellor = async(id)=>{
-
-
-    try{
-
-
+  const deleteCounsellor = async (id) => {
+    try {
       await axios.delete(
-
-        `http://localhost:8000/api/v1/counsellor/delete/counsellor/${id}`,
+        `http://localhost:8000/api/v1/counsellor/admin/${id}`,
 
         {
-
-          headers:{
-
-            Authorization:`Bearer ${token}`
-
-          }
-
-        }
-
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
-
-
 
       loadData();
-
-
+    } catch (error) {
+      console.log("DELETE ERROR:", error.response?.data);
+      console.log("STATUS:", error.response?.status);
     }
-
-    catch(error){
-
-      console.log(error);
-
-    }
-
-
   };
 
 
-
-
-
-
-
-  const totalCounsellors =
-    performance.length;
-
-
-
-  const totalLeads =
-    performance.reduce(
-      (sum,item)=>
-      sum + Number(item.totalLeads || 0),
-      0
+  const toggleCounsellorStatus = async (id, currentStatus) => {
+  try {
+    await axios.put(
+      `http://localhost:8000/api/v1/counsellor/admin/${id}/status`,
+      {
+        status: currentStatus === "Active" ? "Inactive" : "Active",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
+    loadData();
+  } catch (error) {
+    console.log("STATUS ERROR:", error.response?.data);
+    console.log("STATUS:", error.response?.status);
+  }
+};
 
+  const totalCounsellors = performance.length;
 
-  const totalConverted =
-    performance.reduce(
-      (sum,item)=>
-      sum + Number(item.convertedLeads || 0),
-      0
-    );
+  const totalLeads = performance.reduce(
+    (sum, item) => sum + Number(item.totalLeads || 0),
+    0,
+  );
 
-
-
-
-
+  const totalConverted = performance.reduce(
+    (sum, item) => sum + Number(item.convertedLeads || 0),
+    0,
+  );
 
   return (
-
-
-<div
-
-className="
+    <div
+      className="
 relative
 
 min-h-screen
@@ -185,20 +107,11 @@ min-h-screen
 space-y-8
 
 "
+    >
+      {/* Background Glow */}
 
->
-
-
-
-
-
-{/* Background Glow */}
-
-
-
-<div
-
-className="
+      <div
+        className="
 absolute
 
 -top-40
@@ -222,15 +135,10 @@ blur-[120px]
 pointer-events-none
 
 "
+      />
 
-/>
-
-
-
-
-<div
-
-className="
+      <div
+        className="
 absolute
 
 right-0
@@ -255,22 +163,12 @@ blur-[120px]
 pointer-events-none
 
 "
+      />
 
-/>
+      {/* Header */}
 
-
-
-
-
-
-
-{/* Header */}
-
-
-
-<div
-
-className="
+      <div
+        className="
 relative
 
 z-10
@@ -292,18 +190,10 @@ md:justify-between
 gap-5
 
 "
-
->
-
-
-
-
-<div>
-
-
-<h1
-
-className="
+      >
+        <div>
+          <h1
+            className="
 text-3xl
 
 md:text-4xl
@@ -327,47 +217,25 @@ bg-clip-text
 text-transparent
 
 "
+          >
+            Counsellors Management
+          </h1>
 
->
-
-Counsellors Management
-
-</h1>
-
-
-
-<p
-
-className="
+          <p
+            className="
 text-slate-500
 
 mt-2
 
 "
+          >
+            Manage counsellors performance and assigned leads
+          </p>
+        </div>
 
->
-
-Manage counsellors performance and assigned leads
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<Link
-
-to="/admin/add-counsellor"
-
-
-className="
+        <Link
+          to="/admin/add-counsellor"
+          className="
 inline-flex
 
 items-center
@@ -416,38 +284,16 @@ transition-all
 duration-300
 
 "
+        >
+          <UserPlus size={18} />
+          Add Counsellor
+        </Link>
+      </div>
 
->
+      {/* Stats Cards */}
 
-
-<UserPlus size={18}/>
-
-
-Add Counsellor
-
-
-</Link>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* Stats Cards */}
-
-
-
-<div
-
-className="
+      <div
+        className="
 relative
 
 z-10
@@ -463,23 +309,11 @@ sm:grid-cols-3
 gap-5
 
 "
+      >
+        {/* Total Counsellors */}
 
->
-
-
-
-
-
-
-
-
-{/* Total Counsellors */}
-
-
-
-<div
-
-className="
+        <div
+          className="
 bg-white/70
 
 
@@ -508,14 +342,9 @@ gap-4
 
 
 "
-
->
-
-
-
-<div
-
-className="
+        >
+          <div
+            className="
 h-14
 
 w-14
@@ -534,47 +363,29 @@ items-center
 justify-center
 
 "
-
->
-
-
-<Users
-
-className="
+          >
+            <Users
+              className="
 text-cyan-600
 
 "
+            />
+          </div>
 
-/>
-
-
-</div>
-
-
-
-<div>
-
-
-<p
-
-className="
+          <div>
+            <p
+              className="
 text-sm
 
 text-slate-500
 
 "
+            >
+              Total Counsellors
+            </p>
 
->
-
-Total Counsellors
-
-</p>
-
-
-
-<h2
-
-className="
+            <h2
+              className="
 text-2xl
 
 font-bold
@@ -582,35 +393,16 @@ font-bold
 text-slate-800
 
 "
+            >
+              {totalCounsellors}
+            </h2>
+          </div>
+        </div>
 
->
+        {/* Leads */}
 
-{totalCounsellors}
-
-</h2>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-{/* Leads */}
-
-
-
-<div
-
-className="
+        <div
+          className="
 bg-white/70
 
 
@@ -638,14 +430,9 @@ items-center
 gap-4
 
 "
-
->
-
-
-
-<div
-
-className="
+        >
+          <div
+            className="
 h-14
 
 w-14
@@ -664,47 +451,29 @@ items-center
 justify-center
 
 "
-
->
-
-
-<UserCheck
-
-className="
+          >
+            <UserCheck
+              className="
 text-sky-600
 
 "
+            />
+          </div>
 
-/>
-
-
-</div>
-
-
-
-<div>
-
-
-<p
-
-className="
+          <div>
+            <p
+              className="
 text-sm
 
 text-slate-500
 
 "
+            >
+              Total Leads
+            </p>
 
->
-
-Total Leads
-
-</p>
-
-
-
-<h2
-
-className="
+            <h2
+              className="
 text-2xl
 
 font-bold
@@ -712,25 +481,15 @@ font-bold
 text-slate-800
 
 "
+            >
+              {totalLeads}
+            </h2>
+          </div>
+        </div>
+        {/* Converted Leads Stats */}
 
->
-
-{totalLeads}
-
-</h2>
-
-
-
-</div>
-
-
-</div>
-{/* Converted Leads Stats */}
-
-
-<div
-
-className="
+        <div
+          className="
 bg-white/70
 
 
@@ -758,13 +517,9 @@ items-center
 gap-4
 
 "
-
->
-
-
-<div
-
-className="
+        >
+          <div
+            className="
 h-14
 
 w-14
@@ -783,47 +538,29 @@ items-center
 justify-center
 
 "
-
->
-
-
-<TrendingUp
-
-className="
+          >
+            <TrendingUp
+              className="
 text-emerald-600
 
 "
+            />
+          </div>
 
-/>
-
-
-</div>
-
-
-
-<div>
-
-
-<p
-
-className="
+          <div>
+            <p
+              className="
 text-sm
 
 text-slate-500
 
 "
+            >
+              Converted Leads
+            </p>
 
->
-
-Converted Leads
-
-</p>
-
-
-
-<h2
-
-className="
+            <h2
+              className="
 text-2xl
 
 font-bold
@@ -831,39 +568,17 @@ font-bold
 text-slate-800
 
 "
+            >
+              {totalConverted}
+            </h2>
+          </div>
+        </div>
+      </div>
 
->
+      {/* Desktop Counsellor Table */}
 
-{totalConverted}
-
-</h2>
-
-
-
-</div>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* Desktop Counsellor Table */}
-
-
-
-<div
-
-className="
+      <div
+        className="
 hidden
 
 lg:block
@@ -873,13 +588,9 @@ relative
 z-10
 
 "
-
->
-
-
-<div
-
-className="
+      >
+        <div
+          className="
 bg-white/70
 
 
@@ -903,41 +614,26 @@ shadow-[0_25px_80px_rgba(14,165,233,.12)]
 overflow-x-auto
 
 "
-
->
-
-
-<table
-
-className="
+        >
+          <table
+            className="
 w-full
 
 min-w-[1000px]
 
 "
-
->
-
-
-
-<thead>
-
-
-<tr
-
-className="
+          >
+            <thead>
+              <tr
+                className="
 bg-sky-50
 
 text-slate-600
 
 "
-
->
-
-
-<th
-
-className="
+              >
+                <th
+                  className="
 text-left
 
 p-5
@@ -945,86 +641,56 @@ p-5
 rounded-l-2xl
 
 "
+                >
+                  Counsellor
+                </th>
 
->
-
-Counsellor
-
-</th>
-
-
-
-<th
-
-className="
+                <th
+                  className="
 text-left
 
 p-5
 
 "
+                >
+                  Contact
+                </th>
 
->
-
-Contact
-
-</th>
-
-
-
-<th
-
-className="
+                <th
+                  className="
 text-left
 
 p-5
 
 "
+                >
+                  Leads
+                </th>
 
->
-
-Leads
-
-</th>
-
-
-
-<th
-
-className="
+                <th
+                  className="
 text-left
 
 p-5
 
 "
+                >
+                  Converted
+                </th>
 
->
-
-Converted
-
-</th>
-
-
-
-<th
-
-className="
+                <th
+                  className="
 text-left
 
 p-5
 
 "
+                >
+                  Performance
+                </th>
 
->
-
-Performance
-
-</th>
-
-
-
-<th
-
-className="
+                <th
+                  className="
 text-left
 
 p-5
@@ -1032,46 +698,18 @@ p-5
 rounded-r-2xl
 
 "
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
 
->
-
-Actions
-
-</th>
-
-
-
-</tr>
-
-
-</thead>
-
-
-
-
-
-
-
-<tbody>
-
-
-
-{
-
-
-performance.length > 0 ?
-
-
-performance.map((person,index)=>(
-
-
-
-<tr
-
-key={person._id || index}
-
-
-className="
+            <tbody>
+              {performance.length > 0
+                ? performance.map((person, index) => (
+                    <tr
+                      key={person._id || index}
+                      className="
 border-b
 
 border-slate-100
@@ -1085,31 +723,17 @@ transition-all
 duration-300
 
 "
+                    >
+                      {/* Name */}
 
->
-
-
-
-
-
-{/* Name */}
-
-
-
-<td
-
-className="
+                      <td
+                        className="
 p-5
 
 "
-
->
-
-
-
-<div
-
-className="
+                      >
+                        <div
+                          className="
 flex
 
 items-center
@@ -1117,14 +741,9 @@ items-center
 gap-4
 
 "
-
->
-
-
-
-<div
-
-className="
+                        >
+                          <div
+                            className="
 h-12
 
 w-12
@@ -1161,99 +780,51 @@ shadow-lg
 shadow-cyan-200
 
 "
+                          >
+                            {person.name
 
->
+                              ?.charAt(0)
 
-{
+                              ?.toUpperCase()}
+                          </div>
 
-person.name
-
-?.charAt(0)
-
-?.toUpperCase()
-
-}
-
-
-</div>
-
-
-
-<div>
-
-
-<p
-
-className="
+                          <div>
+                            <p
+                              className="
 font-bold
 
 text-slate-800
 
 "
+                            >
+                              {person.name}
+                            </p>
 
->
-
-{person.name}
-
-</p>
-
-
-
-<p
-
-className="
+                            <p
+                              className="
 text-xs
 
 text-slate-500
 
 "
+                            >
+                              Counsellor
+                            </p>
+                          </div>
+                        </div>
+                      </td>
 
->
+                      {/* Contact */}
 
-Counsellor
-
-</p>
-
-
-
-</div>
-
-
-
-</div>
-
-
-</td>
-
-
-
-
-
-
-
-
-
-
-{/* Contact */}
-
-
-
-<td
-
-className="
+                      <td
+                        className="
 p-5
 
 "
-
->
-
-
-<a
-
-href={`mailto:${person.email}`}
-
-
-className="
+                      >
+                        <a
+                          href={`mailto:${person.email}`}
+                          className="
 text-cyan-600
 
 
@@ -1263,18 +834,12 @@ font-medium
 hover:text-cyan-700
 
 "
+                        >
+                          {person.email}
+                        </a>
 
->
-
-{person.email}
-
-</a>
-
-
-
-<p
-
-className="
+                        <p
+                          className="
 text-sm
 
 text-slate-500
@@ -1282,42 +847,21 @@ text-slate-500
 mt-1
 
 "
+                        >
+                          {person.phoneNumber}
+                        </p>
+                      </td>
 
->
+                      {/* Leads */}
 
-{person.phoneNumber}
-
-</p>
-
-
-
-</td>
-
-
-
-
-
-
-
-
-
-{/* Leads */}
-
-
-
-<td
-
-className="
+                      <td
+                        className="
 p-5
 
 "
-
->
-
-
-<span
-
-className="
+                      >
+                        <span
+                          className="
 px-4
 
 py-2
@@ -1338,42 +882,21 @@ font-semibold
 text-sm
 
 "
+                        >
+                          {person.totalLeads || 0}
+                        </span>
+                      </td>
 
->
+                      {/* Converted */}
 
-{person.totalLeads || 0}
-
-</span>
-
-
-
-</td>
-
-
-
-
-
-
-
-
-
-{/* Converted */}
-
-
-
-<td
-
-className="
+                      <td
+                        className="
 p-5
 
 "
-
->
-
-
-<span
-
-className="
+                      >
+                        <span
+                          className="
 px-4
 
 py-2
@@ -1394,53 +917,27 @@ font-semibold
 text-sm
 
 "
+                        >
+                          {person.convertedLeads || 0}
+                        </span>
+                      </td>
 
->
+                      {/* Performance */}
 
-{person.convertedLeads || 0}
-
-</span>
-
-
-
-</td>
-
-
-
-
-
-
-
-
-
-{/* Performance */}
-
-
-
-<td
-
-className="
+                      <td
+                        className="
 p-5
 
 "
-
->
-
-
-
-<div
-
-className="
+                      >
+                        <div
+                          className="
 w-40
 
 "
-
->
-
-
-<div
-
-className="
+                        >
+                          <div
+                            className="
 flex
 
 justify-between
@@ -1450,48 +947,30 @@ text-xs
 mb-2
 
 "
-
->
-
-<span
-
-className="
+                          >
+                            <span
+                              className="
 text-slate-500
 
 "
+                            >
+                              Rate
+                            </span>
 
->
-
-Rate
-
-</span>
-
-
-<span
-
-className="
+                            <span
+                              className="
 font-semibold
 
 text-cyan-600
 
 "
+                            >
+                              {person.conversionRate || 0}%
+                            </span>
+                          </div>
 
->
-
-{person.conversionRate || 0}%
-
-</span>
-
-
-</div>
-
-
-
-
-
-<div
-
-className="
+                          <div
+                            className="
 h-2
 
 bg-slate-100
@@ -1503,13 +982,9 @@ rounded-full
 overflow-hidden
 
 "
-
->
-
-
-<div
-
-className="
+                          >
+                            <div
+                              className="
 h-full
 
 
@@ -1525,264 +1000,123 @@ to-sky-500
 rounded-full
 
 "
+                              style={{
+                                width: `${person.conversionRate || 0}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </td>
 
-style={{
+                      {/* Actions */}
 
-width:`${person.conversionRate || 0}%`
-
-}}
-
-
-/>
-
-
-</div>
-
-
-
-</div>
-
-
-
-</td>
-
-
-
-
-
-
-
-
-
-{/* Actions */}
-
-
-
-<td
-
-className="
+                      <td
+                        className="
 p-5
 
 "
-
->
-
-
-<div
-
-className="
-flex
-
-gap-2
-
-"
-
->
-
-
-<Link
-
-to={`/admin/counsellor/${person._id}`}
-
-
-className="
-h-10
-
-w-10
-
-
-rounded-xl
-
-
-bg-cyan-100
-
-
-text-cyan-700
-
-
-flex
-
-items-center
-
-justify-center
-
-
-hover:scale-110
-
-
-transition
-
-"
-
->
-
-<Eye size={18}/>
-
-</Link>
-
-
-
-
-
-
-<Link
-
-to={`/admin/edit-counsellor/${person._id}`}
-
-
-className="
-h-10
-
-w-10
-
-
-rounded-xl
-
-
-bg-yellow-100
-
-
-text-yellow-700
-
-
-flex
-
-items-center
-
-justify-center
-
-
-hover:scale-110
-
-
-transition
-
-"
-
->
-
-<Pencil size={18}/>
-
-</Link>
-
-
-
-
-
-
-<button
-
-onClick={()=>{
-
-
-const confirmDelete =
-window.confirm(
-`Delete ${person.name}?`
-);
-
-
-if(confirmDelete){
-
-deleteCounsellor(person._id);
-
-}
-
-
-}}
-
-
-className="
-h-10
-
-w-10
-
-
-rounded-xl
-
-
-bg-red-100
-
-
-text-red-700
-
-
-flex
-
-items-center
-
-justify-center
-
-
-hover:scale-110
-
-
-transition
-
-"
-
->
-
-
-<Trash2 size={18}/>
-
-
-</button>
-
-
-
-
-
+                      >
+                        <div className="flex gap-2">
+  {/* View */}
+  <Link
+    to={`/admin/counsellor/${person._id}`}
+    className="
+      h-10 w-10
+      rounded-xl
+      bg-cyan-100
+      text-cyan-700
+      flex items-center justify-center
+      hover:scale-110
+      transition
+    "
+    title="View Counsellor"
+  >
+    <Eye size={18} />
+  </Link>
+
+  {/* Edit */}
+  <Link
+    to={`/admin/edit-counsellor/${person._id}`}
+    className="
+      h-10 w-10
+      rounded-xl
+      bg-yellow-100
+      text-yellow-700
+      flex items-center justify-center
+      hover:scale-110
+      transition
+    "
+    title="Edit Counsellor"
+  >
+    <Pencil size={18} />
+  </Link>
+
+  {/* Active / Inactive */}
+  <button
+    onClick={() =>
+      toggleCounsellorStatus(
+        person._id,
+        person.status
+      )
+    }
+    className={`
+      h-10 w-10
+      rounded-xl
+      flex items-center justify-center
+      hover:scale-110
+      transition
+      ${
+        person.status === "Active"
+          ? "bg-red-100 text-red-700"
+          : "bg-emerald-100 text-emerald-700"
+      }
+    `}
+    title={
+      person.status === "Active"
+        ? "Deactivate Counsellor"
+        : "Activate Counsellor"
+    }
+  >
+    <Power size={18} />
+  </button>
+
+  {/* Delete */}
+  <button
+    onClick={() => {
+      const confirmDelete = window.confirm(
+        `Delete ${person.name}?`
+      );
+
+      if (confirmDelete) {
+        deleteCounsellor(person._id);
+      }
+    }}
+    className="
+      h-10 w-10
+      rounded-xl
+      bg-red-100
+      text-red-700
+      flex items-center justify-center
+      hover:scale-110
+      transition
+    "
+    title="Delete Counsellor"
+  >
+    <Trash2 size={18} />
+  </button>
 </div>
+                      </td>
+                    </tr>
+                  ))
+                : null}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {/* Mobile + Tablet Cards */}
 
-
-
-</td>
-
-
-
-
-
-</tr>
-
-
-))
-
-
-:
-
-null
-
-
-
-}
-
-
-
-</tbody>
-
-
-
-
-
-</table>
-
-
-
-
-
-
-</div>
-
-
-
-</div>
-{/* Mobile + Tablet Cards */}
-
-
-
-<div
-
-className="
+      <div
+        className="
 lg:hidden
 
 relative
@@ -1793,25 +1127,12 @@ z-10
 space-y-5
 
 "
-
->
-
-
-{
-
-
-performance.length > 0 ?
-
-
-performance.map((person,index)=>(
-
-
-<div
-
-key={person._id || index}
-
-
-className="
+      >
+        {performance.length > 0 ? (
+          performance.map((person, index) => (
+            <div
+              key={person._id || index}
+              className="
 bg-white/70
 
 
@@ -1833,20 +1154,11 @@ shadow-[0_20px_60px_rgba(14,165,233,.12)]
 
 
 "
+            >
+              {/* Profile */}
 
->
-
-
-
-
-
-{/* Profile */}
-
-
-
-<div
-
-className="
+              <div
+                className="
 flex
 
 items-center
@@ -1856,14 +1168,9 @@ gap-4
 mb-6
 
 "
-
->
-
-
-
-<div
-
-className="
+              >
+                <div
+                  className="
 h-16
 
 w-16
@@ -1903,35 +1210,17 @@ shadow-lg
 shadow-cyan-200
 
 "
+                >
+                  {person.name
 
->
+                    ?.charAt(0)
 
+                    ?.toUpperCase()}
+                </div>
 
-{
-
-person.name
-
-?.charAt(0)
-
-?.toUpperCase()
-
-}
-
-
-
-</div>
-
-
-
-
-
-
-<div>
-
-
-<h3
-
-className="
+                <div>
+                  <h3
+                    className="
 text-xl
 
 font-bold
@@ -1939,83 +1228,45 @@ font-bold
 text-slate-800
 
 "
+                  >
+                    {person.name}
+                  </h3>
 
->
-
-{person.name}
-
-</h3>
-
-
-
-<p
-
-className="
+                  <p
+                    className="
 text-sm
 
 text-slate-500
 
 "
+                  >
+                    Counsellor
+                  </p>
+                </div>
+              </div>
 
->
+              {/* Details */}
 
-Counsellor
-
-</p>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-{/* Details */}
-
-
-
-<div
-
-className="
+              <div
+                className="
 space-y-4
 
 "
-
->
-
-
-
-<div>
-
-
-<p
-
-className="
+              >
+                <div>
+                  <p
+                    className="
 text-xs
 
 text-slate-500
 
 "
+                  >
+                    Email
+                  </p>
 
->
-
-Email
-
-</p>
-
-
-
-<p
-
-className="
+                  <p
+                    className="
 font-medium
 
 text-cyan-600
@@ -2023,69 +1274,37 @@ text-cyan-600
 break-all
 
 "
+                  >
+                    {person.email}
+                  </p>
+                </div>
 
->
-
-{person.email}
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-<div>
-
-
-<p
-
-className="
+                <div>
+                  <p
+                    className="
 text-xs
 
 text-slate-500
 
 "
+                  >
+                    Phone
+                  </p>
 
->
-
-Phone
-
-</p>
-
-
-
-<p
-
-className="
+                  <p
+                    className="
 font-medium
 
 text-slate-700
 
 "
+                  >
+                    {person.phoneNumber}
+                  </p>
+                </div>
 
->
-
-{person.phoneNumber}
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-<div
-
-className="
+                <div
+                  className="
 grid
 
 grid-cols-3
@@ -2094,14 +1313,9 @@ grid-cols-3
 gap-3
 
 "
-
->
-
-
-
-<div
-
-className="
+                >
+                  <div
+                    className="
 bg-sky-50
 
 
@@ -2114,53 +1328,32 @@ p-3
 text-center
 
 "
-
->
-
-<p
-
-className="
+                  >
+                    <p
+                      className="
 text-xs
 
 text-slate-500
 
 "
+                    >
+                      Leads
+                    </p>
 
->
-
-Leads
-
-</p>
-
-
-<p
-
-className="
+                    <p
+                      className="
 font-bold
 
 text-slate-800
 
 "
+                    >
+                      {person.totalLeads || 0}
+                    </p>
+                  </div>
 
->
-
-{person.totalLeads || 0}
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div
-
-className="
+                  <div
+                    className="
 bg-emerald-50
 
 
@@ -2173,54 +1366,32 @@ p-3
 text-center
 
 "
-
->
-
-<p
-
-className="
+                  >
+                    <p
+                      className="
 text-xs
 
 text-slate-500
 
 "
+                    >
+                      Done
+                    </p>
 
->
-
-Done
-
-</p>
-
-
-<p
-
-className="
+                    <p
+                      className="
 font-bold
 
 text-slate-800
 
 "
+                    >
+                      {person.convertedLeads || 0}
+                    </p>
+                  </div>
 
->
-
-{person.convertedLeads || 0}
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<div
-
-className="
+                  <div
+                    className="
 bg-cyan-50
 
 
@@ -2233,69 +1404,36 @@ p-3
 text-center
 
 "
-
->
-
-<p
-
-className="
+                  >
+                    <p
+                      className="
 text-xs
 
 text-slate-500
 
 "
+                    >
+                      Rate
+                    </p>
 
->
-
-Rate
-
-</p>
-
-
-<p
-
-className="
+                    <p
+                      className="
 font-bold
 
 text-cyan-700
 
 "
+                    >
+                      {person.conversionRate || 0}%
+                    </p>
+                  </div>
+                </div>
+              </div>
 
->
+              {/* Actions */}
 
-{person.conversionRate || 0}%
-
-</p>
-
-
-
-</div>
-
-
-
-
-</div>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* Actions */}
-
-
-
-<div
-
-className="
+              <div
+                className="
 flex
 
 gap-3
@@ -2303,17 +1441,10 @@ gap-3
 mt-6
 
 "
-
->
-
-
-
-<Link
-
-to={`/admin/counsellor/${person._id}`}
-
-
-className="
+              >
+                <Link
+                  to={`/admin/counsellor/${person._id}`}
+                  className="
 flex-1
 
 
@@ -2342,26 +1473,13 @@ hover:bg-cyan-200
 transition
 
 "
+                >
+                  <Eye size={18} />
+                </Link>
 
->
-
-
-<Eye size={18}/>
-
-
-</Link>
-
-
-
-
-
-
-<Link
-
-to={`/admin/edit-counsellor/${person._id}`}
-
-
-className="
+                <Link
+                  to={`/admin/edit-counsellor/${person._id}`}
+                  className="
 flex-1
 
 
@@ -2390,44 +1508,21 @@ hover:bg-yellow-200
 transition
 
 "
+                >
+                  <Pencil size={18} />
+                </Link>
 
->
+                <button
+                  onClick={() => {
+                    const confirmDelete = window.confirm(
+                      `Delete ${person.name}?`,
+                    );
 
-
-<Pencil size={18}/>
-
-
-</Link>
-
-
-
-
-
-
-<button
-
-
-onClick={()=>{
-
-
-const confirmDelete =
-window.confirm(
-`Delete ${person.name}?`
-);
-
-
-if(confirmDelete){
-
-deleteCounsellor(person._id);
-
-}
-
-
-
-}}
-
-
-className="
+                    if (confirmDelete) {
+                      deleteCounsellor(person._id);
+                    }
+                  }}
+                  className="
 flex-1
 
 
@@ -2456,43 +1551,15 @@ hover:bg-red-200
 transition
 
 "
-
->
-
-
-<Trash2 size={18}/>
-
-
-</button>
-
-
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-))
-
-
-
-
-
-:
-
-
-(
-
-
-<div
-
-className="
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div
+            className="
 bg-white/70
 
 
@@ -2513,13 +1580,9 @@ border
 border-white/80
 
 "
-
->
-
-
-<div
-
-className="
+          >
+            <div
+              className="
 h-16
 
 w-16
@@ -2544,30 +1607,17 @@ justify-center
 mb-4
 
 "
-
->
-
-
-<Users
-
-className="
+            >
+              <Users
+                className="
 text-cyan-600
 
 "
+              />
+            </div>
 
-/>
-
-
-
-</div>
-
-
-
-
-
-<h3
-
-className="
+            <h3
+              className="
 text-xl
 
 font-bold
@@ -2575,56 +1625,23 @@ font-bold
 text-slate-700
 
 "
+            >
+              No Counsellors Found
+            </h3>
 
->
-
-No Counsellors Found
-
-</h3>
-
-
-
-<p
-
-className="
+            <p
+              className="
 text-slate-500
 
 mt-2
 
 "
-
->
-
-Add counsellors to manage admissions.
-
-</p>
-
-
-
-</div>
-
-
-
-)
-
-
-
-}
-
-
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
+            >
+              Add counsellors to manage admissions.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   );
-
 }

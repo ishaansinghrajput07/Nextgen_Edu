@@ -1,193 +1,223 @@
-import { NavLink } from "react-router-dom";
-import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const navItems = [
-  {
-    name: "Home",
-    path: "/",
-  },
-  {
-    name: "About",
-    path: "/about",
-  },
-  {
-    name: "Universities",
-    path: "/universities",
-  },
-  {
-    name: "Courses",
-    path: "/courses",
-  },
-  {
-    name: "Success Stories",
-    path: "/success-stories",
-  },
-  {
-    name: "Contact",
-    path: "/contact",
-  },
-];
-
-const services = [
-  {
-    name: "Free Counselling",
-    path: "/free-counselling",
-  },
-  {
-    name: "Admission Process",
-    path: "/admission-process",
-  },
-  {
-    name: "How To Apply",
-    path: "/how-to-apply",
-  },
-  {
-    name: "Eligibility",
-    path: "/eligibility-criteria",
-  },
-];
-
-export default function DesktopMenu() {
-  const [open, setOpen] = useState(false);
-
-const navClass = ({ isActive }) =>
-  isActive
-    ? "relative font-semibold transition-all duration-300 pb-1 text-cyan-600"
-    : "relative font-semibold transition-all duration-300 pb-1 text-black hover:text-cyan-600";
+const DesktopMenu = ({ navLinks = [] }) => {
+  const [activeMenu, setActiveMenu] = useState(null);
 
   return (
-   <nav
-  className="
-hidden
-lg:flex
-items-center
-gap-10
-relative
-z-[200]
-"
->
-    
-      {/* Normal Menu */}
-
-      {navItems.map((item) => (
-        <NavLink
-          key={item.name}
-          to={item.path}
-          className={navClass}
-        >
-          {({ isActive }) => (
-            <>
-              {item.name}
-
-              <motion.div
-                layoutId="navbar"
-                className={`
-absolute
-left-0
-bottom-1
-h-[3px]
-rounded-full
-bg-cyan-500
-${
-  isActive
-    ? "w-full"
-    : "w-0"
-}
-`}
-              />
-            </>
-          )}
-        </NavLink>
-      ))}
-
-      {/* Services Dropdown */}
-
-      <div
-        className="relative"
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-      >
-        <button
-          className="
-flex
-items-center
-gap-1
-font-semibold
-text-black
-hover:text-cyan-600
-transition
-"
-        >
-          Services
-
-          <ChevronDown
-            size={18}
-            className={`transition-transform duration-300 ${
-              open ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-
-        <AnimatePresence>
-
-          {open && (
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 15,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              exit={{
-                opacity: 0,
-                y: 15,
-              }}
-              transition={{
-                duration: .25,
-              }}
+    <nav
+      className="
+    flex
+    items-center
+    gap-1
+    "
+    >
+      {navLinks.map((item) => {
+        if (!item.megaMenu) {
+          return (
+            <Link
+              key={item.title}
+              to={item.path}
               className="
-absolute
-top-12
-left-1/2
--translate-x-1/2
-w-72
-rounded-3xl
-bg-white
-shadow-[0_20px_60px_rgba(15,23,42,.12)]
-border
-border-slate-100
-overflow-hidden
-"
+              px-4
+              py-2
+              text-sm
+              font-semibold
+              text-slate-700
+              rounded-lg
+              hover:text-sky-600
+              hover:bg-sky-50
+              transition
+              "
             >
-              {services.map((item) => (
-                <NavLink
-                  key={item.name}
-                  to={item.path}
+              {item.title}
+            </Link>
+          );
+        }
+
+        return (
+          <div
+            key={item.title}
+            className="
+            relative
+            "
+            onMouseEnter={() => setActiveMenu(item.title)}
+            onMouseLeave={() => setActiveMenu(null)}
+          >
+            <button
+              className="
+              flex
+              items-center
+              gap-1
+              px-4
+              py-2
+              text-sm
+              font-semibold
+              text-slate-700
+              rounded-lg
+              hover:text-sky-600
+              hover:bg-sky-50
+              transition
+              "
+            >
+              {item.title}
+
+              <ChevronDown
+                className="
+                h-4
+                w-4
+                "
+              />
+            </button>
+
+            <AnimatePresence>
+              {activeMenu === item.title && (
+                <motion.div
+                  initial={{
+                    opacity: 0,
+                    y: 10,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: 10,
+                  }}
+                  transition={{
+                    duration: 0.2,
+                  }}
                   className="
-block
-px-6
-py-4
-text-slate-700
-hover:bg-cyan-50
-hover:text-cyan-600
-transition
-font-medium
-"
+                  absolute
+                  top-12
+                  left-0
+                  w-[520px]
+                  bg-white
+                  rounded-2xl
+                  shadow-2xl
+                  border
+                  border-slate-100
+                  p-5
+                  z-50
+                  "
                 >
-                  {item.name}
-                </NavLink>
-              ))}
-            </motion.div>
-          )}
+                  {item.sections.map((section) => (
+                    <div
+                      key={section.title}
+                      className="
+                      mb-5
+                      last:mb-0
+                      "
+                    >
+                      <h4
+                        className="
+                      text-xs
+                      uppercase
+                      tracking-widest
+                      font-black
+                      text-sky-600
+                      mb-3
+                      "
+                      >
+                        {section.title}
+                      </h4>
 
-        </AnimatePresence>
+                      <div
+                        className="
+                      grid
+                      grid-cols-2
+                      gap-3
+                      "
+                      >
+                        {section.items.map((subItem) => (
+                          <Link
+                            key={subItem.title}
+                            to={subItem.path}
+                            className="
+                            group
+                            flex
+                            gap-3
+                            p-3
+                            rounded-xl
+                            border
+                            border-slate-100
+                            hover:border-sky-200
+                            hover:bg-sky-50
+                            transition
+                            "
+                          >
+                            <div
+                              className="
+                            h-10
+                            w-10
+                            rounded-xl
+                            bg-gradient-to-br
+                            from-sky-500
+                            to-cyan-500
+                            flex
+                            items-center
+                            justify-center
+                            text-white
+                            shrink-0
+                            "
+                            >
+                              <subItem.icon
+                                className="
+                                h-5
+                                w-5
+                                "
+                              />
+                            </div>
 
-      </div>
+                            <div>
+                              <h5
+                                className="
+                              text-sm
+                              font-bold
+                              text-slate-800
+                              group-hover:text-sky-600
+                              "
+                              >
+                                {subItem.title}
+                              </h5>
 
+                              <p
+                                className="
+                              text-xs
+                              text-slate-500
+                              mt-1
+                              line-clamp-2
+                              "
+                              >
+                                {subItem.description}
+                              </p>
+                            </div>
+
+                            <ChevronRight
+                              className="
+                              h-4
+                              w-4
+                              text-slate-400
+                              ml-auto
+                              mt-1
+                              "
+                            />
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      })}
     </nav>
   );
-}
+};
+
+export default DesktopMenu;

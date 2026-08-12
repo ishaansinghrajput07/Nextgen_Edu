@@ -1,3 +1,4 @@
+
 import {
   Eye,
   Loader2,
@@ -6,584 +7,557 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
-
-const AdmissionTable = ({
-  admissions,
-  loading,
-}) => {
-
-
+const AdmissionTable = ({ admissions, loading }) => {
   const navigate = useNavigate();
 
+  console.log(
+    "AdmissionTable admissions:",
+    admissions,
+  );
 
+  console.log(
+    "Length:",
+    admissions?.length,
+  );
 
-  const getStatusStyle = (status)=>{
-
-    switch(status){
-
+  const getStatusStyle = (status) => {
+    switch (status) {
       case "Applied":
-        return "bg-blue-500/20 text-blue-300";
-
+        return "bg-blue-50 text-blue-700 border-blue-100";
 
       case "Documents Pending":
-        return "bg-yellow-500/20 text-yellow-300";
-
+        return "bg-amber-50 text-amber-700 border-amber-100";
 
       case "Documents Verified":
-        return "bg-purple-500/20 text-purple-300";
-
+        return "bg-violet-50 text-violet-700 border-violet-100";
 
       case "Offer Letter":
-        return "bg-indigo-500/20 text-indigo-300";
-
+        return "bg-indigo-50 text-indigo-700 border-indigo-100";
 
       case "Fee Paid":
-        return "bg-green-500/20 text-green-300";
-
+        return "bg-emerald-50 text-emerald-700 border-emerald-100";
 
       case "Enrolled":
-        return "bg-emerald-500/20 text-emerald-300";
-
+        return "bg-green-50 text-green-700 border-green-100";
 
       case "Rejected":
-        return "bg-red-500/20 text-red-300";
-
+        return "bg-red-50 text-red-700 border-red-100";
 
       default:
-        return "bg-gray-500/20 text-gray-300";
-
+        return "bg-slate-50 text-slate-600 border-slate-200";
     }
-
   };
 
-
-
-
-  if(loading){
-
+  if (loading) {
     return (
+      <div
+        className="
+          bg-white/75
+          backdrop-blur-2xl
+          border
+          border-white/80
+          rounded-3xl
+          shadow-[0_15px_50px_rgba(14,165,233,.08)]
+          min-h-[300px]
+          flex
+          items-center
+          justify-center
+        "
+      >
+        <div className="flex flex-col items-center gap-3">
+          <div
+            className="
+              h-12
+              w-12
+              rounded-2xl
+              bg-cyan-50
+              flex
+              items-center
+              justify-center
+            "
+          >
+            <Loader2
+              size={24}
+              className="
+                text-cyan-600
+                animate-spin
+              "
+            />
+          </div>
 
-      <div className="
-        flex
-        justify-center
-        items-center
-        h-64
-        bg-white/10
-        rounded-3xl
-        backdrop-blur-xl
-      ">
-
-        <Loader2
-          className="
-            animate-spin
-            text-cyan-400
-          "
-          size={35}
-        />
-
+          <p className="text-slate-500 text-sm">
+            Loading admissions...
+          </p>
+        </div>
       </div>
-
     );
-
   }
 
-
-
-
   return (
-
-    <div className="
-      bg-white/10
-      backdrop-blur-xl
-      border
-      border-white/10
-      rounded-3xl
-      overflow-hidden
-    ">
-
-
-
+    <div
+      className="
+        bg-white/75
+        backdrop-blur-2xl
+        border
+        border-white/80
+        rounded-3xl
+        shadow-[0_15px_50px_rgba(14,165,233,.08)]
+        overflow-hidden
+      "
+    >
       {/* Desktop Table */}
 
-
-      <div className="
-        hidden
-        md:block
-        overflow-x-auto
-      ">
-
-
-        <table className="
-          w-full
-          text-left
-        ">
-
-
+      <div
+        className="
+          hidden
+          md:block
+          overflow-x-auto
+        "
+      >
+        <table className="w-full text-left">
           <thead>
-
-            <tr className="
-              border-b
-              border-white/10
-              text-gray-300
-              text-sm
-            ">
-
-
-              <th className="px-6 py-4">
+            <tr
+              className="
+                border-b
+                border-slate-100
+                bg-slate-50/70
+                text-slate-500
+                text-sm
+              "
+            >
+              <th className="px-6 py-4 font-semibold">
                 Student
               </th>
 
-
-              <th className="px-6 py-4">
+              <th className="px-6 py-4 font-semibold">
                 University
               </th>
 
-
-              <th className="px-6 py-4">
+              <th className="px-6 py-4 font-semibold">
                 Course
               </th>
 
-
-              <th className="px-6 py-4">
+              <th className="px-6 py-4 font-semibold">
                 Status
               </th>
 
-
-              <th className="px-6 py-4">
+              <th className="px-6 py-4 font-semibold">
                 Fee
               </th>
 
-
-              <th className="px-6 py-4">
+              <th className="px-6 py-4 font-semibold">
                 Commission
               </th>
 
-
-              <th className="px-6 py-4">
+              <th className="px-6 py-4 font-semibold">
                 Action
               </th>
-
-
             </tr>
-
           </thead>
 
-
-
-
-
           <tbody>
+            {admissions?.length > 0 ? (
+              admissions.map((admission) => (
+                <tr
+                  key={admission._id}
+                  className="
+                    border-b
+                    border-slate-100
+                    hover:bg-cyan-50/40
+                    transition-all
+                    duration-200
+                  "
+                >
+                  {/* Student */}
 
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="
+                          h-11
+                          w-11
+                          rounded-2xl
+                          bg-cyan-50
+                          flex
+                          items-center
+                          justify-center
+                          shrink-0
+                        "
+                      >
+                        <GraduationCap
+                          className="text-cyan-600"
+                          size={20}
+                        />
+                      </div>
 
-          {
-            admissions?.length > 0 ?
+                      <div>
+                        <p
+                          className="
+                            text-slate-800
+                            font-semibold
+                          "
+                        >
+                          {admission.studentName}
+                        </p>
 
-
-            admissions.map((admission)=>(
-
-
-              <tr
-
-                key={admission._id}
-
-                className="
-                  border-b
-                  border-white/10
-                  hover:bg-white/5
-                  transition
-                "
-
-              >
-
-
-
-                {/* Student */}
-
-                <td className="
-                  px-6
-                  py-4
-                ">
-
-
-                  <div className="
-                    flex
-                    items-center
-                    gap-3
-                  ">
-
-
-                    <div className="
-                      p-3
-                      rounded-xl
-                      bg-cyan-500/20
-                    ">
-
-                      <GraduationCap
-                        className="text-cyan-400"
-                        size={20}
-                      />
-
+                        <p
+                          className="
+                            text-slate-400
+                            text-sm
+                            mt-0.5
+                          "
+                        >
+                          {admission.studentPhone}
+                        </p>
+                      </div>
                     </div>
+                  </td>
 
+                  {/* University */}
 
-
-                    <div>
-
-                      <p className="
-                        text-white
-                        font-semibold
-                      ">
-
-                        {
-                          admission.studentName
-                        }
-
-                      </p>
-
-
-                      <p className="
-                        text-gray-400
-                        text-sm
-                      ">
-
-                        {
-                          admission.studentPhone
-                        }
-
-                      </p>
-
-
-                    </div>
-
-
-                  </div>
-
-
-                </td>
-
-
-
-
-
-
-
-                {/* University */}
-
-
-                <td className="
-                  px-6
-                  py-4
-                  text-gray-200
-                ">
-
-                  {
-                    admission.universityName
-                  }
-
-
-                </td>
-
-
-
-
-
-
-                {/* Course */}
-
-
-                <td className="
-                  px-6
-                  py-4
-                  text-gray-200
-                ">
-
-
-                  {
-                    admission.courseName
-                  }
-
-
-                </td>
-
-
-
-
-
-
-
-                {/* Status */}
-
-
-                <td className="
-                  px-6
-                  py-4
-                ">
-
-
-                  <span
-
-                    className={`
-                      px-3
-                      py-1
-                      rounded-full
-                      text-xs
-                      font-medium
-                      ${getStatusStyle(
-                        admission.admissionStatus
-                      )}
-                    `}
-
-                  >
-
-                    {
-                      admission.admissionStatus
-                    }
-
-
-                  </span>
-
-
-                </td>
-
-
-
-
-
-
-
-                {/* Fee */}
-
-
-                <td className="
-                  px-6
-                  py-4
-                  text-white
-                ">
-
-
-                  ₹{
-                    admission.netFee?.toLocaleString()
-                    || 0
-                  }
-
-
-                </td>
-
-
-
-
-
-
-
-                {/* Commission */}
-
-
-                <td className="
-                  px-6
-                  py-4
-                  text-cyan-300
-                  font-semibold
-                ">
-
-
-                  ₹{
-                    admission.counsellorCommissionAmount
-                    ?.toLocaleString()
-                    || 0
-                  }
-
-
-                </td>
-
-
-
-
-
-
-
-                {/* Action */}
-
-
-                <td className="
-                  px-6
-                  py-4
-                ">
-
-
-                  <button
-
-                    onClick={()=> 
-                      navigate(
-                        `/admin/admissions/${admission._id}`
-                      )
-                    }
-
-
+                  <td
                     className="
-                      p-3
-                      rounded-xl
-                      bg-cyan-500/20
-                      hover:bg-cyan-500/40
-                      text-cyan-300
-                      transition
+                      px-6
+                      py-5
+                      text-slate-700
+                      font-medium
                     "
-
                   >
+                    {admission.universityName}
+                  </td>
 
-                    <Eye size={18}/>
+                  {/* Course */}
 
+                  <td
+                    className="
+                      px-6
+                      py-5
+                      text-slate-600
+                    "
+                  >
+                    {admission.courseName}
+                  </td>
 
-                  </button>
+                  {/* Status */}
 
+                  <td className="px-6 py-5">
+                    <span
+                      className={`
+                        inline-flex
+                        items-center
+                        px-3
+                        py-1.5
+                        rounded-full
+                        border
+                        text-xs
+                        font-semibold
+                        whitespace-nowrap
+                        ${getStatusStyle(
+                          admission.admissionStatus,
+                        )}
+                      `}
+                    >
+                      {admission.admissionStatus}
+                    </span>
+                  </td>
 
-                </td>
+                  {/* Fee */}
 
+                  <td
+                    className="
+                      px-6
+                      py-5
+                      text-slate-700
+                      font-semibold
+                    "
+                  >
+                    ₹
+                    {admission.netFee?.toLocaleString() ||
+                      0}
+                  </td>
 
+                  {/* Commission */}
 
-              </tr>
+                  <td
+                    className="
+                      px-6
+                      py-5
+                      text-cyan-600
+                      font-bold
+                    "
+                  >
+                    ₹
+                    {admission.counsellorCommissionAmount?.toLocaleString() ||
+                      0}
+                  </td>
 
+                  {/* Action */}
 
-            ))
-
-
-
-            :
-
-            (
-
+                  <td className="px-6 py-5">
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/admin/admissions/${admission._id}`,
+                        )
+                      }
+                      className="
+                        h-10
+                        w-10
+                        rounded-xl
+                        bg-cyan-50
+                        text-cyan-600
+                        flex
+                        items-center
+                        justify-center
+                        hover:bg-cyan-100
+                        hover:text-cyan-700
+                        transition-all
+                        duration-200
+                      "
+                    >
+                      <Eye size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
               <tr>
-
                 <td
-
                   colSpan="7"
-
                   className="
                     text-center
-                    py-10
-                    text-gray-400
+                    py-14
+                    text-slate-400
                   "
-
                 >
+                  <div
+                    className="
+                      flex
+                      flex-col
+                      items-center
+                      gap-3
+                    "
+                  >
+                    <div
+                      className="
+                        h-14
+                        w-14
+                        rounded-2xl
+                        bg-cyan-50
+                        flex
+                        items-center
+                        justify-center
+                      "
+                    >
+                      <GraduationCap
+                        size={26}
+                        className="text-cyan-600"
+                      />
+                    </div>
 
-                  No admissions found
+                    <p
+                      className="
+                        text-slate-700
+                        font-semibold
+                      "
+                    >
+                      No admissions found
+                    </p>
 
-
+                    <p className="text-sm text-slate-400">
+                      Admission records will appear here.
+                    </p>
+                  </div>
                 </td>
-
               </tr>
-
-            )
-
-
-          }
-
-
+            )}
           </tbody>
-
-
         </table>
-
-
       </div>
-
-
-
-
-
 
       {/* Mobile Cards */}
 
-
-      <div className="
-        md:hidden
-        p-4
-        space-y-4
-      ">
-
-
-        {
-          admissions?.map((admission)=>(
-
+      <div
+        className="
+          md:hidden
+          p-4
+          space-y-4
+        "
+      >
+        {admissions?.length > 0 ? (
+          admissions.map((admission) => (
             <div
-
               key={admission._id}
-
               className="
-                bg-white/10
+                bg-white
                 rounded-2xl
                 p-4
                 border
-                border-white/10
+                border-slate-200
+                shadow-sm
               "
-
             >
+              <div className="flex items-start gap-3">
+                <div
+                  className="
+                    h-11
+                    w-11
+                    rounded-xl
+                    bg-cyan-50
+                    flex
+                    items-center
+                    justify-center
+                    shrink-0
+                  "
+                >
+                  <GraduationCap
+                    size={20}
+                    className="text-cyan-600"
+                  />
+                </div>
 
+                <div className="min-w-0">
+                  <h3
+                    className="
+                      text-slate-800
+                      font-semibold
+                    "
+                  >
+                    {admission.studentName}
+                  </h3>
 
-              <h3 className="
-                text-white
-                font-semibold
-              ">
+                  <p
+                    className="
+                      text-slate-500
+                      text-sm
+                      mt-1
+                    "
+                  >
+                    {admission.universityName}
+                  </p>
 
-                {
-                  admission.studentName
-                }
+                  <p
+                    className="
+                      text-slate-400
+                      text-sm
+                      mt-1
+                    "
+                  >
+                    {admission.courseName}
+                  </p>
+                </div>
+              </div>
 
-              </h3>
+              <div
+                className="
+                  flex
+                  items-center
+                  justify-between
+                  mt-4
+                "
+              >
+                <span
+                  className={`
+                    px-3
+                    py-1.5
+                    rounded-full
+                    border
+                    text-xs
+                    font-semibold
+                    ${getStatusStyle(
+                      admission.admissionStatus,
+                    )}
+                  `}
+                >
+                  {admission.admissionStatus}
+                </span>
 
-
-              <p className="
-                text-gray-400
-                text-sm
-              ">
-
-                {
-                  admission.universityName
-                }
-
-              </p>
-
+                <span
+                  className="
+                    text-cyan-600
+                    font-bold
+                  "
+                >
+                  ₹
+                  {admission.netFee?.toLocaleString() ||
+                    0}
+                </span>
+              </div>
 
               <button
-
-                onClick={()=>
+                onClick={() =>
                   navigate(
-                    `/admin/admissions/${admission._id}`
+                    `/admin/admissions/${admission._id}`,
                   )
                 }
-
                 className="
-                  mt-3
+                  mt-4
                   w-full
-                  py-2
+                  py-2.5
                   rounded-xl
-                  bg-cyan-500/20
-                  text-cyan-300
+                  bg-gradient-to-r
+                  from-cyan-500
+                  to-sky-500
+                  text-white
+                  font-semibold
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  shadow-md
+                  shadow-cyan-100
                 "
-
               >
+                <Eye size={17} />
 
                 View Details
-
               </button>
-
-
-
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-12">
+            <div
+              className="
+                h-14
+                w-14
+                mx-auto
+                rounded-2xl
+                bg-cyan-50
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <GraduationCap
+                size={26}
+                className="text-cyan-600"
+              />
             </div>
 
+            <p
+              className="
+                mt-3
+                text-slate-700
+                font-semibold
+              "
+            >
+              No admissions found
+            </p>
 
-          ))
-        }
-
-
+            <p
+              className="
+                text-sm
+                text-slate-400
+                mt-1
+              "
+            >
+              Admission records will appear here.
+            </p>
+          </div>
+        )}
       </div>
-
-
-
     </div>
-
   );
-
 };
-
 
 export default AdmissionTable;

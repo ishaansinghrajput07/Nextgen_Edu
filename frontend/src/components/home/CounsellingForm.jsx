@@ -39,7 +39,7 @@ export default function CounsellingForm() {
       setLoading(true);
 
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/contact/contacts",
+        "http://localhost:8000/api/v1/contact/form",
         {
           username: formData.name,
           email: formData.email,

@@ -1,7 +1,7 @@
 import Auth from "../models/auth.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import Counsellor from "../models/Counsellor.model.js";
+import Counsellor from "../models/counsellor.model.js";
 import Contact from "../models/Contact.model.js";
 import Activity from "../models/activity.model.js";
 // ==============================

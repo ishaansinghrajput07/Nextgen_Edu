@@ -1,24 +1,19 @@
-# Node
 node_modules/
-dist/
-build/
-
-# Logs
-*.log
-
-# Environment
 .env
 .env.*
+!.env.example
 
-# Visual Studio
-.vs/
-bin/
-obj/
+dist/
+build/
+.vite/
 
-# IDE
+coverage/
+*.log
+
+.DS_Store
+Thumbs.db
+
 .vscode/
 .idea/
 
-# OS
-Thumbs.db
-.DS_Store
+uploads/

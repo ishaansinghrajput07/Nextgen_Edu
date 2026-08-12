@@ -1,5 +1,3 @@
-// src/pages/admin/admissions/components/AdmissionCommission.jsx
-
 import React from "react";
 import {
   IndianRupee,
@@ -29,6 +27,8 @@ const AdmissionCommission = ({ admission }) => {
     counsellorPaymentStatus = "Pending",
 
     netFee = 0,
+    universityPayments = [],
+    counsellorPayments = [],
 
   } = admission;
 
@@ -59,6 +59,20 @@ const AdmissionCommission = ({ admission }) => {
   return (
 
     <div className="space-y-6">
+
+      {/* ==========================
+          PAID BANNERS
+      =========================== */}
+
+      <div className="space-y-2">
+        {universityPaymentStatus === "Paid" && (
+          <div className="p-3 rounded bg-green-50 text-green-800">University commission fully paid on {admission.universityPaymentDate ? new Date(admission.universityPaymentDate).toLocaleDateString() : "-"} (₹{universityCommissionAmount.toLocaleString()})</div>
+        )}
+
+        {counsellorPaymentStatus === "Paid" && (
+          <div className="p-3 rounded bg-green-50 text-green-800">Counsellor commission fully paid on {admission.counsellorPaymentDate ? new Date(admission.counsellorPaymentDate).toLocaleDateString() : "-"} (₹{counsellorCommissionAmount.toLocaleString()})</div>
+        )}
+      </div>
 
 
 
@@ -115,6 +129,52 @@ const AdmissionCommission = ({ admission }) => {
             </div>
 
 
+          </div>
+
+          {/* ==========================
+              PAYMENT HISTORY
+          =========================== */}
+
+          <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-white border rounded-2xl p-4">
+              <h4 className="font-semibold mb-2">University Payments</h4>
+              {universityPayments && universityPayments.length > 0 ? (
+                <ul className="space-y-2 text-sm">
+                  {universityPayments.map((p, idx) => (
+                    <li key={idx} className="flex justify-between items-start">
+                      <div>
+                        <div className="font-medium">₹ {Number(p.amount || 0).toLocaleString()}</div>
+                        <div className="text-gray-500">{p.paymentMode} • {p.referenceNumber || p.transactionId || "-"}</div>
+                        <div className="text-gray-400 text-xs">{p.remarks}</div>
+                      </div>
+                      <div className="text-right text-xs text-gray-600">{p.paymentDate ? new Date(p.paymentDate).toLocaleDateString() : "-"}</div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="text-sm text-gray-500">No university payments recorded.</div>
+              )}
+            </div>
+
+            <div className="bg-white border rounded-2xl p-4">
+              <h4 className="font-semibold mb-2">Counsellor Payments</h4>
+              {counsellorPayments && counsellorPayments.length > 0 ? (
+                <ul className="space-y-2 text-sm">
+                  {counsellorPayments.map((p, idx) => (
+                    <li key={idx} className="flex justify-between items-start">
+                      <div>
+                        <div className="font-medium">₹ {Number(p.amount || 0).toLocaleString()}</div>
+                        <div className="text-gray-500">{p.paymentMode} • {p.referenceNumber || p.transactionId || "-"}</div>
+                        <div className="text-gray-400 text-xs">{p.remarks}</div>
+                      </div>
+                      <div className="text-right text-xs text-gray-600">{p.paymentDate ? new Date(p.paymentDate).toLocaleDateString() : "-"}</div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="text-sm text-gray-500">No counsellor payments recorded.</div>
+              )}
+            </div>
           </div>
 
 

@@ -1,17 +1,13 @@
 import { motion } from "framer-motion";
 
 const positions = {
-  "top-left":
-    "top-6 -left-8 lg:-left-14",
+  "top-left": "top-6 -left-8 lg:-left-14",
 
-  "top-right":
-    "top-12 -right-8 lg:-right-14",
+  "top-right": "top-12 -right-8 lg:-right-14",
 
-  "bottom-left":
-    "bottom-16 -left-6 lg:-left-10",
+  "bottom-left": "bottom-16 -left-6 lg:-left-10",
 
-  "bottom-right":
-    "bottom-4 right-0 lg:-right-10",
+  "bottom-right": "bottom-4 right-0 lg:-right-10",
 };
 
 export default function HeroFloatingCards({
@@ -82,13 +78,9 @@ export default function HeroFloatingCards({
         </div>
 
         <div>
-          <h3 className="text-2xl font-extrabold text-slate-900">
-            {title}
-          </h3>
+          <h3 className="text-2xl font-extrabold text-slate-900">{title}</h3>
 
-          <p className="mt-1 text-sm font-medium text-slate-500">
-            {subtitle}
-          </p>
+          <p className="mt-1 text-sm font-medium text-slate-500">{subtitle}</p>
         </div>
       </div>
     </motion.div>

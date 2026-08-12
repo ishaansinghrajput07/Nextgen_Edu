@@ -86,6 +86,11 @@ const counsellorSchema = new mongoose.Schema(
       default: 0,
     },
 
+    admissionCount: {
+      type: Number,
+      default: 0,
+    },
+
     conversionRate: {
       type: Number,
       default: 0,

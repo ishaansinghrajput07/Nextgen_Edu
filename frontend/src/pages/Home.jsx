@@ -10,11 +10,17 @@ import ProcessSection from "../components/home/ProcessSection";
 import Reviews from "./Reviews";
 import WhatWeOffer from "../components/home/WhatWeOffer";
 import TrustedUniversities from "../components/home/Trusteduniver/TrustedUniversities";
+import AboutHero from "../components/about/AboutHero";
+
+
+
 export default function Home() {
   return (
     <>
       <Hero />
-        <TrustedUniversities />
+      <AboutHero/>
+    
+      <TrustedUniversities />
       <Stats />
      
       <UniversitiesSection />

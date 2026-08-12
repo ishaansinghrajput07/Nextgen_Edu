@@ -1,73 +1,78 @@
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
-import logo from "../../assets/logo/NEXTGEN LOGO.png";
-
-export default function Logo() {
+const Logo = ({
+  logo,
+  name = "Your Brand",
+  tagline = "Admission Guidance Experts",
+}) => {
   return (
-    <Link
-      to="/"
-      className="flex items-center gap-3 shrink-0"
-    >
-      {/* Logo */}
-
+    <Link to="/" className="flex shrink-0 items-center">
       <motion.div
-        whileHover={{
-          rotate: -6,
-          scale: 1.05,
+        initial={{
+          opacity: 0,
+          x: -20,
+        }}
+        animate={{
+          opacity: 1,
+          x: 0,
         }}
         transition={{
-          duration: 0.3,
+          duration: 0.5,
         }}
-        className="
-          w-14
-          h-14
-          rounded-2xl
-          bg-white
-          shadow-lg
-          flex
-          items-center
-          justify-center
-          overflow-hidden
-        "
+        className="group flex items-center gap-3"
       >
-        <img
-          src={logo}
-          alt="NextGenEdu"
-          className="w-10 h-10 object-contain"
-        />
-      </motion.div>
+        {/* ================================================= */}
+        {/* LOGO IMAGE */}
+        {/* ================================================= */}
 
-      {/* Logo Text */}
-
-      <div className="leading-tight">
-
-        <h1
-          className="
-            text-2xl
-            font-extrabold
-            tracking-tight
-            text-slate-900
-          "
+        <motion.div
+          whileHover={{
+            scale: 1.05,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+          }}
+          className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl"
         >
-          NextGen
-          <span className="text-cyan-600">
-            Edu
+          {/* Glow */}
+          <div className="absolute inset-0 rounded-2xl bg-sky-400/30 blur-xl opacity-0 transition-all duration-500 group-hover:opacity-100" />
+
+          {logo ? (
+            <img
+              src={logo}
+              alt={name}
+              className="relative z-10 h-full w-full object-contain"
+            />
+          ) : (
+            <div className="relative z-10 flex h-full w-full items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-500 text-xl font-black text-white">
+              {name.charAt(0)}
+            </div>
+          )}
+        </motion.div>
+
+        {/* ================================================= */}
+        {/* BRAND TEXT */}
+        {/* ================================================= */}
+
+        <div className="flex flex-col leading-none">
+          <motion.h1
+            whileHover={{
+              x: 2,
+            }}
+            className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl"
+          >
+            {name}
+          </motion.h1>
+
+          <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-sky-600">
+            {tagline}
           </span>
-        </h1>
-
-        <p
-          className="
-            text-xs
-            text-slate-500
-            font-medium
-            tracking-wide
-          "
-        >
-          Career & Admission Experts
-        </p>
-
-      </div>
+        </div>
+      </motion.div>
     </Link>
   );
-}
+};
+
+export default Logo;

@@ -9,7 +9,10 @@ import {
   getAdmissionStats,
 } from "../controller/admission_controller.js";
 
-import { protect, authorize } from "../middleware/auth.middleware.js";
+import {
+  protect,
+  authorize,
+} from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -22,21 +25,36 @@ const router = express.Router();
 // POST /api/admissions
 // =====================================================
 
-router.post("/", protect, authorize("Admin", "counsellor"), createAdmission);
+router.post(
+  "/",
+  protect,
+  authorize("SuperAdmin", "Admin", "Counsellor"),
+  createAdmission
+);
 
 // =====================================================
 // Get All Admissions
 // GET /api/admissions
 // =====================================================
 
-router.get("/", protect, authorize("Admin", "counsellor"), getAllAdmissions);
+router.get(
+  "/",
+  protect,
+  authorize("SuperAdmin", "Admin", "Counsellor"),
+  getAllAdmissions
+);
 
 // =====================================================
 // Admission Dashboard Stats
 // GET /api/admissions/stats
 // =====================================================
 
-router.get("/stats", protect, authorize("Admin"), getAdmissionStats);
+router.get(
+  "/stats",
+  protect,
+  authorize("SuperAdmin", "Admin"),
+  getAdmissionStats
+);
 
 // =====================================================
 // Get Single Admission
@@ -46,8 +64,8 @@ router.get("/stats", protect, authorize("Admin"), getAdmissionStats);
 router.get(
   "/:id",
   protect,
-  authorize("Admin", "counsellor"),
-  getSingleAdmission,
+  authorize("SuperAdmin", "Admin", "Counsellor"),
+  getSingleAdmission
 );
 
 // =====================================================
@@ -55,13 +73,23 @@ router.get(
 // PUT /api/admissions/:id
 // =====================================================
 
-router.put("/:id", protect, authorize("Admin", "counsellor"), updateAdmission);
+router.put(
+  "/:id",
+  protect,
+  authorize("SuperAdmin", "Admin", "Counsellor"),
+  updateAdmission
+);
 
 // =====================================================
 // Delete Admission
 // DELETE /api/admissions/:id
 // =====================================================
 
-router.delete("/:id", protect, authorize("Admin"), deleteAdmission);
+router.delete(
+  "/:id",
+  protect,
+  authorize("SuperAdmin", "Admin"),
+  deleteAdmission
+);
 
 export default router;

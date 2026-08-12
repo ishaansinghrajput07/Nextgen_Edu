@@ -55,6 +55,7 @@ const notificationSchema = new mongoose.Schema(
         "Payment",
         "Review",
         "Reminder",
+        "Commission"
       ],
       default: "System",
     },

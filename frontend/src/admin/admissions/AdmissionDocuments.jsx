@@ -1,5 +1,3 @@
-// src/pages/admin/admissions/components/AdmissionDocuments.jsx
-
 import React from "react";
 import {
   FileText,
@@ -9,367 +7,483 @@ import {
   UploadCloud,
 } from "lucide-react";
 
-
 const AdmissionDocuments = ({ admission }) => {
-
   if (!admission) return null;
 
-
-  const {
-    documentStatus = "Pending",
-    documents = [],
-  } = admission;
-
-
+  const { documentStatus = "Pending", documents = [] } = admission;
 
   const statusConfig = {
-
     Pending: {
       icon: Clock,
-      style: "bg-yellow-100 text-yellow-700",
+      style: "bg-yellow-50 text-yellow-700 border border-yellow-100",
     },
 
     Uploaded: {
       icon: UploadCloud,
-      style: "bg-blue-100 text-blue-700",
+      style: "bg-sky-50 text-sky-700 border border-sky-100",
     },
 
     Verified: {
       icon: CheckCircle,
-      style: "bg-green-100 text-green-700",
+      style: "bg-emerald-50 text-emerald-700 border border-emerald-100",
     },
 
     Rejected: {
       icon: XCircle,
-      style: "bg-red-100 text-red-700",
+      style: "bg-red-50 text-red-700 border border-red-100",
     },
-
   };
 
-
-
   const currentStatus =
-    statusConfig[documentStatus] ||
-    statusConfig.Pending;
-
-
+    statusConfig[documentStatus] || statusConfig.Pending;
 
   const StatusIcon = currentStatus.icon;
 
-
-
   return (
-
     <div className="space-y-6">
-
-
-
       {/* ===========================
           DOCUMENT STATUS CARD
       =========================== */}
 
-
-      <div className="bg-white border rounded-2xl shadow-sm p-6">
-
-
-        <div className="flex items-center justify-between">
-
-
-          <div className="flex items-center gap-3">
-
-
-            <div className="p-3 rounded-xl bg-indigo-100 text-indigo-600">
-
-              <FileText size={24}/>
-
+      <div
+        className="
+          bg-white
+          border
+          border-slate-200
+          rounded-2xl
+          shadow-[0_10px_35px_rgba(15,23,42,0.06)]
+          p-5
+          sm:p-6
+        "
+      >
+        <div
+          className="
+            flex
+            flex-col
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+            gap-4
+          "
+        >
+          <div className="flex items-center gap-4">
+            <div
+              className="
+                h-12
+                w-12
+                sm:h-14
+                sm:w-14
+                rounded-2xl
+                bg-cyan-50
+                text-cyan-600
+                border
+                border-cyan-100
+                flex
+                items-center
+                justify-center
+                shrink-0
+              "
+            >
+              <FileText size={24} />
             </div>
 
-
-
             <div>
-
-              <h3 className="text-lg font-semibold">
+              <h3
+                className="
+                  text-lg
+                  sm:text-xl
+                  font-bold
+                  text-slate-800
+                "
+              >
                 Document Status
               </h3>
 
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-slate-500 mt-1">
                 Admission documents verification
               </p>
-
             </div>
-
-
           </div>
-
-
-
 
           <div
-            className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium ${currentStatus.style}`}
+            className={`
+              flex
+              items-center
+              gap-2
+              px-4
+              py-2
+              rounded-full
+              font-semibold
+              text-sm
+              w-fit
+              ${currentStatus.style}
+            `}
           >
-
-            <StatusIcon size={18}/>
+            <StatusIcon size={17} />
 
             {documentStatus}
-
           </div>
-
-
         </div>
-
-
       </div>
-
-
-
-
-
 
       {/* ===========================
           DOCUMENT LIST
       =========================== */}
 
+      <div
+        className="
+          bg-white
+          border
+          border-slate-200
+          rounded-2xl
+          shadow-[0_10px_35px_rgba(15,23,42,0.06)]
+          p-5
+          sm:p-6
+        "
+      >
+        <div
+          className="
+            flex
+            flex-col
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+            gap-4
+            mb-6
+          "
+        >
+          <div>
+            <h3
+              className="
+                text-lg
+                sm:text-xl
+                font-bold
+                text-slate-800
+              "
+            >
+              Required Documents
+            </h3>
 
-
-      <div className="bg-white border rounded-2xl shadow-sm p-6">
-
-
-        <div className="flex justify-between items-center mb-5">
-
-
-          <h3 className="text-lg font-semibold">
-            Required Documents
-          </h3>
-
-
+            <p className="text-sm text-slate-500 mt-1">
+              Manage admission document submissions
+            </p>
+          </div>
 
           <button
             className="
-            flex items-center gap-2
-            px-4 py-2
-            rounded-xl
-            bg-blue-600
-            text-white
-            hover:bg-blue-700
-            transition
+              flex
+              items-center
+              justify-center
+              gap-2
+              px-4
+              py-2.5
+              rounded-xl
+              bg-gradient-to-r
+              from-cyan-500
+              to-sky-500
+              text-white
+              font-semibold
+              shadow-md
+              shadow-cyan-100
+              hover:from-cyan-600
+              hover:to-sky-600
+              transition-all
+              duration-300
+              w-full
+              sm:w-auto
             "
           >
-
-            <UploadCloud size={18}/>
-
+            <UploadCloud size={18} />
             Upload
-
           </button>
-
-
         </div>
 
-
-
-
-        {
-          documents.length === 0 ?
-
-
-          (
-
-            <div className="text-center py-10 text-gray-500">
-
-              No documents uploaded yet.
-
+        {documents.length === 0 ? (
+          <div
+            className="
+              text-center
+              py-12
+              border
+              border-dashed
+              border-slate-200
+              rounded-2xl
+              bg-slate-50/50
+            "
+          >
+            <div
+              className="
+                mx-auto
+                h-14
+                w-14
+                rounded-2xl
+                bg-cyan-50
+                text-cyan-600
+                border
+                border-cyan-100
+                flex
+                items-center
+                justify-center
+                mb-4
+              "
+            >
+              <FileText size={26} />
             </div>
 
-          )
+            <h4 className="font-semibold text-slate-700">
+              No Documents Found
+            </h4>
 
-
-          :
-
-          (
-
-            <div className="space-y-4">
-
-
-              {
-                documents.map((doc,index)=>(
-
-
+            <p className="text-sm text-slate-500 mt-1">
+              No documents uploaded yet.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {documents.map((doc, index) => (
+              <div
+                key={index}
+                className="
+                  flex
+                  flex-col
+                  sm:flex-row
+                  sm:items-center
+                  sm:justify-between
+                  gap-4
+                  border
+                  border-slate-200
+                  rounded-2xl
+                  p-4
+                  bg-white
+                  hover:border-cyan-200
+                  hover:shadow-sm
+                  transition-all
+                  duration-300
+                "
+              >
+                <div className="flex items-center gap-4 min-w-0">
                   <div
-                    key={index}
                     className="
-                    flex
-                    items-center
-                    justify-between
-                    border
-                    rounded-xl
-                    p-4
-                    hover:shadow-sm
-                    transition
+                      h-11
+                      w-11
+                      rounded-xl
+                      bg-slate-50
+                      border
+                      border-slate-200
+                      text-cyan-600
+                      flex
+                      items-center
+                      justify-center
+                      shrink-0
                     "
                   >
-
-
-
-                    <div className="flex items-center gap-4">
-
-
-                      <div className="p-3 rounded-xl bg-gray-100">
-
-                        <FileText size={22}/>
-
-                      </div>
-
-
-
-
-                      <div>
-
-                        <h4 className="font-medium">
-
-                          {doc.name || "Document"}
-
-                        </h4>
-
-
-                        <p className="text-sm text-gray-500">
-
-                          {
-                            doc.uploadedAt
-                            ?
-                            new Date(
-                              doc.uploadedAt
-                            ).toLocaleDateString()
-                            :
-                            "Not uploaded"
-                          }
-
-                        </p>
-
-
-                      </div>
-
-
-
-                    </div>
-
-
-
-
-
-                    <span
-                      className={`
-                      px-3
-                      py-1
-                      rounded-full
-                      text-sm
-                      font-medium
-                      ${
-                        statusConfig[
-                          doc.status
-                        ]?.style ||
-                        statusConfig.Pending.style
-                      }
-                      `}
-                    >
-
-                      {
-                        doc.status || "Pending"
-                      }
-
-
-                    </span>
-
-
-
-
+                    <FileText size={21} />
                   </div>
 
+                  <div className="min-w-0">
+                    <h4
+                      className="
+                        font-semibold
+                        text-slate-800
+                        truncate
+                      "
+                    >
+                      {doc.name || "Document"}
+                    </h4>
 
-                ))
-              }
+                    <p className="text-sm text-slate-500 mt-1">
+                      {doc.uploadedAt
+                        ? new Date(
+                            doc.uploadedAt,
+                          ).toLocaleDateString()
+                        : "Not uploaded"}
+                    </p>
+                  </div>
+                </div>
 
-
-
-            </div>
-
-
-          )
-
-        }
-
-
-
+                <span
+                  className={`
+                    px-3
+                    py-1.5
+                    rounded-full
+                    text-xs
+                    sm:text-sm
+                    font-semibold
+                    w-fit
+                    ${
+                      statusConfig[doc.status]?.style ||
+                      statusConfig.Pending.style
+                    }
+                  `}
+                >
+                  {doc.status || "Pending"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-
-
-
 
       {/* ===========================
           DOCUMENT CHECKLIST
       =========================== */}
 
+      <div
+        className="
+          bg-white
+          border
+          border-cyan-100
+          rounded-2xl
+          shadow-[0_10px_35px_rgba(14,165,233,0.08)]
+          p-5
+          sm:p-6
+        "
+      >
+        <div className="flex items-center gap-3 mb-5">
+          <div
+            className="
+              h-11
+              w-11
+              rounded-xl
+              bg-cyan-50
+              text-cyan-600
+              border
+              border-cyan-100
+              flex
+              items-center
+              justify-center
+            "
+          >
+            <CheckCircle size={21} />
+          </div>
 
+          <div>
+            <h3
+              className="
+                text-lg
+                sm:text-xl
+                font-bold
+                text-slate-800
+              "
+            >
+              Document Checklist
+            </h3>
 
-      <div className="
-      bg-gradient-to-r
-      from-blue-600
-      to-cyan-500
-      rounded-2xl
-      p-6
-      text-white
-      ">
+            <p className="text-sm text-slate-500">
+              Documents generally required for admission
+            </p>
+          </div>
+        </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              p-3
+              rounded-xl
+              bg-slate-50
+              border
+              border-slate-100
+              text-sm
+              text-slate-700
+            "
+          >
+            <CheckCircle
+              size={17}
+              className="text-cyan-500 shrink-0"
+            />
+            Passport / ID Proof
+          </div>
 
-        <h3 className="text-xl font-semibold mb-3">
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              p-3
+              rounded-xl
+              bg-slate-50
+              border
+              border-slate-100
+              text-sm
+              text-slate-700
+            "
+          >
+            <CheckCircle
+              size={17}
+              className="text-cyan-500 shrink-0"
+            />
+            Academic Certificates
+          </div>
 
-          Document Checklist
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              p-3
+              rounded-xl
+              bg-slate-50
+              border
+              border-slate-100
+              text-sm
+              text-slate-700
+            "
+          >
+            <CheckCircle
+              size={17}
+              className="text-cyan-500 shrink-0"
+            />
+            Mark Sheets
+          </div>
 
-        </h3>
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              p-3
+              rounded-xl
+              bg-slate-50
+              border
+              border-slate-100
+              text-sm
+              text-slate-700
+            "
+          >
+            <CheckCircle
+              size={17}
+              className="text-cyan-500 shrink-0"
+            />
+            Passport Size Photos
+          </div>
 
-
-
-        <ul className="space-y-2 text-sm">
-
-
-          <li>
-            ✓ Passport / ID Proof
-          </li>
-
-
-          <li>
-            ✓ Academic Certificates
-          </li>
-
-
-          <li>
-            ✓ Mark Sheets
-          </li>
-
-
-          <li>
-            ✓ Passport Size Photos
-          </li>
-
-
-          <li>
-            ✓ Other Required Documents
-          </li>
-
-
-        </ul>
-
-
-
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              p-3
+              rounded-xl
+              bg-slate-50
+              border
+              border-slate-100
+              text-sm
+              text-slate-700
+              sm:col-span-2
+            "
+          >
+            <CheckCircle
+              size={17}
+              className="text-cyan-500 shrink-0"
+            />
+            Other Required Documents
+          </div>
+        </div>
       </div>
-
-
-
-
     </div>
-
   );
-
 };
-
-
 
 export default AdmissionDocuments;

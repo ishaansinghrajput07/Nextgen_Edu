@@ -8,18 +8,21 @@ import Contact from "../models/Contact.model.js";
 import University from "../models/university.model.js";
 import Course from "../models/course_model.js";
 import Counter from "../models/Counter.model.js";
-
+import Commission from "../models/commission.model.js";
 import Auth from "../models/auth.model.js";
 import Notification from "../models/notification.model.js";
 import Email from "../models/email.model.js";
 
 import Activity from "../models/activity.model.js";
+import {
+  isAdmissionReversalStatus,
+  clearAdmissionFinancials,
+  refreshCounsellorPerformance,
+} from "../util/workflow.js";
 
 // =====================================================
 // CREATE ADMISSION
 // =====================================================
-
-
 
 export const createAdmission = async (req, res) => {
   try {
@@ -49,7 +52,6 @@ export const createAdmission = async (req, res) => {
       remarks = "",
     } = req.body;
 
-
     // =====================================================
     // BASIC VALIDATION
     // =====================================================
@@ -61,58 +63,45 @@ export const createAdmission = async (req, res) => {
       });
     }
 
-
     // =====================================================
     // FETCH MASTER DATA
     // =====================================================
 
-    const [student, leadData, universityData, courseData] =
-      await Promise.all([
-        Student.findById(studentId),
+    const [student, leadData, universityData, courseData] = await Promise.all([
+      Student.findById(studentId),
 
-        Contact.findById(lead),
+      Contact.findById(lead),
 
-        University.findById(university),
+      University.findById(university),
 
-        Course.findById(course),
-      ]);
-
+      Course.findById(course),
+    ]);
 
     if (!student) {
       throw new Error("Student not found.");
     }
 
-
     if (!leadData) {
       throw new Error("Lead not found.");
     }
-
 
     if (!universityData) {
       throw new Error("University not found.");
     }
 
-
     if (!courseData) {
       throw new Error("Course not found.");
     }
-
-
 
     // =====================================================
     // UNIVERSITY COURSE MATCH CHECK
     // =====================================================
 
-    if (
-      courseData.university.toString() !==
-      universityData._id.toString()
-    ) {
+    if (courseData.university.toString() !== universityData._id.toString()) {
       throw new Error(
-        "Selected course does not belong to selected university."
+        "Selected course does not belong to selected university.",
       );
     }
-
-
 
     // =====================================================
     // ACTIVE STATUS CHECK
@@ -122,305 +111,206 @@ export const createAdmission = async (req, res) => {
       throw new Error("University is not approved.");
     }
 
-
     if (courseData.status !== "Active") {
       throw new Error("Course is not active.");
     }
-
-
 
     // =====================================================
     // COUNSELLOR FIND
     // =====================================================
 
     const counsellorId =
-      counsellor ||
-      student.counsellor ||
-      leadData.counsellor;
-
+      counsellor || student.counsellor || leadData.counsellor;
 
     if (!counsellorId) {
       throw new Error("Counsellor not assigned.");
     }
 
-
-    const counsellorData =
-      await Counsellor.findById(counsellorId);
-
+    const counsellorData = await Counsellor.findById(counsellorId);
 
     if (!counsellorData) {
       throw new Error("Counsellor not found.");
     }
 
-
-
     // =====================================================
-    // DUPLICATE ADMISSION CHECK
+    // DUPLICATE ADMISSION / COMMISSION CHECK
     // =====================================================
 
-    const existingAdmission =
-      await Admission.findOne({
-        student: student._id,
+    const existingAdmission = await Admission.findOne({
+      $or: [{ student: student._id }, { lead: leadData._id }],
 
-        university: universityData._id,
-
-        course: courseData._id,
-
-        admissionStatus: {
-          $nin: [
-            "Cancelled",
-            "Rejected",
-          ],
-        },
-      });
-
+      admissionStatus: {
+        $nin: ["Cancelled", "Admission Cancelled", "Rejected", "Withdrawn"],
+      },
+    });
 
     if (existingAdmission) {
-      throw new Error(
-        "Admission already exists for this student, university and course."
-      );
-    }
-
-
-
-    // =====================================================
-    // SINGLE ACTIVE ADMISSION CHECK
-    // =====================================================
-
-    const activeAdmission =
-      await Admission.findOne({
-        student: student._id,
-
-        admissionStatus: {
-          $in: [
-            "Applied",
-            "Documents Pending",
-            "Documents Verified",
-            "Offer Letter",
-            "Fee Paid",
-            "Enrolled",
-          ],
-        },
+      return res.status(400).json({
+        success: false,
+        message: "Commission has already been generated for this admission.",
       });
-
-
-    if (activeAdmission) {
-      throw new Error(
-        "Student already has an active admission."
-      );
     }
-
-
 
     // =====================================================
     // GENERATE ADMISSION NUMBER
     // =====================================================
 
-    const counter =
-      await Counter.findOneAndUpdate(
-        {
-          name: "admission",
+    const counter = await Counter.findOneAndUpdate(
+      {
+        name: "admission",
+      },
+
+      {
+        $inc: {
+          sequence: 1,
         },
+      },
 
-        {
-          $inc: {
-            sequence: 1,
-          },
-        },
+      {
+        new: true,
+        upsert: true,
+      },
+    );
 
-        {
-          new: true,
-          upsert: true,
-        }
-      );
-
-
-    const admissionNumber =
-      `ADM-${String(counter.sequence).padStart(6, "0")}`;
+    const admissionNumber = `ADM-${String(counter.sequence).padStart(6, "0")}`;
     // =====================================================
     // FEE CALCULATION
     // =====================================================
 
-    const finalTuitionFee =
-      Number(tuitionFee || courseData.fees || 0);
+    const finalTuitionFee = Number(tuitionFee || courseData.fees || 0);
 
-    const finalScholarship =
-      Number(scholarshipAmount || 0);
+    const finalScholarship = Number(scholarshipAmount || 0);
 
-    const netFee =
-      Math.max(finalTuitionFee - finalScholarship, 0);
-
-
+    const netFee = Math.max(finalTuitionFee - finalScholarship, 0);
 
     // =====================================================
     // COMMISSION CALCULATION
     // =====================================================
 
     const finalUniversityCommissionAmount =
-      (netFee *
-        Number(universityCommissionPercent)) /
-      100;
-
+      (netFee * Number(universityCommissionPercent)) / 100;
 
     const finalCounsellorCommissionAmount =
-      (finalUniversityCommissionAmount *
-        Number(counsellorCommissionPercent)) /
+      (finalUniversityCommissionAmount * Number(counsellorCommissionPercent)) /
       100;
-
-
 
     // =====================================================
     // CREATE ADMISSION
     // =====================================================
 
-    const admissionResult =
-      await Admission.create([
-        {
-          admissionNumber,
+    const admissionResult = await Admission.create([
+      {
+        admissionNumber,
 
+        // REFERENCES
 
-          // REFERENCES
+        lead: leadData._id,
 
-          lead: leadData._id,
+        student: student._id,
 
-          student: student._id,
+        counsellor: counsellorData._id,
 
-          counsellor: counsellorData._id,
+        university: universityData._id,
 
-          university: universityData._id,
+        course: courseData._id,
 
-          course: courseData._id,
+        createdBy: req.user._id,
 
-          createdBy: req.user._id,
+        // STUDENT SNAPSHOT
 
+        studentName: student.studentName,
 
+        studentEmail: student.email || "",
 
-          // STUDENT SNAPSHOT
+        studentPhone: student.phoneNumber || "",
 
-          studentName:
-            student.studentName,
+        // UNIVERSITY SNAPSHOT
 
-          studentEmail:
-            student.email || "",
+        universityName: universityData.universityName,
 
-          studentPhone:
-            student.phoneNumber || "",
+        // COURSE SNAPSHOT
 
+        courseName: courseData.courseName,
 
+        // ADMISSION DETAILS
 
-          // UNIVERSITY SNAPSHOT
+        intake: intake || student.intake || "",
 
-          universityName:
-            universityData.universityName,
+        country: country || student.country || "India",
 
+        admissionDate: admissionDate || new Date(),
 
+        expectedJoiningDate: expectedJoiningDate || null,
 
-          // COURSE SNAPSHOT
+        // FEES
 
-          courseName:
-            courseData.courseName,
+        tuitionFee: finalTuitionFee,
 
+        scholarshipAmount: finalScholarship,
 
+        netFee,
 
-          // ADMISSION DETAILS
+        // UNIVERSITY COMMISSION
 
-          intake:
-            intake ||
-            student.intake ||
-            "",
+        universityCommissionPercent: Number(universityCommissionPercent),
 
+        universityCommissionAmount: finalUniversityCommissionAmount,
 
-          country:
-            country ||
-            student.country ||
-            "India",
+        // COUNSELLOR COMMISSION
 
+        counsellorCommissionPercent: Number(counsellorCommissionPercent),
 
-          admissionDate:
-            admissionDate ||
-            new Date(),
+        counsellorCommissionAmount: finalCounsellorCommissionAmount,
 
+        paymentDueDate: paymentDueDate || null,
 
-          expectedJoiningDate:
-            expectedJoiningDate ||
-            null,
+        notes,
 
+        remarks,
 
+        timeline: [
+          {
+            title: "Admission Created",
 
-          // FEES
+            description: `Admission ${admissionNumber} created by ${req.user.name}.`,
 
-          tuitionFee:
-            finalTuitionFee,
+            createdBy: req.user._id,
 
+            date: new Date(),
+          },
+        ],
+      },
+    ]);
 
-          scholarshipAmount:
-            finalScholarship,
+    const createdAdmission = admissionResult[0];
 
+    // =====================================================
+    // CREATE COMMISSION RECORD
+    // =====================================================
 
-          netFee,
+    const commission = await Commission.create({
+      admission: createdAdmission._id,
 
+      counsellor: counsellorData._id,
 
+      student: student._id,
 
-          // UNIVERSITY COMMISSION
+      university: universityData._id,
 
-          universityCommissionPercent:
-            Number(universityCommissionPercent),
+      course: courseData._id,
 
+      studentName: student.studentName,
 
-          universityCommissionAmount:
-            finalUniversityCommissionAmount,
+      universityName: universityData.universityName,
 
+      courseName: courseData.courseName,
 
+      amount: finalCounsellorCommissionAmount,
 
-          // COUNSELLOR COMMISSION
+      status: "Pending",
 
-          counsellorCommissionPercent:
-            Number(counsellorCommissionPercent),
-
-
-          counsellorCommissionAmount:
-            finalCounsellorCommissionAmount,
-
-
-
-          paymentDueDate:
-            paymentDueDate ||
-            null,
-
-
-          notes,
-
-          remarks,
-
-
-
-          timeline: [
-            {
-              title:
-                "Admission Created",
-
-
-              description:
-                `Admission ${admissionNumber} created by ${req.user.name}.`,
-
-
-              createdBy:
-                req.user._id,
-
-
-              date:
-                new Date(),
-            },
-          ],
-        },
-      ]);
-
-
-    const createdAdmission =
-      admissionResult[0];
-
-
-
+      createdBy: req.user._id,
+    });
 
     // =====================================================
     // UPDATE STUDENT AFTER ADMISSION
@@ -430,62 +320,33 @@ export const createAdmission = async (req, res) => {
       student._id,
 
       {
-        university:
-          universityData.universityName,
+        university: universityData.universityName,
 
+        course: courseData.courseName,
 
-        course:
-          courseData.courseName,
+        country: country || student.country || "India",
 
+        intake: intake || student.intake || "",
 
-        country:
-          country ||
-          student.country ||
-          "India",
+        tuitionFee: finalTuitionFee,
 
+        commissionPercent: Number(counsellorCommissionPercent),
 
-        intake:
-          intake ||
-          student.intake ||
-          "",
+        commissionAmount: finalCounsellorCommissionAmount,
 
-
-        tuitionFee:
-          finalTuitionFee,
-
-
-        commissionPercent:
-          Number(counsellorCommissionPercent),
-
-
-        commissionAmount:
-          finalCounsellorCommissionAmount,
-
-
-        admissionStatus:
-          "Applied",
-
-
+        admissionStatus: "Applied",
 
         $push: {
           timeline: {
-            title:
-              "Admission Created",
+            title: "Admission Created",
 
+            description: `Admission ${admissionNumber} created.`,
 
-            description:
-              `Admission ${admissionNumber} created.`,
-
-
-            date:
-              new Date(),
+            date: new Date(),
           },
         },
-      }
+      },
     );
-
-
-
 
     // =====================================================
     // UPDATE LEAD STATUS
@@ -495,456 +356,265 @@ export const createAdmission = async (req, res) => {
       leadData._id,
 
       {
-        status:
-          "Converted",
+        status: "Converted",
 
+        applicationStatus: "Applied",
 
-        applicationStatus:
-          "Applied",
+        university: universityData.universityName,
 
+        country: country || "India",
 
-        university:
-          universityData.universityName,
+        intake: intake || "",
 
+        tuitionFee: finalTuitionFee,
 
-        country:
-          country ||
-          "India",
+        commissionAmount: finalCounsellorCommissionAmount,
 
-
-        intake:
-          intake ||
-          "",
-
-
-        tuitionFee:
-          finalTuitionFee,
-
-
-        commissionAmount:
-          finalCounsellorCommissionAmount,
-
-
-        paymentStatus:
-          "Pending",
-
-
+        paymentStatus: "Pending",
 
         $push: {
           timeline: {
-            title:
-              "Lead Converted",
+            title: "Lead Converted",
 
+            description: `Lead converted into admission ${admissionNumber}.`,
 
-            description:
-              `Lead converted into admission ${admissionNumber}.`,
-
-
-            date:
-              new Date(),
+            date: new Date(),
           },
         },
-      }
+      },
     );
-// =====================================================
-// UPDATE COUNSELLOR PERFORMANCE
-// =====================================================
+    // =====================================================
+    // UPDATE COUNSELLOR PERFORMANCE
+    // =====================================================
 
-await Counsellor.findByIdAndUpdate(
-  counsellorData._id,
+    await Counsellor.findByIdAndUpdate(
+      counsellorData._id,
 
-  {
-    $inc: {
-      convertedLeads: 1,
-    },
-  }
-);
-
-
-
-
-// =====================================================
-// RECALCULATE COUNSELLOR COMMISSION
-// =====================================================
-
-const commissionSummary =
-  await Admission.aggregate([
-    {
-      $match: {
-        counsellor: counsellorData._id,
-      },
-    },
-
-    {
-      $group: {
-        _id: null,
-
-        totalCommission: {
-          $sum:
-            "$counsellorCommissionAmount",
+      {
+        $inc: {
+          convertedLeads: 1,
         },
+      },
+    );
 
+    // =====================================================
+    // RECALCULATE COUNSELLOR COMMISSION
+    // =====================================================
 
-        paidCommission: {
-          $sum: {
-            $cond: [
-              {
-                $eq: [
-                  "$counsellorPaymentStatus",
-                  "Paid",
-                ],
-              },
+    const commissionSummary = await Admission.aggregate([
+      {
+        $match: {
+          counsellor: counsellorData._id,
+        },
+      },
 
-              "$counsellorCommissionAmount",
+      {
+        $group: {
+          _id: null,
 
-              0,
-            ],
+          totalCommission: {
+            $sum: "$counsellorCommissionAmount",
+          },
+
+          paidCommission: {
+            $sum: {
+              $cond: [
+                {
+                  $eq: ["$counsellorPaymentStatus", "Paid"],
+                },
+
+                "$counsellorCommissionAmount",
+
+                0,
+              ],
+            },
           },
         },
       },
-    },
-  ]);
+    ]);
 
+    const totalCommission = commissionSummary[0]?.totalCommission || 0;
 
+    const paidCommission = commissionSummary[0]?.paidCommission || 0;
 
-const totalCommission =
-  commissionSummary[0]?.totalCommission || 0;
+    await Counsellor.findByIdAndUpdate(
+      counsellorData._id,
 
+      {
+        totalCommission,
 
-const paidCommission =
-  commissionSummary[0]?.paidCommission || 0;
+        paidCommission,
 
+        pendingCommission: totalCommission - paidCommission,
+      },
+    );
 
+    // =====================================================
+    // ACTIVITY LOG
+    // =====================================================
 
-await Counsellor.findByIdAndUpdate(
-  counsellorData._id,
+    await Activity.create([
+      {
+        action: `Admission ${admissionNumber} created for ${student.studentName}.`,
 
-  {
-    totalCommission,
+        by: req.user.name,
+      },
+    ]);
 
-    paidCommission,
+    // =====================================================
+    // ADMIN NOTIFICATION
+    // =====================================================
 
-    pendingCommission:
-      totalCommission - paidCommission,
-  }
-);
+    const admins = await Auth.find({
+      role: {
+        $in: ["SuperAdmin", "Admin"],
+      },
 
-
-
-
-// =====================================================
-// ACTIVITY LOG
-// =====================================================
-
-await Activity.create(
-  [
-    {
-      action:
-        `Admission ${admissionNumber} created for ${student.studentName}.`,
-
-
-      by:
-        req.user.name,
-    },
-  ]
-);
-
-
-
-
-
-// =====================================================
-// ADMIN NOTIFICATION
-// =====================================================
-
-const admins =
-  await Auth.find({
-    role: {
-      $in: [
-        "SuperAdmin",
-        "Admin",
-      ],
-    },
-
-    isActive: true,
-  });
-
-
-
-if (admins.length > 0) {
-
-  const adminNotifications =
-    admins.map((admin) => ({
-
-      title:
-        "New Admission Created",
-
-
-      message:
-        `Admission ${admissionNumber} created for ${student.studentName}.`,
-
-
-      receiver:
-        admin._id,
-
-
-      receiverModel:
-        "Auth",
-
-
-      type:
-        "Admission",
-
-
-      icon:
-        "GraduationCap",
-
-
-      link:
-        `/admin/admissions/${createdAdmission._id}`,
-
-
-      createdBy:
-        req.user._id,
-
-    }));
-
-
-
-  await Notification.insertMany(
-    adminNotifications
-  );
-
-}
-
-
-
-
-
-// =====================================================
-// COUNSELLOR NOTIFICATION
-// =====================================================
-
-await Notification.create(
-  [
-    {
-      title:
-        "Admission Created",
-
-
-      message:
-        `Admission ${admissionNumber} has been created successfully.`,
-
-
-      receiver:
-        counsellorData._id,
-
-
-      receiverModel:
-        "Counsellor",
-
-
-      type:
-        "Admission",
-
-
-      icon:
-        "UserCheck",
-
-
-      link:
-        `/counsellor/admissions/${createdAdmission._id}`,
-
-
-      createdBy:
-        req.user._id,
-    },
-  ]
-);
-
-// =====================================================
-// EMAIL LOG CREATION
-// =====================================================
-
-const emailLogs = [];
-
-
-if (student.email) {
-
-  emailLogs.push({
-
-    receiver:
-      student.email,
-
-
-    subject:
-      "Admission Created Successfully",
-
-
-    message:
-      `Dear ${student.studentName}, your admission ${admissionNumber} has been created successfully.`,
-
-
-    type:
-      "Admission",
-
-
-    sentBy:
-      req.user._id,
-
-  });
-
-}
-
-
-
-if (universityData.email) {
-
-  emailLogs.push({
-
-    receiver:
-      universityData.email,
-
-
-    subject:
-      "New Student Admission",
-
-
-    message:
-      `New admission received for ${student.studentName} in ${courseData.courseName}.`,
-
-
-    type:
-      "Admission",
-
-
-    sentBy:
-      req.user._id,
-
-  });
-
-}
-
-
-
-if (emailLogs.length) {
-
-  await Email.insertMany(
-    emailLogs
-  );
-
-}
-
-
-
-
-// =====================================================
-// FINAL RESPONSE DATA
-// =====================================================
-
-const finalAdmission =
-  await Admission.findById(
-    createdAdmission._id
-  )
-
-    .populate({
-      path:
-        "student",
-
-      select:
-        "studentNumber studentName email phoneNumber admissionStatus",
-    })
-
-
-    .populate({
-      path:
-        "lead",
-
-      select:
-        "leadNumber leadName email phoneNumber status",
-    })
-
-
-    .populate({
-      path:
-        "university",
-
-      select:
-        "universityName universityLogo country state city",
-    })
-
-
-    .populate({
-      path:
-        "course",
-
-      select:
-        "courseName duration fees courseMode",
-    })
-
-
-    .populate({
-      path:
-        "counsellor",
-
-      select:
-        "name email employeeId phoneNumber",
-    })
-
-
-    .populate({
-      path:
-        "createdBy",
-
-      select:
-        "name email role",
+      isActive: true,
     });
 
+    if (admins.length > 0) {
+      const adminNotifications = admins.map((admin) => ({
+        title: "New Admission Created",
 
+        message: `Admission ${admissionNumber} created for ${student.studentName}.`,
 
+        receiver: admin._id,
 
+        receiverModel: "Auth",
 
-return res.status(201).json({
+        type: "Admission",
 
-  success:
-    true,
+        icon: "GraduationCap",
 
+        link: `/admin/admissions/${createdAdmission._id}`,
 
-  message:
-    "Admission created successfully.",
+        createdBy: req.user._id,
+      }));
 
+      await Notification.insertMany(adminNotifications);
+    }
 
-  admission:
-    finalAdmission,
+    // =====================================================
+    // COUNSELLOR NOTIFICATION
+    // =====================================================
 
-});
+    await Notification.create([
+      {
+        title: "Admission Created",
 
+        message: `Admission ${admissionNumber} has been created successfully.`,
 
+        receiver: counsellorData._id,
 
+        receiverModel: "Counsellor",
 
-} catch (error) {
+        type: "Admission",
 
+        icon: "UserCheck",
 
-console.error(
-  "CREATE ADMISSION ERROR:",
-  error
-);
+        link: `/counsellor/admissions/${createdAdmission._id}`,
 
+        createdBy: req.user._id,
+      },
+    ]);
 
+    // =====================================================
+    // EMAIL LOG CREATION
+    // =====================================================
 
-return res.status(500).json({
+    const emailLogs = [];
 
-  success:
-    false,
+    if (student.email) {
+      emailLogs.push({
+        receiver: student.email,
 
+        subject: "Admission Created Successfully",
 
-  message:
-    error.message ||
-    "Failed to create admission.",
+        message: `Dear ${student.studentName}, your admission ${admissionNumber} has been created successfully.`,
 
-});
+        type: "Admission",
 
-}
+        sentBy: req.user._id,
+      });
+    }
+
+    if (universityData.email) {
+      emailLogs.push({
+        receiver: universityData.email,
+
+        subject: "New Student Admission",
+
+        message: `New admission received for ${student.studentName} in ${courseData.courseName}.`,
+
+        type: "Admission",
+
+        sentBy: req.user._id,
+      });
+    }
+
+    if (emailLogs.length) {
+      await Email.insertMany(emailLogs);
+    }
+
+    // =====================================================
+    // FINAL RESPONSE DATA
+    // =====================================================
+
+    const finalAdmission = await Admission.findById(createdAdmission._id)
+
+      .populate({
+        path: "student",
+
+        select: "studentNumber studentName email phoneNumber admissionStatus",
+      })
+
+      .populate({
+        path: "lead",
+
+        select: "leadNumber leadName email phoneNumber status",
+      })
+
+      .populate({
+        path: "university",
+
+        select: "universityName universityLogo country state city",
+      })
+
+      .populate({
+        path: "course",
+
+        select: "courseName duration fees courseMode",
+      })
+
+      .populate({
+        path: "counsellor",
+
+        select: "name email employeeId phoneNumber",
+      })
+
+      .populate({
+        path: "createdBy",
+
+        select: "name email role",
+      });
+
+    return res.status(201).json({
+      success: true,
+
+      message: "Admission created successfully.",
+
+      admission: finalAdmission,
+    });
+  } catch (error) {
+    console.error("CREATE ADMISSION ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+
+      message: error.message || "Failed to create admission.",
+    });
+  }
 };
 
 // =====================================================
@@ -1492,7 +1162,12 @@ export const updateAdmission = async (req, res) => {
     if (counsellorPaymentStatus)
       admission.counsellorPaymentStatus = counsellorPaymentStatus;
 
-    if (admissionStatus) admission.admissionStatus = admissionStatus;
+    if (admissionStatus) {
+      admission.admissionStatus = admissionStatus;
+      if (isAdmissionReversalStatus(admissionStatus)) {
+        clearAdmissionFinancials(admission);
+      }
+    }
 
     if (documentStatus) admission.documentStatus = documentStatus;
 
@@ -1516,6 +1191,113 @@ export const updateAdmission = async (req, res) => {
     if (remarks !== undefined) admission.remarks = remarks;
 
     if (notes !== undefined) admission.notes = notes;
+
+    // =====================================================
+    // PAYMENT RECORDS (university / counsellor)
+    // Accept single payment objects in the request body and append
+    // them to the corresponding payment history arrays. Update
+    // status based on total paid vs commission amount.
+    // =====================================================
+
+    if (req.body.universityPayment) {
+      const p = req.body.universityPayment;
+
+      // normalize
+      const paymentObj = {
+        amount: Number(p.amount || 0),
+        paymentDate: p.paymentDate ? new Date(p.paymentDate) : new Date(),
+        paymentMode: p.paymentMode || "Bank Transfer",
+        transactionId: p.transactionId || "",
+        referenceNumber: p.referenceNumber || "",
+        receivedBy: req.user._id,
+        remarks: p.remarks || "",
+      };
+
+      admission.universityPayments.push(paymentObj);
+
+      // compute total paid
+      const totalPaid = admission.universityPayments.reduce(
+        (s, it) => s + (it.amount || 0),
+        0,
+      );
+
+      if (
+        totalPaid >= (admission.universityCommissionAmount || 0) &&
+        (admission.universityCommissionAmount || 0) > 0
+      ) {
+        admission.universityPaymentStatus = "Paid";
+      } else if (totalPaid > 0) {
+        admission.universityPaymentStatus = "Partial";
+      } else {
+        admission.universityPaymentStatus = "Pending";
+      }
+
+      // latest payment date & reference
+      const last =
+        admission.universityPayments[admission.universityPayments.length - 1];
+
+      if (last) {
+        admission.universityPaymentDate = last.paymentDate || new Date();
+        admission.universityPaymentReference =
+          last.referenceNumber || admission.universityPaymentReference;
+      }
+
+      // timeline entry
+      admission.timeline.push({
+        title: "University Payment Recorded",
+        description: `${req.user.name} recorded university payment of ₹${paymentObj.amount}.`,
+        createdBy: req.user._id,
+        date: new Date(),
+      });
+    }
+
+    if (req.body.counsellorPayment) {
+      const p = req.body.counsellorPayment;
+
+      const paymentObj = {
+        amount: Number(p.amount || 0),
+        paymentDate: p.paymentDate ? new Date(p.paymentDate) : new Date(),
+        paymentMode: p.paymentMode || "Bank Transfer",
+        transactionId: p.transactionId || "",
+        referenceNumber: p.referenceNumber || "",
+        paidBy: req.user._id,
+        remarks: p.remarks || "",
+      };
+
+      admission.counsellorPayments.push(paymentObj);
+
+      const totalPaid = admission.counsellorPayments.reduce(
+        (s, it) => s + (it.amount || 0),
+        0,
+      );
+
+      if (
+        totalPaid >= (admission.counsellorCommissionAmount || 0) &&
+        (admission.counsellorCommissionAmount || 0) > 0
+      ) {
+        admission.counsellorPaymentStatus = "Paid";
+      } else if (totalPaid > 0) {
+        admission.counsellorPaymentStatus = "Partial";
+      } else {
+        admission.counsellorPaymentStatus = "Pending";
+      }
+
+      const last =
+        admission.counsellorPayments[admission.counsellorPayments.length - 1];
+
+      if (last) {
+        admission.counsellorPaymentDate = last.paymentDate || new Date();
+        admission.counsellorPaymentReference =
+          last.referenceNumber || admission.counsellorPaymentReference;
+      }
+
+      admission.timeline.push({
+        title: "Counsellor Payment Recorded",
+        description: `${req.user.name} recorded counsellor payment of ₹${paymentObj.amount}.`,
+        createdBy: req.user._id,
+        date: new Date(),
+      });
+    }
 
     // =====================================================
     // PAYMENT DATE AUTO UPDATE

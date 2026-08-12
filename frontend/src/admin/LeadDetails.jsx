@@ -1,83 +1,101 @@
-import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
+
 import axios from "axios";
+import toast from "react-hot-toast";
+
+import {
+  User,
+  Phone,
+  Mail,
+  GraduationCap,
+  Calendar,
+  Building2,
+  IndianRupee,
+  CheckCircle,
+  Clock,
+} from "lucide-react";
+import AdmissionCommission from "./admissions/AdmissionCommission";
+import AdmissionPaymentModal from "./admissions/AdmissionPaymentModal";
+
 export default function LeadDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
+
+  // ==========================
+  // STATES
+  // ==========================
+
   const [lead, setLead] = useState(null);
-  const [notes, setNotes] = useState("");
+
   const [loading, setLoading] = useState(true);
+
+  // NOTES
+
+  const [notes, setNotes] = useState("");
+
+  // FOLLOW UP
 
   const [followUpText, setFollowUpText] = useState("");
 
   const [followUps, setFollowUps] = useState([]);
 
-  const [applicationStatus, setApplicationStatus] = useState("Not Applied");
+  // STATUS
+
+  const [status, setStatus] = useState("");
+
+  // ENROLLMENT
+
+  const [enrollmentStatus, setEnrollmentStatus] = useState("Not Enrolled");
 
   const [university, setUniversity] = useState("");
 
-  const [country, setCountry] = useState("");
+  const [enrolledCourse, setEnrolledCourse] = useState("");
+
+  const [joiningDate, setJoiningDate] = useState("");
 
   const [tuitionFee, setTuitionFee] = useState("");
 
-  const [commissionPercent, setCommissionPercent] = useState("");
+  const [universities, setUniversities] = useState([]);
+
+  const [courses, setCourses] = useState([]);
+
+  const [admission, setAdmission] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentType, setPaymentType] = useState("university");
+
+  const paymentStatusLabel =
+    admission?.paymentStatus ||
+    admission?.counsellorPaymentStatus ||
+    admission?.universityPaymentStatus ||
+    lead?.paymentStatus ||
+    "Pending";
+  const admissionStatusLabel =
+    admission?.admissionStatus || admission?.applicationStatus || "Enrolled";
+
+  // COMMISSION
+
+  const [collegePercentage, setCollegePercentage] = useState("");
+
+  const [counsellorPercentage, setCounsellorPercentage] = useState("");
 
   const [paymentStatus, setPaymentStatus] = useState("Pending");
 
-  //useeffect
+  // ==========================
+  // FETCH LEAD
+  // ==========================
+
   useEffect(() => {
+    fetchUniversities();
     fetchLead();
   }, [id]);
 
-  const fetchLead = async () => {
+  const fetchUniversities = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/api/v1/contact/admin/contacts/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      const leadData = res.data.contact;
-
-      setLead(leadData);
-
-      setNotes(leadData.notes || "");
-
-      setFollowUps(leadData.followUps || []);
-
-      setApplicationStatus(leadData.applicationStatus || "Not Applied");
-
-      setUniversity(leadData.university || "");
-
-      setCountry(leadData.country || "");
-
-      setTuitionFee(leadData.tuitionFee || "");
-
-      setCommissionPercent(leadData.commissionPercent || "");
-
-      setPaymentStatus(leadData.paymentStatus || "Pending");
-
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-
-      setLoading(false);
-
-      toast.error("Lead not found");
-    }
-  };
-
-  const saveNotes = async () => {
-    try {
-      await axios.put(
-        `http://localhost:8000/api/v1/contact/admin/contacts/${id}`,
-        {
-          notes,
-        },
+        "http://localhost:8000/api/v1/university/alluniversity",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -85,35 +103,24 @@ export default function LeadDetails() {
         },
       );
 
-      toast.success("Notes Saved Successfully");
-
-      fetchLead();
+      setUniversities(res.data.universities || []);
     } catch (error) {
-      console.log(error);
-
-      toast.error("Failed to save notes");
+      console.log(
+        "FETCH UNIVERSITIES ERROR =>",
+        error.response?.data || error.message,
+      );
     }
   };
 
-  const addFollowUp = async () => {
-    if (!followUpText.trim()) {
-      toast.error("Please enter follow up");
-
+  const fetchCourses = async (universityId) => {
+    if (!universityId) {
+      setCourses([]);
       return;
     }
 
     try {
-      await axios.put(
-        `http://localhost:8000/api/v1/contact/admin/contacts/${id}`,
-        {
-          followUps: [
-            ...followUps,
-            {
-              text: followUpText,
-              date: new Date(),
-            },
-          ],
-        },
+      const res = await axios.get(
+        `http://localhost:8000/api/v1/course/university/${universityId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -121,25 +128,21 @@ export default function LeadDetails() {
         },
       );
 
-      setFollowUpText("");
-
-      toast.success("Follow Up Added");
-
-      fetchLead();
+      setCourses(res.data.courses || []);
     } catch (error) {
-      console.log(error);
-
-      toast.error("Failed to add follow up");
+      console.log(
+        "FETCH COURSES ERROR =>",
+        error.response?.data || error.message,
+      );
+      setCourses([]);
     }
   };
 
-  const saveApplicationStatus = async () => {
+  const fetchLead = async () => {
     try {
-      await axios.put(
-        `http://localhost:8000/api/v1/contact/admin/contacts/${id}`,
-        {
-          applicationStatus,
-        },
+      const res = await axios.get(
+        `http://localhost:8000/api/v1/contact/${id}`,
+
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -147,31 +150,65 @@ export default function LeadDetails() {
         },
       );
 
-      toast.success("Application Status Updated");
+      console.log("SINGLE LEAD RESPONSE =>", res.data);
+      console.log("STATUS =>", res.data.lead?.status);
+      console.log("LEAD =>", res.data.lead);
 
-      fetchLead();
+      const data =
+        res.data.lead || res.data.contact || res.data.data || res.data;
+
+      setLead(data);
+
+      setNotes(data.notes || "");
+
+      setFollowUps(data.followUps || []);
+
+      setStatus(data.status || "New");
+
+      setEnrollmentStatus(data.enrollmentStatus || "Not Enrolled");
+
+      setUniversity(data.enrollment?.university || "");
+
+      setEnrolledCourse(data.enrollment?.course || "");
+
+      setJoiningDate(data.enrollment?.joiningDate || "");
+
+      setTuitionFee(data.enrollment?.tuitionFee || "");
+
+      setAdmission(res.data.admission || null);
+
+      if (data.enrollment?.university) {
+        await fetchCourses(data.enrollment.university);
+      }
+
+      setCollegePercentage(data.commission?.collegePercentage || "");
+
+      setCounsellorPercentage(data.commission?.counsellorPercentage || "");
+
+      setPaymentStatus(data.commission?.paymentStatus || "Pending");
     } catch (error) {
-      console.log(error);
+      console.log(
+        "FETCH SINGLE LEAD ERROR =>",
+        error.response?.data || error.message,
+      );
 
-      toast.error("Failed to update");
+      toast.error("Lead not found");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const saveCommissionDetails = async () => {
-    try {
-      const commissionAmount =
-        (Number(tuitionFee) * Number(commissionPercent)) / 100;
+  // ==========================
+  // UPDATE LEAD
+  // ==========================
 
+  const updateLead = async (payload) => {
+    try {
       await axios.put(
-        `http://localhost:8000/api/v1/contact/admin/contacts/${id}`,
-        {
-          university,
-          country,
-          tuitionFee,
-          commissionPercent,
-          commissionAmount,
-          paymentStatus,
-        },
+        `http://localhost:8000/api/v1/contact/${id}`,
+
+        payload,
+
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -179,415 +216,1986 @@ export default function LeadDetails() {
         },
       );
 
-      toast.success("Commission Saved");
+      toast.success("Updated Successfully");
 
       fetchLead();
     } catch (error) {
-      console.log(error);
+      console.log("UPDATE ERROR =>", error.response?.data || error.message);
 
-      toast.error("Failed to save");
+      toast.error("Update Failed");
     }
+  };
+
+  // ==========================
+  // STATUS UPDATE
+  // ==========================
+
+  const handleStatusUpdate = () => {
+    updateLead({
+      status,
+    });
+  };
+
+  // ==========================
+  // SAVE NOTES
+  // ==========================
+
+  const saveNotes = () => {
+    updateLead({
+      notes,
+    });
+  };
+
+  // ==========================
+  // ADD FOLLOW UP
+  // ==========================
+
+  const addFollowUp = () => {
+    if (!followUpText.trim()) {
+      toast.error("Enter follow up");
+
+      return;
+    }
+
+    const newFollowUp = {
+      text: followUpText,
+
+      date: new Date(),
+    };
+
+    updateLead({
+      followUps: [...followUps, newFollowUp],
+    });
+
+    setFollowUpText("");
+  };
+
+  // ==========================
+  // SAVE ENROLLMENT
+  // ==========================
+
+  const saveEnrollment = () => {
+    if (!university || !enrolledCourse) {
+      toast.error("Please select university and enrolled course.");
+      return;
+    }
+
+    const selectedUniversity =
+      universities.find((item) => item._id === university);
+
+    updateLead({
+      status: "Enrolled",
+
+      applicationStatus: "Enrolled",
+
+      enrollmentStatus: "Enrolled",
+
+      university: selectedUniversity?.universityName || "",
+
+      tuitionFee: Number(tuitionFee),
+
+      enrollment: {
+        university,
+        course: enrolledCourse,
+        joiningDate,
+        tuitionFee: Number(tuitionFee),
+      },
+    });
+  };
+
+  // ==========================
+  // SAVE COMMISSION
+  // ==========================
+
+  const saveCommission = () => {
+    const totalCommission =
+      (Number(tuitionFee) * Number(collegePercentage)) / 100;
+
+    const counsellorAmount =
+      (totalCommission * Number(counsellorPercentage)) / 100;
+
+    updateLead({
+      commission: {
+        collegePercentage: Number(collegePercentage),
+
+        totalCommission,
+
+        counsellorPercentage: Number(counsellorPercentage),
+
+        counsellorAmount,
+
+        paymentStatus,
+      },
+    });
   };
 
   if (loading) {
-    return <div className="p-8">Loading...</div>;
+    return <div className="p-10 text-center">Loading Lead...</div>;
   }
 
   if (!lead) {
-    return (
-      <div className="p-8">
-        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl p-8 text-center">
-          <h2 className="text-2xl font-bold mb-2">Lead Not Found</h2>
-
-          <p className="text-gray-500">The requested lead does not exist.</p>
-        </div>
-      </div>
-    );
+    return <div className="p-10">Lead Not Found</div>;
   }
-
+  const timeline = lead.timeline || lead.activityTimeline || [];
   return (
-    <div className="p-6 lg:p-8">
-      {/* Header */}
+    <div
+      className="
+relative
+min-h-screen
+overflow-hidden
+bg-gradient-to-br
+from-sky-50
+via-cyan-50
+to-blue-100
+p-6
+lg:p-10
+"
+    >
+      {/* Background Glow */}
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <h1 className="text-3xl font-bold">Lead Details</h1>
+      <div
+        className="
+absolute
+-top-40
+-left-40
+h-[450px]
+w-[450px]
+rounded-full
+bg-cyan-300/30
+blur-[120px]
+"
+      />
 
-        <span className="px-4 py-2 rounded-xl bg-cyan-500 text-white font-medium">
-          #{lead.id || lead._id || "N/A"}
-        </span>
-      </div>
+      <div
+        className="
+absolute
+bottom-0
+right-0
+h-[500px]
+w-[500px]
+rounded-full
+bg-blue-300/30
+blur-[140px]
+"
+      />
 
-      {/* Lead Information */}
+      <div
+        className="
+relative
+z-10
+max-w-7xl
+mx-auto
+"
+      >
+        {/* ==========================
+ HERO HEADER
+========================== */}
 
-      <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-lg rounded-3xl p-8">
-        <div className="grid md:grid-cols-2 gap-6">
-          <InfoField label="Full Name" value={lead.username || "-"} />
+        <div
+          className="
+rounded-[35px]
+bg-white/80
+backdrop-blur-xl
+border
+border-white
+shadow-2xl
+p-8
+lg:p-10
+mb-8
+"
+        >
+          <div
+            className="
+flex
+flex-col
+lg:flex-row
+justify-between
+gap-8
+"
+          >
+            {/* LEFT */}
 
-          <InfoField label="Email" value={lead.email || "-"} />
+            <div>
+              <div
+                className="
+inline-flex
+items-center
+gap-2
+rounded-full
+bg-cyan-100
+px-5
+py-2
+text-cyan-700
+font-semibold
+"
+              >
+                <User
+                  className="
+h-5
+w-5
+"
+                />
+                Lead Details
+              </div>
 
-          <InfoField label="Phone" value={lead.phoneNumber || "-"} />
+              <h1
+                className="
+mt-5
+text-4xl
+lg:text-5xl
+font-black
+text-slate-900
+"
+              >
+                {lead.leadName || lead.username || "Unknown Lead"}
+              </h1>
 
-          <InfoField label="Course" value={lead.interestedCourse || "-"} />
+              <p
+                className="
+mt-3
+text-lg
+text-slate-600
+"
+              >
+                {lead.interestedCourse || "No Course Selected"}
+              </p>
 
-          <InfoField label="Status" value={lead.status || "New"} />
+              <div
+                className="
+flex
+flex-wrap
+gap-3
+mt-6
+"
+              >
+                <span
+                  className="
+px-5
+py-2
+rounded-full
+bg-gradient-to-r
+from-sky-500
+to-cyan-500
+text-white
+font-bold
+shadow-lg
+"
+                >
+                  {status}
+                </span>
 
-          <InfoField
-            label="Assigned Counsellor"
-            value={lead.assignedTo?.name || "Not Assigned"}
+                <span
+                  className="
+px-5
+py-2
+rounded-full
+bg-blue-100
+text-blue-700
+font-semibold
+"
+                >
+                  ID :{lead._id}
+                </span>
+
+                {admission && (
+                  <button
+                    onClick={() => navigate(`/admin/admissions/${admission._id}`)}
+                    className="
+px-5
+py-2
+rounded-full
+bg-emerald-100
+text-emerald-700
+font-semibold
+shadow-lg
+hover:bg-emerald-200
+transition
+"
+                  >
+                    View Admission
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* RIGHT */}
+
+            <div
+              className="
+bg-gradient-to-br
+from-sky-500
+to-blue-600
+rounded-3xl
+p-8
+text-white
+min-w-[280px]
+shadow-xl
+"
+            >
+              <p
+                className="
+text-sm
+opacity-80
+"
+              >
+                Assigned Counsellor
+              </p>
+
+              <h2
+                className="
+text-2xl
+font-black
+mt-2
+"
+              >
+                {lead.counsellor?.name ||
+                  lead.assignedTo?.name ||
+                  "Not Assigned"}
+              </h2>
+
+              <div
+                className="
+mt-5
+flex
+items-center
+gap-2
+"
+              >
+                <Clock
+                  className="
+h-5
+w-5
+"
+                />
+
+                <span>
+                  {lead.createdAt
+                    ? new Date(lead.createdAt).toLocaleDateString()
+                    : "-"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ==========================
+ QUICK INFO CARDS
+========================== */}
+
+        <div
+          className="
+grid
+md:grid-cols-2
+lg:grid-cols-4
+gap-6
+mb-8
+"
+        >
+          <InfoCard
+            icon={<Phone />}
+            title="Phone"
+            value={lead.phoneNumber || "-"}
           />
 
-          <InfoField label="Source" value={lead.source || "-"} />
+          <InfoCard icon={<Mail />} title="Email" value={lead.email || "-"} />
 
-          <InfoField
-            label="Created At"
+          <InfoCard
+            icon={<GraduationCap />}
+            title="Course"
+            value={lead.interestedCourse || "-"}
+          />
+
+          <InfoCard
+            icon={<Calendar />}
+            title="Created"
             value={
-              lead.createdAt ? new Date(lead.createdAt).toLocaleString() : "-"
+              lead.createdAt
+                ? new Date(lead.createdAt).toLocaleDateString()
+                : "-"
             }
           />
         </div>
-      </div>
 
-      {/* Notes Section */}
+        {/* ==========================
+ ADMISSION PIPELINE
+========================== */}
 
-      <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-lg rounded-3xl p-8 mt-8">
-        <h2 className="text-2xl font-bold mb-4">Notes</h2>
-
-        <textarea
-          rows={6}
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Add notes here..."
+        <div
           className="
-            w-full
-            p-4
-            rounded-xl
-            border
-            border-gray-300
-            dark:border-slate-700
-            bg-white
-            dark:bg-slate-800
-            focus:outline-none
-            focus:ring-2
-            focus:ring-cyan-500
-          "
-        />
-
-        <button
-          onClick={saveNotes}
-          className="
-            mt-4
-            bg-cyan-500
-            hover:bg-cyan-600
-            text-white
-            px-6
-            py-3
-            rounded-xl
-            transition
-          "
+bg-white/80
+backdrop-blur-xl
+border
+border-white
+rounded-[35px]
+shadow-2xl
+p-8
+mb-8
+"
         >
-          Save Notes
-        </button>
-      </div>
-      {/* Follow Up History */}
+          <h2
+            className="
+text-2xl
+font-black
+text-slate-900
+mb-8
+"
+          >
+            Admission Journey
+          </h2>
 
-      <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-lg rounded-3xl p-8 mt-8">
-        <h2 className="text-2xl font-bold mb-6">Follow Up History</h2>
+          <div
+            className="
+grid
+grid-cols-2
+md:grid-cols-3
+lg:grid-cols-6
+gap-5
+"
+          >
+            {[
+              "New",
+              "Contacted",
+              "Interested",
+              "Follow Up",
+              "Converted",
+              "Enrolled",
+            ].map((item, index) => {
+              const active =
+                [
+                  "New",
+                  "Contacted",
+                  "Interested",
+                  "Follow Up",
+                  "Converted",
+                  "Enrolled",
+                ].indexOf(status) >= index;
 
-        <div className="space-y-4 mb-6">
-          {followUps.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400">
-              No Follow Ups Yet
-            </p>
-          ) : (
-            followUps
-              .slice()
-              .reverse()
-              .map((item) => (
+              return (
                 <div
-                  key={item.id}
+                  key={item}
                   className="
-                    border-l-4
-                    border-cyan-500
-                    pl-4
-                    py-3
-                    bg-gray-50
-                    dark:bg-slate-800
-                    rounded-r-xl
-                  "
+flex
+flex-col
+items-center
+gap-3
+"
                 >
-                  <p className="font-medium">{item.text}</p>
+                  <div
+                    className={`
+h-14
+w-14
+rounded-full
+flex
+items-center
+justify-center
+font-black
+shadow-lg
 
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {item.date}
+${
+  active
+    ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-white"
+    : "bg-slate-100 text-slate-400"
+}
+
+`}
+                  >
+                    {index + 1}
+                  </div>
+
+                  <p
+                    className={`
+text-sm
+font-semibold
+text-center
+
+${active ? "text-sky-700" : "text-slate-400"}
+
+`}
+                  >
+                    {item}
                   </p>
                 </div>
-              ))
+              );
+            })}
+          </div>
+
+          {/* STATUS UPDATE */}
+
+          <div
+            className="
+mt-10
+flex
+flex-col
+md:flex-row
+gap-5
+items-center
+"
+          >
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="
+w-full
+md:w-80
+rounded-2xl
+border
+border-sky-200
+bg-white
+px-5
+py-4
+outline-none
+focus:ring-4
+focus:ring-cyan-100
+"
+            >
+              <option>New</option>
+
+              <option>Contacted</option>
+
+              <option>Interested</option>
+
+              <option>Follow Up</option>
+
+              <option>Converted</option>
+
+              <option>Enrolled</option>
+            </select>
+
+            <button
+              onClick={handleStatusUpdate}
+              className="
+rounded-2xl
+bg-gradient-to-r
+from-sky-500
+to-cyan-500
+px-8
+py-4
+text-white
+font-bold
+shadow-lg
+hover:-translate-y-1
+transition
+"
+            >
+              Update Status
+            </button>
+          </div>
+        </div>
+
+        {/* ==========================
+ ACTIVITY TIMELINE
+========================== */}
+
+        <div
+          className="
+bg-white/80
+backdrop-blur-xl
+border
+border-white
+rounded-[35px]
+shadow-2xl
+p-8
+mb-8
+"
+        >
+          <h2
+            className="
+text-2xl
+font-black
+text-slate-900
+mb-8
+"
+          >
+            Activity Timeline
+          </h2>
+
+          <div
+            className="
+space-y-6
+"
+          >
+            {timeline && timeline.length > 0 ? (
+              timeline
+                .slice()
+                .reverse()
+                .map((item, index) => (
+                  <div
+                    key={index}
+                    className="
+flex
+gap-5
+"
+                  >
+                    <div
+                      className="
+relative
+"
+                    >
+                      <div
+                        className="
+h-12
+w-12
+rounded-full
+bg-cyan-100
+text-cyan-600
+flex
+items-center
+justify-center
+"
+                      >
+                        <CheckCircle
+                          className="
+h-6
+w-6
+"
+                        />
+                      </div>
+
+                      {index !== timeline.length - 1 && (
+                        <div
+                          className="
+absolute
+top-12
+left-6
+h-full
+w-[2px]
+bg-cyan-200
+"
+                        />
+                      )}
+                    </div>
+
+                    <div
+                      className="
+bg-slate-50
+rounded-2xl
+p-5
+flex-1
+"
+                    >
+                        <h3
+                        className="
+font-bold
+text-slate-900
+"
+                      >
+                        {item.title || item.type}
+                      </h3>
+
+                      <p
+                        className="
+text-slate-600
+mt-1
+"
+                      >
+                        {item.description}
+                      </p>
+
+                      <p
+                        className="
+text-sm
+text-slate-400
+mt-2
+"
+                      >
+                        {item.date ? new Date(item.date).toLocaleString() : "-"}
+                      </p>
+                    </div>
+                  </div>
+                ))
+            ) : (
+              <div
+                className="
+text-center
+text-slate-500
+py-10
+"
+              >
+                No Activity Available
+              </div>
+            )}
+          </div>
+        </div>
+        {/* ==========================
+ NOTES SECTION
+========================== */}
+
+        <div
+          className="
+bg-white/80
+backdrop-blur-xl
+border
+border-white
+rounded-[35px]
+shadow-2xl
+p-8
+mb-8
+"
+        >
+          <div
+            className="
+flex
+items-center
+gap-3
+mb-6
+"
+          >
+            <div
+              className="
+h-12
+w-12
+rounded-2xl
+bg-cyan-100
+text-cyan-600
+flex
+items-center
+justify-center
+"
+            >
+              <User />
+            </div>
+
+            <h2
+              className="
+text-2xl
+font-black
+text-slate-900
+"
+            >
+              Internal Notes
+            </h2>
+          </div>
+
+          <textarea
+            rows={6}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="
+Write important notes about student...
+"
+            className="
+w-full
+rounded-3xl
+border
+border-sky-200
+bg-white
+p-5
+outline-none
+resize-none
+focus:ring-4
+focus:ring-cyan-100
+"
+          />
+
+          <button
+            onClick={saveNotes}
+            className="
+mt-5
+rounded-2xl
+bg-gradient-to-r
+from-sky-500
+to-cyan-500
+px-8
+py-3
+text-white
+font-bold
+shadow-lg
+hover:-translate-y-1
+transition
+"
+          >
+            Save Notes
+          </button>
+        </div>
+
+        {/* ==========================
+ FOLLOW UP SECTION
+========================== */}
+
+        <div
+          className="
+bg-white/80
+backdrop-blur-xl
+border
+border-white
+rounded-[35px]
+shadow-2xl
+p-8
+mb-8
+"
+        >
+          <div
+            className="
+flex
+items-center
+gap-3
+mb-8
+"
+          >
+            <div
+              className="
+h-12
+w-12
+rounded-2xl
+bg-blue-100
+text-blue-600
+flex
+items-center
+justify-center
+"
+            >
+              <Clock />
+            </div>
+
+            <h2
+              className="
+text-2xl
+font-black
+text-slate-900
+"
+            >
+              Follow Up Management
+            </h2>
+          </div>
+
+          <div
+            className="
+grid
+lg:grid-cols-3
+gap-6
+"
+          >
+            <textarea
+              rows={4}
+              value={followUpText}
+              onChange={(e) => setFollowUpText(e.target.value)}
+              placeholder="
+Example: Student interested in MBA, call tomorrow...
+"
+              className="
+lg:col-span-2
+rounded-3xl
+border
+border-sky-200
+p-5
+resize-none
+outline-none
+focus:ring-4
+focus:ring-cyan-100
+"
+            />
+
+            <button
+              onClick={addFollowUp}
+              className="
+rounded-3xl
+bg-gradient-to-r
+from-blue-500
+to-cyan-500
+text-white
+font-black
+text-lg
+shadow-xl
+hover:-translate-y-1
+transition
+"
+            >
+              Add Follow Up
+            </button>
+          </div>
+
+          {/* HISTORY */}
+
+          <div
+            className="
+mt-10
+space-y-5
+"
+          >
+            <h3
+              className="
+text-xl
+font-black
+text-slate-900
+"
+            >
+              Follow Up History
+            </h3>
+
+            {followUps.length > 0 ? (
+              followUps
+                .slice()
+                .reverse()
+                .map((item, index) => (
+                  <div
+                    key={index}
+                    className="
+border-l-4
+border-cyan-500
+bg-slate-50
+rounded-r-3xl
+p-5
+"
+                  >
+                    <div
+                      className="
+flex
+justify-between
+gap-5
+flex-wrap
+"
+                    >
+                      <p
+                        className="
+font-bold
+text-slate-900
+"
+                      >
+                        {item.text}
+                      </p>
+
+                      <span
+                        className="
+text-sm
+text-slate-500
+"
+                      >
+                        {item.date ? new Date(item.date).toLocaleString() : "-"}
+                      </span>
+                    </div>
+                  </div>
+                ))
+            ) : (
+              <div
+                className="
+text-center
+text-slate-500
+py-8
+"
+              >
+                No Follow Ups Added Yet
+              </div>
+            )}
+          </div>
+        </div>
+        {/* ==========================
+ STUDENT ENROLLMENT SECTION
+========================== */}
+
+        {admission ? (
+          <div
+            className="
+  bg-white/80
+backdrop-blur-xl
+border
+border-white
+rounded-[35px]
+shadow-2xl
+p-8
+mb-8
+"
+          >
+            <div className="flex flex-col gap-6">
+              <div>
+                <h2 className="text-2xl font-black text-slate-900 mb-3">
+                  Admission Created
+                </h2>
+                <p className="text-slate-600">
+                  This lead already has an admission record. Enrollment and admission fields are locked for updates from the admission page.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="rounded-3xl bg-slate-50 p-5">
+                  <p className="text-sm text-slate-500">Admission Number</p>
+                  <p className="text-lg font-bold text-slate-900">
+                    {admission.admissionNumber || "-"}
+                  </p>
+                </div>
+                <div className="rounded-3xl bg-slate-50 p-5">
+                  <p className="text-sm text-slate-500">Admission Status</p>
+                  <p className="text-lg font-bold text-slate-900">
+                    {admissionStatusLabel}
+                  </p>
+                </div>
+                <div className="rounded-3xl bg-slate-50 p-5">
+                  <p className="text-sm text-slate-500">Payment Status</p>
+                  <p className="text-lg font-bold text-slate-900">
+                    {paymentStatusLabel}
+                  </p>
+                </div>
+                <div className="rounded-3xl bg-slate-50 p-5">
+                  <p className="text-sm text-slate-500">University / Course</p>
+                  <p className="text-lg font-bold text-slate-900">
+                    {admission.universityName || "-"} / {admission.courseName || "-"}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => navigate(`/admin/admissions/${admission._id}`)}
+                className="
+  inline-flex
+  items-center
+  justify-center
+  rounded-2xl
+  bg-gradient-to-r
+  from-sky-500
+  to-cyan-500
+  px-8
+  py-4
+  text-white
+  font-bold
+  shadow-xl
+  hover:-translate-y-1
+  transition
+"
+              >
+                Update Admission
+              </button>
+              {/* Show commission summary when admission exists */}
+              <div className="mt-6">
+                <AdmissionCommission admission={admission} />
+
+                <div className="flex gap-3 mt-4">
+                  {admission?.universityPaymentStatus !== "Paid" ? (
+                    <button onClick={() => { setPaymentType("university"); setShowPaymentModal(true); }} className="px-4 py-2 rounded bg-green-600 text-white">Record University Payment</button>
+                  ) : (
+                    <span className="px-4 py-2 rounded bg-green-100 text-green-800 font-medium">University commission paid</span>
+                  )}
+
+                  {admission?.counsellorPaymentStatus !== "Paid" ? (
+                    <button onClick={() => { setPaymentType("counsellor"); setShowPaymentModal(true); }} className="px-4 py-2 rounded bg-amber-600 text-white">Record Counsellor Payment</button>
+                  ) : (
+                    <span className="px-4 py-2 rounded bg-green-100 text-green-800 font-medium">Counsellor commission paid</span>
+                  )}
+                </div>
+              </div>
+
+              {showPaymentModal && (
+                <AdmissionPaymentModal
+                  admissionId={admission?._id}
+                  admission={admission}
+                  type={paymentType}
+                  onClose={() => setShowPaymentModal(false)}
+                  onSaved={(updated) => setAdmission(updated)}
+                />
+              )}
+            </div>
+          </div>
+        ) : (
+          <div
+            className="
+bg-white/80
+backdrop-blur-xl
+border
+border-white
+rounded-[35px]
+shadow-2xl
+p-8
+mb-8
+"
+          >
+          <div
+            className="
+flex
+items-center
+gap-3
+mb-8
+"
+          >
+            <div
+              className="
+h-12
+w-12
+rounded-2xl
+bg-blue-100
+text-blue-600
+flex
+items-center
+justify-center
+"
+            >
+              <GraduationCap />
+            </div>
+
+            <h2
+              className="
+text-2xl
+font-black
+text-slate-900
+"
+            >
+              Student Enrollment
+            </h2>
+          </div>
+
+          {/* ENROLLMENT STATUS */}
+
+          <div
+            className="
+grid
+md:grid-cols-2
+gap-6
+mb-8
+"
+          >
+            <div>
+              <label
+                className="
+text-sm
+font-semibold
+text-slate-600
+"
+              >
+                Enrollment Status
+              </label>
+
+              <select
+                value={enrollmentStatus}
+                onChange={(e) => setEnrollmentStatus(e.target.value)}
+                className="
+mt-2
+w-full
+rounded-2xl
+border
+border-sky-200
+bg-white
+px-5
+py-4
+outline-none
+focus:ring-4
+focus:ring-cyan-100
+"
+              >
+                <option value="Not Enrolled">Not Enrolled</option>
+
+                <option value="Enrolled">Enrolled</option>
+              </select>
+            </div>
+
+            <div
+              className="
+flex
+items-center
+justify-center
+"
+            >
+              <div
+                className={`
+px-6
+py-3
+rounded-full
+font-bold
+
+${
+  enrollmentStatus === "Enrolled"
+    ? "bg-green-100 text-green-700"
+    : "bg-yellow-100 text-yellow-700"
+}
+
+`}
+              >
+                {enrollmentStatus === "Enrolled"
+                  ? "✓ Student Enrolled"
+                  : "Waiting For Enrollment"}
+              </div>
+            </div>
+          </div>
+
+          {enrollmentStatus === "Enrolled" && (
+            <div
+              className="
+grid
+md:grid-cols-2
+gap-6
+"
+            >
+              {/* UNIVERSITY */}
+
+              <div>
+                <label
+                  className="
+text-sm
+font-semibold
+text-slate-600
+"
+                >
+                  University
+                </label>
+
+                <select
+                  value={university}
+                  onChange={async (e) => {
+                    setUniversity(e.target.value);
+                    setEnrolledCourse("");
+                    await fetchCourses(e.target.value);
+                  }}
+                  className="
+mt-2
+w-full
+rounded-2xl
+border
+border-sky-200
+bg-white
+px-5
+py-4
+outline-none
+focus:ring-4
+focus:ring-cyan-100
+"
+                >
+                  <option value="">Select University</option>
+                  {universities.map((item) => (
+                    <option key={item._id} value={item._id}>
+                      {item.universityName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* COURSE */}
+
+              <div>
+                <label
+                  className="
+text-sm
+font-semibold
+text-slate-600
+"
+                >
+                  Enrolled Course
+                </label>
+
+                <select
+                  value={enrolledCourse}
+                  onChange={(e) => setEnrolledCourse(e.target.value)}
+                  className="
+mt-2
+w-full
+rounded-2xl
+border
+border-sky-200
+bg-white
+px-5
+py-4
+outline-none
+focus:ring-4
+focus:ring-cyan-100
+"
+                >
+                  <option value="">Select Course</option>
+                  {courses.map((item) => (
+                    <option key={item._id} value={item._id}>
+                      {item.courseName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* JOINING DATE */}
+
+              <div>
+                <label
+                  className="
+text-sm
+font-semibold
+text-slate-600
+"
+                >
+                  Joining Date
+                </label>
+
+                <input
+                  type="date"
+                  value={joiningDate ? joiningDate.substring(0, 10) : ""}
+                  onChange={(e) => setJoiningDate(e.target.value)}
+                  className="
+mt-2
+w-full
+rounded-2xl
+border
+border-sky-200
+p-4
+outline-none
+focus:ring-4
+focus:ring-cyan-100
+"
+                />
+              </div>
+
+              {/* TUITION FEE */}
+
+              <div>
+                <label
+                  className="
+text-sm
+font-semibold
+text-slate-600
+"
+                >
+                  Tuition Fee
+                </label>
+
+                <div
+                  className="
+relative
+"
+                >
+                  <IndianRupee
+                    className="
+absolute
+left-4
+top-1/2
+-translate-y-1/2
+text-cyan-600
+h-5
+"
+                  />
+
+                  <input
+                    type="number"
+                    value={tuitionFee}
+                    onChange={(e) => setTuitionFee(e.target.value)}
+                    placeholder="
+500000
+"
+                    className="
+mt-2
+w-full
+rounded-2xl
+border
+border-sky-200
+p-4
+pl-12
+outline-none
+focus:ring-4
+focus:ring-cyan-100
+"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={saveEnrollment}
+            className="
+mt-8
+rounded-2xl
+bg-gradient-to-r
+from-sky-500
+to-blue-600
+px-8
+py-4
+text-white
+font-black
+shadow-xl
+hover:-translate-y-1
+transition
+"
+          >
+            Save Enrollment Details
+          </button>
+        </div>
+      )}
+        {/* ==========================
+ COMMISSION MANAGEMENT
+========================== */}
+
+        {!admission && enrollmentStatus === "Enrolled" && (
+          <div
+            className="
+bg-white/80
+backdrop-blur-xl
+border
+border-white
+rounded-[35px]
+shadow-2xl
+p-8
+mb-8
+"
+          >
+            <div
+              className="
+flex
+items-center
+gap-3
+mb-8
+"
+            >
+              <div
+                className="
+h-12
+w-12
+rounded-2xl
+bg-green-100
+text-green-600
+flex
+items-center
+justify-center
+"
+              >
+                <IndianRupee />
+              </div>
+
+              <h2
+                className="
+text-2xl
+font-black
+text-slate-900
+"
+              >
+                Commission Management
+              </h2>
+            </div>
+
+            <div
+              className="
+grid
+md:grid-cols-2
+gap-6
+"
+            >
+              {/* COLLEGE COMMISSION % */}
+
+              <div>
+                <label
+                  className="
+text-sm
+font-semibold
+text-slate-600
+"
+                >
+                  College Commission %
+                </label>
+
+                <input
+                  type="number"
+                  value={collegePercentage}
+                  onChange={(e) => setCollegePercentage(e.target.value)}
+                  placeholder="Example 20"
+                  className="
+mt-2
+w-full
+rounded-2xl
+border
+border-sky-200
+p-4
+outline-none
+focus:ring-4
+focus:ring-cyan-100
+"
+                />
+              </div>
+
+              {/* COUNSELLOR SHARE % */}
+
+              <div>
+                <label
+                  className="
+text-sm
+font-semibold
+text-slate-600
+"
+                >
+                  Counsellor Share %
+                </label>
+
+                <input
+                  type="number"
+                  value={counsellorPercentage}
+                  onChange={(e) => setCounsellorPercentage(e.target.value)}
+                  placeholder="Example 40"
+                  className="
+mt-2
+w-full
+rounded-2xl
+border
+border-sky-200
+p-4
+outline-none
+focus:ring-4
+focus:ring-cyan-100
+"
+                />
+              </div>
+            </div>
+
+            {/* CALCULATION CARD */}
+
+            <div
+              className="
+mt-8
+grid
+md:grid-cols-3
+gap-5
+"
+            >
+              <div
+                className="
+rounded-3xl
+bg-sky-50
+p-6
+"
+              >
+                <p
+                  className="
+text-sm
+text-slate-500
+"
+                >
+                  College Commission
+                </p>
+
+                <h3
+                  className="
+mt-2
+text-3xl
+font-black
+text-sky-700
+"
+                >
+                  ₹{(Number(tuitionFee) * Number(collegePercentage)) / 100}
+                </h3>
+              </div>
+
+              <div
+                className="
+rounded-3xl
+bg-cyan-50
+p-6
+"
+              >
+                <p
+                  className="
+text-sm
+text-slate-500
+"
+                >
+                  Total Commission
+                </p>
+
+                <h3
+                  className="
+mt-2
+text-3xl
+font-black
+text-cyan-700
+"
+                >
+                  ₹{(Number(tuitionFee) * Number(collegePercentage)) / 100}
+                </h3>
+              </div>
+
+              <div
+                className="
+rounded-3xl
+bg-blue-50
+p-6
+"
+              >
+                <p
+                  className="
+text-sm
+text-slate-500
+"
+                >
+                  Counsellor Amount
+                </p>
+
+                <h3
+                  className="
+mt-2
+text-3xl
+font-black
+text-blue-700
+"
+                >
+                  ₹
+                  {(((Number(tuitionFee) * Number(collegePercentage)) / 100) *
+                    Number(counsellorPercentage)) /
+                    100}
+                </h3>
+              </div>
+            </div>
+
+            {/* PAYMENT STATUS */}
+
+            <div
+              className="
+mt-8
+grid
+md:grid-cols-2
+gap-6
+"
+            >
+              <div>
+                <label
+                  className="
+text-sm
+font-semibold
+text-slate-600
+"
+                >
+                  Commission Payment Status
+                </label>
+
+                <select
+                  value={paymentStatus}
+                  onChange={(e) => setPaymentStatus(e.target.value)}
+                  className="
+mt-2
+w-full
+rounded-2xl
+border
+border-sky-200
+bg-white
+p-4
+outline-none
+focus:ring-4
+focus:ring-cyan-100
+"
+                >
+                  <option value="Pending">Pending</option>
+
+                  <option value="Paid">Paid</option>
+                </select>
+              </div>
+
+              <div
+                className="
+flex
+items-end
+"
+              >
+                <button
+                  onClick={saveCommission}
+                  className="
+w-full
+rounded-2xl
+bg-gradient-to-r
+from-green-500
+to-emerald-600
+px-8
+py-4
+text-white
+font-black
+shadow-xl
+hover:-translate-y-1
+transition
+"
+                >
+                  Save Commission
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* ==========================
+ STATUS HISTORY
+========================== */}
+
+        <div
+          className="
+bg-white/80
+backdrop-blur-xl
+border
+border-white
+rounded-[35px]
+shadow-2xl
+p-8
+mb-8
+"
+        >
+          <h2
+            className="
+text-2xl
+font-black
+text-slate-900
+mb-8
+"
+          >
+            Status History
+          </h2>
+
+          {lead.statusHistory && lead.statusHistory.length > 0 ? (
+            <div className="space-y-5">
+              {lead.statusHistory
+                .slice()
+                .reverse()
+                .map((item, index) => (
+                  <div
+                    key={index}
+                    className="
+flex
+gap-5
+items-start
+"
+                  >
+                    <div
+                      className="
+h-10
+w-10
+rounded-full
+bg-cyan-100
+text-cyan-600
+flex
+items-center
+justify-center
+font-bold
+"
+                    >
+                      {index + 1}
+                    </div>
+
+                    <div
+                      className="
+flex-1
+bg-slate-50
+rounded-2xl
+p-5
+"
+                    >
+                      <div
+                        className="
+flex
+justify-between
+flex-wrap
+gap-3
+"
+                      >
+                        <h3
+                          className="
+font-black
+text-slate-900
+"
+                        >
+                          {item.status}
+                        </h3>
+
+                        <span
+                          className="
+text-sm
+text-slate-500
+"
+                        >
+                          {item.date
+                            ? new Date(item.date).toLocaleString()
+                            : "-"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <div
+              className="
+text-center
+text-slate-500
+py-8
+"
+            >
+              No Status History Available
+            </div>
           )}
         </div>
 
-        <textarea
-          rows={4}
-          value={followUpText}
-          onChange={(e) => setFollowUpText(e.target.value)}
-          placeholder="Add Follow Up..."
-          className="
-            w-full
-            p-4
-            rounded-xl
-            border
-            border-gray-300
-            dark:border-slate-700
-            bg-white
-            dark:bg-slate-800
-            focus:outline-none
-            focus:ring-2
-            focus:ring-green-500
-          "
-        />
+        {/* ==========================
+ ASSIGNMENT HISTORY
+========================== */}
 
-        <button
-          onClick={addFollowUp}
+        <div
           className="
-            mt-4
-            bg-green-500
-            hover:bg-green-600
-            text-white
-            px-6
-            py-3
-            rounded-xl
-            transition
-          "
+bg-white/80
+backdrop-blur-xl
+border
+border-white
+rounded-[35px]
+shadow-2xl
+p-8
+mb-8
+"
         >
-          Add Follow Up
-        </button>
-      </div>
-
-      {/* activityTimeline */}
-      <div className="mt-8 bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-lg">
-        <h2 className="text-2xl font-bold mb-6">Activity Timeline</h2>
-
-        <div className="space-y-4">
-          {lead.activityTimeline?.map((item, index) => (
+          <div
+            className="
+flex
+items-center
+gap-3
+mb-8
+"
+          >
             <div
-              key={index}
               className="
-          border-l-4
-          border-cyan-500
-          pl-4
-          "
+h-12
+w-12
+rounded-2xl
+bg-blue-100
+text-blue-600
+flex
+items-center
+justify-center
+"
             >
-              <h3 className="font-semibold">{item.type}</h3>
-
-              <p>{item.description}</p>
-
-              <p className="text-sm text-gray-500">{item.date}</p>
+              <User />
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Status History */}
-
-      <div className="mt-8 bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-lg">
-        <h2 className="text-2xl font-bold mb-6">Status History</h2>
-
-        {lead.statusHistory?.map((item, index) => (
-          <div
-            key={index}
-            className="
-        flex
-        justify-between
-        border-b
-        py-3
-        "
-          >
-            <span>{item.status}</span>
-
-            <span>{item.date}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* University Application */}
-
-      {lead.status === "Converted" ? (
-        <div className="mt-8 bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-lg">
-          <h2 className="text-2xl font-bold mb-6">University Application</h2>
-
-          <select
-            value={applicationStatus}
-            onChange={(e) => setApplicationStatus(e.target.value)}
-            className="
-    w-full
-    p-4
-    rounded-xl
-    border
-    border-gray-300
-    dark:border-slate-700
-    bg-white
-    dark:bg-slate-800
-  "
-          >
-            <option value="Not Applied">Not Applied</option>
-
-            <option value="Application Started">Application Started</option>
-
-            <option value="Documents Pending">Documents Pending</option>
-
-            <option value="Submitted">Submitted</option>
-
-            <option value="Offer Received">Offer Received</option>
-
-            <option value="Enrolled">Enrolled</option>
-
-            <option value="Rejected">Rejected</option>
-          </select>
-
-          <button
-            onClick={saveApplicationStatus}
-            className="
-    mt-4
-    bg-blue-500
-    hover:bg-blue-600
-    text-white
-    px-6
-    py-3
-    rounded-xl
-  "
-          >
-            Save Application Status
-          </button>
-
-          <div className="mt-4">
-            <span
+            <h2
               className="
-      inline-block
-      px-4
-      py-2
-      rounded-xl
-      bg-green-500/20
-      text-green-600
-      font-medium
-    "
+text-2xl
+font-black
+text-slate-900
+"
             >
-              Current Status: {lead.applicationStatus || "Not Applied"}
-            </span>
+              Assignment History
+            </h2>
           </div>
-        </div>
-      ) : (
-        <div className="mt-8 bg-yellow-100 text-yellow-800 p-6 rounded-xl">
-          Lead must be Converted before University Application can be submitted.
-        </div>
-      )}
 
-      {lead.applicationStatus === "Enrolled" ? (
-        <div className="mt-8 bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-lg">
-          <h2 className="text-2xl font-bold mb-6">Commission Details</h2>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              placeholder="University"
-              value={university}
-              onChange={(e) => setUniversity(e.target.value)}
-              className="p-4 rounded-xl border"
-            />
-
-            <input
-              type="text"
-              placeholder="Country"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className="p-4 rounded-xl border"
-            />
-
-            <input
-              type="number"
-              placeholder="Tuition Fee"
-              value={tuitionFee}
-              onChange={(e) => setTuitionFee(e.target.value)}
-              className="p-4 rounded-xl border"
-            />
-
-            <input
-              type="number"
-              placeholder="Commission %"
-              value={commissionPercent}
-              onChange={(e) => setCommissionPercent(e.target.value)}
-              className="p-4 rounded-xl border"
-            />
-
-            <select
-              value={paymentStatus}
-              onChange={(e) => setPaymentStatus(e.target.value)}
-              className="p-4 rounded-xl border"
+          {lead.assignmentHistory && lead.assignmentHistory.length > 0 ? (
+            <div
+              className="
+space-y-5
+"
             >
-              <option>Pending</option>
+              {lead.assignmentHistory
+                .slice()
+                .reverse()
+                .map((item, index) => (
+                  <div
+                    key={index}
+                    className="
+bg-slate-50
+rounded-2xl
+p-5
+flex
+justify-between
+flex-wrap
+gap-3
+"
+                  >
+                    <div>
+                      <p
+                        className="
+font-bold
+text-slate-900
+"
+                      >
+                        {item.counsellorName || item.counsellor || "Unknown"}
+                      </p>
 
-              <option>Paid</option>
-            </select>
-          </div>
+                      <p
+                        className="
+text-sm
+text-slate-500
+mt-1
+"
+                      >
+                        Assigned Counsellor
+                      </p>
+                    </div>
 
-          <div className="mt-6">
-            <h3 className="text-xl font-bold">
-              Commission Amount : ₹
-              {(Number(tuitionFee) * Number(commissionPercent)) / 100}
-            </h3>
-          </div>
-
-          <button
-            onClick={saveCommissionDetails}
-            className="
-    mt-6
-    bg-green-500
-    text-white
-    px-6
-    py-3
-    rounded-xl
-  "
-          >
-            Save Commission
-          </button>
+                    <p
+                      className="
+text-sm
+text-slate-500
+"
+                    >
+                      {item.date ? new Date(item.date).toLocaleString() : "-"}
+                    </p>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <div
+              className="
+text-center
+text-slate-500
+py-8
+"
+            >
+              No Assignment History
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="mt-8 bg-blue-100 text-blue-800 p-6 rounded-xl">
-          Commission Details will be available after student enrollment.
+
+        {/* ==========================
+ END SPACE
+========================== */}
+
+        <div
+          className="
+text-center
+py-10
+text-slate-500
+font-semibold
+"
+        >
+          Lead Management System
         </div>
-      )}
-
-      {/* Assignment History */}
-
-      <div className="mt-8 bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-lg">
-        <h2 className="text-2xl font-bold mb-6">Assignment History</h2>
-
-        {lead.assignmentHistory?.map((item, index) => (
-          <div
-            key={index}
-            className="
-        flex
-        justify-between
-        border-b
-        py-3
-        "
-          >
-            <span>{item.counsellor}</span>
-
-            <span>{item.date}</span>
-          </div>
-        ))}
       </div>
     </div>
   );
 }
 
-/* Reusable Field Component */
+// ==========================
+// INFO CARD COMPONENT
+// ==========================
 
-function InfoField({ label, value }) {
+function InfoCard({ icon, title, value }) {
   return (
-    <div>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{label}</p>
+    <div
+      className="
+bg-white/80
+backdrop-blur-xl
+border
+border-white
+rounded-3xl
+p-6
+shadow-xl
+hover:-translate-y-2
+transition
+"
+    >
+      <div
+        className="
+h-12
+w-12
+rounded-2xl
+bg-gradient-to-r
+from-sky-500
+to-cyan-500
+text-white
+flex
+items-center
+justify-center
+mb-5
+shadow-lg
+"
+      >
+        {icon}
+      </div>
 
-      <h3 className="text-lg font-semibold break-words">{value}</h3>
+      <p
+        className="
+text-sm
+text-slate-500
+font-medium
+"
+      >
+        {title}
+      </p>
+
+      <h3
+        className="
+mt-2
+font-black
+text-slate-900
+break-words
+"
+      >
+        {value}
+      </h3>
     </div>
   );
 }

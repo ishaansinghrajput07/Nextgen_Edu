@@ -1,12 +1,56 @@
+// routes/counsellor.route.js
+
 import express from "express";
 
 import {
-  addCounsellor,
+  // ======================================================
+  // ADMIN / SUPER ADMIN
+  // ======================================================
+
+  createCounsellor,
   getAllCounsellors,
   getSingleCounsellor,
   updateCounsellor,
   deleteCounsellor,
-  changeCounsellorStatus,
+  updateCounsellorStatus,
+  resetCounsellorPassword,
+  assignLeadsToCounsellor,
+  removeAssignedLeads,
+
+  // ======================================================
+  // PERFORMANCE
+  // ======================================================
+
+  getCounsellorPerformance,
+  getMonthlyPerformance,
+  getCounsellorActivityTimeline,
+
+  // ======================================================
+  // REPORTS
+  // ======================================================
+
+  getCounsellorDashboardReport,
+  getCounsellorLeadStatusReport,
+  getUniversityWisePerformanceReport,
+
+  // ======================================================
+  // COUNSELLOR SELF
+  // ======================================================
+
+  getCounsellorDashboard,
+  getRecentLeads,
+  getRecentStudents,
+  getRecentActivities,
+  getTodaysFollowUps,
+
+  getMyLeads,
+  getCounsellorLead,
+  updateCounsellorLead,
+
+  getCounsellorProfile,
+  updateCounsellorProfile,
+
+  changeCounsellorPassword,
 } from "../controller/counsellor_controller.js";
 
 import {
@@ -16,52 +60,279 @@ import {
 
 const router = express.Router();
 
-// Add Counsellor
+// ======================================================
+// ADMIN / SUPER ADMIN ROUTES
+// ======================================================
+
+// ------------------------------------------------------
+// Create Counsellor
+// ------------------------------------------------------
+
 router.post(
-  "/addcounsellor",
+  "/admin/create",
   protect,
-  authorize("SuperAdmin", "Admin"),
-  addCounsellor
+  authorize("Admin", "SuperAdmin"),
+  createCounsellor,
 );
 
+// ------------------------------------------------------
 // Get All Counsellors
+// ------------------------------------------------------
+
 router.get(
-  "/allcounsellor",
+  "/admin/allcounsellor",
   protect,
-  authorize("SuperAdmin", "Admin"),
-  getAllCounsellors
+  authorize("Admin", "SuperAdmin"),
+  getAllCounsellors,
 );
 
+// ------------------------------------------------------
 // Get Single Counsellor
+// ------------------------------------------------------
+
 router.get(
-  "/counsellor/:id",
+  "/admin/:id",
   protect,
-  authorize("SuperAdmin", "Admin"),
-  getSingleCounsellor
+  authorize("Admin", "SuperAdmin"),
+  getSingleCounsellor,
 );
 
-// Update Counsellor
+
+// ------------------------------------------------------
+// Assign Leads
+// ------------------------------------------------------
+
 router.put(
-  "/update/counsellor/:id",
+  "/admin/assign-leads",
   protect,
-  authorize("SuperAdmin", "Admin"),
-  updateCounsellor
+  authorize("Admin", "SuperAdmin"),
+  assignLeadsToCounsellor,
 );
 
+// ------------------------------------------------------
+// Update Counsellor
+// ------------------------------------------------------
+
+router.put(
+  "/admin/:id",
+  protect,
+  authorize("Admin", "SuperAdmin"),
+  updateCounsellor,
+);
+
+// ------------------------------------------------------
 // Delete Counsellor
+// ------------------------------------------------------
+
 router.delete(
-  "/delete/counsellor/:id",
+  "/admin/:id",
   protect,
-  authorize("SuperAdmin", "Admin"),
-  deleteCounsellor
+  authorize("Admin", "SuperAdmin"),
+  deleteCounsellor,
 );
 
-// Change Counsellor Status
-router.patch(
-  "/change-status/:id",
+// ------------------------------------------------------
+// Activate / Deactivate Counsellor
+// ------------------------------------------------------
+
+router.put(
+  "/admin/:id/status",
   protect,
-  authorize("SuperAdmin", "Admin"),
-  changeCounsellorStatus
+  authorize("Admin", "SuperAdmin"),
+  updateCounsellorStatus,
+);
+
+// ------------------------------------------------------
+// Reset Counsellor Password
+// ------------------------------------------------------
+
+router.put(
+  "/admin/:id/reset-password",
+  protect,
+  authorize("Admin", "SuperAdmin"),
+  resetCounsellorPassword,
+);
+
+
+// ------------------------------------------------------
+// Remove Assigned Leads
+// ------------------------------------------------------
+
+router.put(
+  "/admin/remove-leads",
+  protect,
+  authorize("Admin", "SuperAdmin"),
+  removeAssignedLeads,
+);
+
+// ======================================================
+// PERFORMANCE ROUTES
+// ======================================================
+
+// ------------------------------------------------------
+// Performance Summary
+// ------------------------------------------------------
+
+router.get(
+  "/admin/:id/performance",
+  protect,
+  authorize("Admin", "SuperAdmin"),
+  getCounsellorPerformance,
+);
+
+// ------------------------------------------------------
+// Monthly Performance
+// ------------------------------------------------------
+
+router.get(
+  "/admin/:id/monthly-performance",
+  protect,
+  authorize("Admin", "SuperAdmin"),
+  getMonthlyPerformance,
+);
+
+// ------------------------------------------------------
+// Activity Timeline
+// ------------------------------------------------------
+
+router.get(
+  "/admin/:id/activity-timeline",
+  protect,
+  authorize("Admin", "SuperAdmin"),
+  getCounsellorActivityTimeline,
+);
+
+// ======================================================
+// REPORT ROUTES
+// ======================================================
+
+// ------------------------------------------------------
+// Dashboard Report
+// ------------------------------------------------------
+
+router.get(
+  "/admin/:id/dashboard-report",
+  protect,
+  authorize("Admin", "SuperAdmin"),
+  getCounsellorDashboardReport,
+);
+
+// ------------------------------------------------------
+// Lead Status Report
+// ------------------------------------------------------
+
+router.get(
+  "/admin/:id/lead-status-report",
+  protect,
+  authorize("Admin", "SuperAdmin"),
+  getCounsellorLeadStatusReport,
+);
+
+// ------------------------------------------------------
+// University-wise Performance Report
+// ------------------------------------------------------
+
+router.get(
+  "/admin/:id/university-report",
+  protect,
+  authorize("Admin", "SuperAdmin"),
+  getUniversityWisePerformanceReport,
+);
+
+// ======================================================
+// COUNSELLOR SELF ROUTES
+// ======================================================
+
+// From this point onward:
+// protect + Counsellor authorization
+// will automatically apply to all routes below.
+
+router.use(protect);
+router.use(authorize("Counsellor"));
+
+// ======================================================
+// PART 1
+// COUNSELLOR DASHBOARD
+// ======================================================
+
+router.get(
+  "/dashboard",
+  getCounsellorDashboard,
+);
+
+// ======================================================
+// DASHBOARD WIDGETS
+// ======================================================
+
+// Recent Leads
+router.get(
+  "/recent-leads",
+  getRecentLeads,
+);
+
+// Recent Students
+router.get(
+  "/recent-students",
+  getRecentStudents,
+);
+
+// Recent Activities
+router.get(
+  "/recent-activities",
+  getRecentActivities,
+);
+
+// Today's Follow Ups
+router.get(
+  "/todays-followups",
+  getTodaysFollowUps,
+);
+
+// ======================================================
+// MY LEADS
+// ======================================================
+
+// Get My Leads
+router.get(
+  "/leads",
+  getMyLeads,
+);
+
+// Get Single Lead
+router.get(
+  "/leads/:id",
+  getCounsellorLead,
+);
+
+// Update My Lead
+router.put(
+  "/leads/:id",
+  updateCounsellorLead,
+);
+
+// ======================================================
+// COUNSELLOR PROFILE
+// ======================================================
+
+// Get Profile
+router.get(
+  "/profile",
+  getCounsellorProfile,
+);
+
+// Update Profile
+router.put(
+  "/profile",
+  updateCounsellorProfile,
+);
+
+// ======================================================
+// CHANGE PASSWORD
+// ======================================================
+
+router.put(
+  "/change-password",
+  changeCounsellorPassword,
 );
 
 export default router;

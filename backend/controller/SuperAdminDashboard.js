@@ -1,5 +1,5 @@
 import Auth from "../models/auth.model.js";
-import Counsellor from "../models/Counsellor.model.js";
+import Counsellor from "../models/counsellor.model.js";
 import Contact from "../models/Contact.model.js";
 import Student from "../models/student.model.js";
 import University from "../models/university.model.js";

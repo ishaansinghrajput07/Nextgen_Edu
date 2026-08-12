@@ -56,15 +56,15 @@ const studentSchema = new mongoose.Schema(
     // Education / Admission Info
     // =================================
 
-    university: {
-      type: String,
+   university:{
+type: String,
       default: "",
-    },
+},
 
-    course: {
-      type: String,
+course:{
+ type: String,
       default: "",
-    },
+},
 
     country: {
       type: String,
@@ -117,11 +117,16 @@ const studentSchema = new mongoose.Schema(
         "Contacted",
         "Interested",
         "Applied",
+        "Document Pending",
+        "Documents Pending",
+        "Documents Verified",
         "Offer Letter",
         "Fee Paid",
         "Enrolled",
         "Rejected",
         "Cancelled",
+        "Admission Cancelled",
+        "Withdrawn",
       ],
       default: "New",
     },
@@ -178,6 +183,15 @@ const studentSchema = new mongoose.Schema(
 
   {
     timestamps: true,
+  },
+);
+
+studentSchema.index(
+  {
+    lead: 1,
+  },
+  {
+    unique: true,
   },
 );
 

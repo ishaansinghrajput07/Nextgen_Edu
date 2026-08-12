@@ -13,6 +13,7 @@ import {
   getCounsellorLead,
   updateCounsellorLead,
   getCounsellorProfile,
+   assignCounsellor,
 } from "../controller/Contact_controller.js";
 
 import {
@@ -33,6 +34,11 @@ router.post(
   submitContactForm
 );
 
+// Backward-compatible website lead endpoint
+router.post(
+  "/contacts",
+  submitContactForm
+);
 
 // ======================================================
 // ADMIN ROUTES
@@ -86,7 +92,16 @@ router.get(
 
 
 
+// ======================================================
+// ASSIGN COUNSELLOR
+// ======================================================
 
+router.patch(
+  "/:id/assign-counsellor",
+  protect,
+  authorize("Admin", "SuperAdmin"),
+ assignCounsellor
+);
 
 
 
@@ -131,12 +146,25 @@ router.get(
   getCounsellorLead
 );
 
+router.get(
+  "/my-lead/:id",
+  protect,
+  authorize("Admin", "SuperAdmin", "Counsellor"),
+  getCounsellorLead
+);
 
 // Update My Lead
 router.put(
   "/counsellor/my-leads/:id",
   protect,
-  authorize("Counsellor"),
+  authorize("Admin", "SuperAdmin", "Counsellor"),
+  updateCounsellorLead
+);
+
+router.put(
+  "/my-lead/:id",
+  protect,
+  authorize("Admin", "SuperAdmin", "Counsellor"),
   updateCounsellorLead
 );
 

@@ -1,75 +1,90 @@
-import { Link } from "react-router-dom";
-import { ArrowRight, CalendarDays } from "lucide-react";
 import { motion } from "framer-motion";
+import { CalendarCheck, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
-export default function BookCounsellingButton() {
+const BookCounsellingButton = ({ mobile = false }) => {
   return (
     <motion.div
-      whileHover={{
-        y: -3,
-      }}
-      whileTap={{
-        scale: 0.97,
-      }}
-      className="hidden lg:block"
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      className={mobile ? "w-full" : "hidden md:block"}
     >
       <Link
-        to="/contact"
-        className="
+        to="/book-counselling"
+        className={`
           group
           relative
           overflow-hidden
           inline-flex
           items-center
-          gap-3
-          px-7
-          h-14
-          rounded-2xl
-          bg-gradient-to-r
-          from-cyan-500
-          to-blue-600
-          text-white
+          justify-center
+          gap-2
           font-semibold
-          shadow-[0_15px_35px_rgba(14,165,233,.35)]
           transition-all
           duration-300
-          hover:shadow-[0_20px_45px_rgba(14,165,233,.45)]
-        "
-      >
-        {/* Hover Overlay */}
 
+          ${
+            mobile
+              ? `
+                w-full
+                py-4
+                rounded-2xl
+                text-base
+              `
+              : `
+                px-4
+                py-2.5
+                rounded-xl
+                text-sm
+                whitespace-nowrap
+              `
+          }
+
+          bg-gradient-to-r
+          from-sky-600
+          via-cyan-500
+          to-sky-500
+
+          text-white
+          shadow-lg
+          shadow-sky-200/40
+          hover:shadow-xl
+          hover:shadow-sky-300/50
+        `}
+      >
+        {/* Shine Effect */}
         <span
           className="
             absolute
             inset-0
-            bg-white/15
-            translate-x-[-100%]
-            group-hover:translate-x-0
+            -translate-x-full
+            bg-gradient-to-r
+            from-transparent
+            via-white/25
+            to-transparent
+            group-hover:translate-x-full
             transition-transform
-            duration-500
+            duration-700
           "
         />
 
         {/* Icon */}
-
-        <CalendarDays
-          size={20}
-          className="relative z-10"
+        <CalendarCheck
+          className={mobile ? "relative z-10 h-5 w-5" : "relative z-10 h-4 w-4"}
         />
 
         {/* Text */}
-
-        <span className="relative z-10 whitespace-nowrap">
-          Book Free Counselling
+        <span className="relative z-10">
+          {mobile ? "Book Free Counselling" : "Free Counselling"}
         </span>
 
         {/* Arrow */}
-
         <ArrowRight
-          size={18}
           className="
             relative
             z-10
+            h-4
+            w-4
             transition-transform
             duration-300
             group-hover:translate-x-1
@@ -78,4 +93,6 @@ export default function BookCounsellingButton() {
       </Link>
     </motion.div>
   );
-}
+};
+
+export default BookCounsellingButton;

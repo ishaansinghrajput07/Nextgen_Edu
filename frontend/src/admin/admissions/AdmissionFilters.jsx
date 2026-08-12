@@ -1,312 +1,239 @@
-import {
-  Filter,
-  RotateCcw,
-} from "lucide-react";
 
+import { Filter, RotateCcw } from "lucide-react";
 
-const AdmissionFilters = ({
-  filters,
-  setFilters,
-}) => {
-
-
-
-  const handleChange = (key,value)=>{
-
+const AdmissionFilters = ({ filters, setFilters }) => {
+  const handleChange = (key, value) => {
     setFilters({
       ...filters,
       [key]: value,
     });
-
   };
 
-
-
-  const resetFilters = ()=>{
-
+  const resetFilters = () => {
     setFilters({
-
-      search:"",
-      status:"",
-      university:"",
-      counsellor:"",
-
+      search: "",
+      admissionStatus: "",
+      university: "",
+      counsellor: "",
     });
-
   };
-
-
 
   return (
-
-    <div className="
-      bg-white/10
-      backdrop-blur-xl
-      border
-      border-white/10
-      rounded-3xl
-      p-5
-      mb-6
-    ">
-
-
+    <div
+      className="
+        bg-white/75
+        backdrop-blur-2xl
+        border
+        border-white/80
+        rounded-3xl
+        shadow-[0_15px_45px_rgba(14,165,233,.08)]
+        p-5
+        sm:p-6
+      "
+    >
       {/* Header */}
 
-      <div className="
-        flex
-        items-center
-        gap-3
-        mb-5
-      ">
-
-        <div className="
-          p-3
-          rounded-xl
-          bg-cyan-500/20
-        ">
-
+      <div
+        className="
+          flex
+          items-center
+          gap-3
+          mb-5
+        "
+      >
+        <div
+          className="
+            h-11
+            w-11
+            rounded-2xl
+            bg-cyan-50
+            flex
+            items-center
+            justify-center
+          "
+        >
           <Filter
-            className="text-cyan-400"
-            size={22}
+            className="text-cyan-600"
+            size={21}
           />
-
         </div>
 
+        <div>
+          <h2
+            className="
+              text-lg
+              font-bold
+              text-slate-800
+            "
+          >
+            Filter Admissions
+          </h2>
 
-        <h2 className="
-          text-white
-          font-semibold
-          text-lg
-        ">
-
-          Filter Admissions
-
-        </h2>
-
-
+          <p
+            className="
+              text-xs
+              text-slate-500
+              mt-0.5
+            "
+          >
+            Filter admission records
+          </p>
+        </div>
       </div>
 
+      {/* Filters */}
 
-
-
-
-      <div className="
-        grid
-        grid-cols-1
-        md:grid-cols-2
-        lg:grid-cols-4
-        gap-4
-      ">
-
-
-
+      <div
+        className="
+          grid
+          grid-cols-1
+          md:grid-cols-2
+          lg:grid-cols-4
+          gap-4
+        "
+      >
         {/* Status */}
 
-
         <select
-
-          value={filters.status}
-
-          onChange={(e)=>
+          value={filters.admissionStatus}
+          onChange={(e) =>
             handleChange(
-              "status",
-              e.target.value
+              "admissionStatus",
+              e.target.value,
             )
           }
-
-
           className="
-            bg-white/10
+            w-full
+            bg-slate-50
             border
-            border-white/20
-            text-white
+            border-slate-200
+            text-slate-700
             rounded-xl
             px-4
             py-3
             outline-none
+            focus:border-cyan-400
+            focus:ring-4
+            focus:ring-cyan-50
+            transition-all
           "
-
         >
-
-          <option
-            value=""
-            className="text-black"
-          >
+          <option value="">
             All Status
           </option>
 
-
-          <option
-            value="Applied"
-            className="text-black"
-          >
+          <option value="Applied">
             Applied
           </option>
 
-
-          <option
-            value="Documents Pending"
-            className="text-black"
-          >
+          <option value="Documents Pending">
             Documents Pending
           </option>
 
-
-          <option
-            value="Documents Verified"
-            className="text-black"
-          >
+          <option value="Documents Verified">
             Documents Verified
           </option>
 
-
-          <option
-            value="Offer Letter"
-            className="text-black"
-          >
+          <option value="Offer Letter">
             Offer Letter
           </option>
 
-
-          <option
-            value="Fee Paid"
-            className="text-black"
-          >
+          <option value="Fee Paid">
             Fee Paid
           </option>
 
-
-          <option
-            value="Enrolled"
-            className="text-black"
-          >
+          <option value="Enrolled">
             Enrolled
           </option>
-
-
         </select>
-
-
-
-
-
-
 
         {/* University */}
 
-
         <input
-
           value={filters.university}
-
-          onChange={(e)=>
+          onChange={(e) =>
             handleChange(
               "university",
-              e.target.value
+              e.target.value,
             )
           }
-
-
           placeholder="University ID"
-
-
           className="
-            bg-white/10
+            w-full
+            bg-slate-50
             border
-            border-white/20
-            text-white
-            placeholder:text-gray-400
+            border-slate-200
+            text-slate-700
+            placeholder:text-slate-400
             rounded-xl
             px-4
             py-3
             outline-none
+            focus:border-cyan-400
+            focus:ring-4
+            focus:ring-cyan-50
+            transition-all
           "
-
         />
-
-
-
-
-
-
 
         {/* Counsellor */}
 
-
         <input
-
           value={filters.counsellor}
-
-          onChange={(e)=>
+          onChange={(e) =>
             handleChange(
               "counsellor",
-              e.target.value
+              e.target.value,
             )
           }
-
-
           placeholder="Counsellor ID"
-
-
           className="
-            bg-white/10
+            w-full
+            bg-slate-50
             border
-            border-white/20
-            text-white
-            placeholder:text-gray-400
+            border-slate-200
+            text-slate-700
+            placeholder:text-slate-400
             rounded-xl
             px-4
             py-3
             outline-none
+            focus:border-cyan-400
+            focus:ring-4
+            focus:ring-cyan-50
+            transition-all
           "
-
         />
-
-
-
-
-
-
 
         {/* Reset */}
 
-
         <button
-
           onClick={resetFilters}
-
-
           className="
             flex
             items-center
             justify-center
             gap-2
             rounded-xl
-            bg-white/10
-            hover:bg-white/20
-            text-white
-            transition
+            bg-slate-100
+            border
+            border-slate-200
+            text-slate-600
+            font-semibold
+            hover:bg-cyan-50
+            hover:text-cyan-600
+            hover:border-cyan-200
+            transition-all
+            duration-300
           "
-
         >
-
-          <RotateCcw size={18}/>
+          <RotateCcw size={18} />
 
           Reset
-
-
         </button>
-
-
-
       </div>
-
-
     </div>
-
   );
-
 };
-
 
 export default AdmissionFilters;

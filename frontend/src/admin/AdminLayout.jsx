@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Menu,
   X,
+  IndianRupee,
 } from "lucide-react";
 
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
@@ -423,13 +424,23 @@ gap-2
           </NavLink>
 
           <NavLink
-  to="/admin/admissions"
+            to="/admin/admissions"
+            className={menuClass}
+            onClick={() => setSidebarOpen(false)}
+          >
+            <GraduationCap size={18} />
+
+            <span>Admissions</span>
+          </NavLink>
+
+          <NavLink
+  to="/admin/commissions"
   className={menuClass}
   onClick={() => setSidebarOpen(false)}
 >
-  <GraduationCap size={18} />
+  <IndianRupee size={18} />
 
-  <span>Admissions</span>
+  <span>Commissions</span>
 </NavLink>
 
           <NavLink

@@ -19,28 +19,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-
 // =====================================================
 // VERIFY EMAIL CONFIGURATION
 // =====================================================
 
 transporter.verify((error, success) => {
-
   if (error) {
-
-    console.log(
-      "EMAIL CONFIG ERROR:",
-      error
-    );
-
+    console.log("EMAIL CONFIG ERROR:", error);
   } else {
-
-    console.log(
-      "EMAIL SERVER READY"
-    );
-
+    console.log("EMAIL SERVER READY");
   }
-
 });
 
 // =====================================================
@@ -120,36 +108,17 @@ NextGen Education Team
     await emailRecord.save();
 
     return emailRecord;
-  }    catch (error) {
+  } catch (error) {
+    console.log("SEND EMAIL ERROR:", error);
 
-    console.log(
-      "SEND EMAIL ERROR:",
-      error
-    );
+    console.log("Receiver:", receiver);
 
+    console.log("Subject:", subject);
 
-    console.log(
-      "Receiver:",
-      receiver
-    );
-
-
-    console.log(
-      "Subject:",
-      subject
-    );
-
-
-    console.log(
-      "Type:",
-      type
-    );
-
+    console.log("Type:", type);
 
     if (receiver) {
-
       await Email.create({
-
         receiver,
 
         subject,
@@ -163,14 +132,10 @@ NextGen Education Team
         errorMessage: error.message,
 
         sentBy,
-
       });
-
     }
 
-
     return null;
-
   }
 };
 
