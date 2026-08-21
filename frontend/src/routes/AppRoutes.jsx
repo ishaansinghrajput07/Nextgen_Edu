@@ -1,89 +1,89 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
 
 import MainLayout from "../layouts/MainLayout";
+import AdminLayout from "../admin/AdminLayout";
 
 import SuperAdminLayout from "../superadmin/SuperAdminLayout";
 
-import SuperAdminDashboard from "../superadmin/Dashboard";
-
-import Admins from "../superadmin/Admins";
 import ScrollToTop from "../components/ScrollToTop";
 
-import CounsellorsManagement from "../superadmin/CounsellorsManagement";
-import ActivityLogs from "../superadmin/ActivityLogs";
-import AdminPerformance from "../superadmin/AdminPerformance";
-
 /* Pages */
-import Home from "../pages/Home";
-import CareerResearch from "../pages/CareerResearch";
-import EducationTrends from "../pages/EducationTrends";
-import CollegeGuide from "../pages/CollegeGuide";
-import CareerAdvice from "../pages/college-guide";
-import BlogArticles from "../pages/BlogArticles";
+const FAQs = lazy(() => import("../components/home/FAQ"));
 
-import About from "../pages/About";
-import Contact from "../pages/Contact";
-import Universities from "../pages/Universities";
-import UniversityDetails from "../pages/UniversityDetails";
-import Courses from "../pages/Courses";
-import CourseDetails from "../pages/CourseDetails";
-import Scholarships from "../pages/Scholarships";
-import Reviews from "../pages/Reviews";
-import CompareUniversities from "../pages/CompareUniversities";
-import TermsConditions from "../pages/TermsConditions";
-import PrivacyPolicy from "../pages/PrivacyPolicy";
-import SuccessStories from "../pages/SuccessStories";
-import PhD from "../pages/PhD";
-import HowToApply from "../pages/HowToApply";
-import AdmissionProcess from "../pages/AdmissionProcess";
-import EligibilityCriteria from "../pages/EligibilityCriteria";
-import RegistrationForm from "../pages/RegistrationForm";
-import faqs from "../components/home/FAQ";
+const Home = lazy(() => import("../pages/Home"));
+const CareerResearch = lazy(() => import("../pages/CareerResearch"));
+const EducationTrends = lazy(() => import("../pages/EducationTrends"));
+const CollegeGuide = lazy(() => import("../pages/CollegeGuide"));
+const CareerAdvice = lazy(() => import("../pages/college-guide"));
+const BlogArticles = lazy(() => import("../pages/BlogArticles"));
+const About = lazy(() => import("../pages/About"));
+const Contact = lazy(() => import("../pages/Contact"));
+const Universities = lazy(() => import("../pages/Universities"));
+const UniversityDetails = lazy(() => import("../pages/UniversityDetails"));
+const Courses = lazy(() => import("../pages/Courses"));
+const CourseDetails = lazy(() => import("../pages/CourseDetails"));
+const Scholarships = lazy(() => import("../pages/Scholarships"));
+const Reviews = lazy(() => import("../pages/Reviews"));
+const CompareUniversities = lazy(() => import("../pages/CompareUniversities"));
+const TermsConditions = lazy(() => import("../pages/TermsConditions"));
+const PrivacyPolicy = lazy(() => import("../pages/PrivacyPolicy"));
+const SuccessStories = lazy(() => import("../pages/SuccessStories"));
+const PhD = lazy(() => import("../pages/PhD"));
+const HowToApply = lazy(() => import("../pages/HowToApply"));
+const AdmissionProcess = lazy(() => import("../pages/AdmissionProcess"));
+const EligibilityCriteria = lazy(() => import("../pages/EligibilityCriteria"));
+const RegistrationForm = lazy(() => import("../pages/RegistrationForm"));
 
 /* Admin */
-import AdminLayout from "../admin/AdminLayout";
-import Dashboard from "../admin/Dashboard";
-import Leads from "../admin/Leads";
-import Counsellors from "../admin/Counsellors";
-import UniversitiesAdmin from "../admin/Universities";
-import Notifications from "../admin/Notifications";
-// import BlogsAdmin from "../admin/Blogs";
-import AdmissionDetails from "../../src/admin/admissions/AdmissionDetails";
-import SettingsAdmin from "../admin/Settings";
-import LeadDetails from "../admin/LeadDetails";
-import CounsellorProfile from "../admin/CounsellorProfile";
-
-import Commissions from "../admin/commission/Commission";
-import CommissionDetails from "../admin/commission/CommissionDetails";
-import Admissions from "../admin/admissions/Admissions";
-import Students from "../admin/Students";
-import AddCounsellor from "../admin/AddCounsellor";
-import EditCounsellor from "../admin/EditCounsellor";
-import UniversityProfile from "../admin/UniversityProfile";
-import ReviewsAdmin from "../admin/Reviews";
+const Dashboard = lazy(() => import("../admin/Dashboard"));
+const Leads = lazy(() => import("../admin/Leads"));
+const Counsellors = lazy(() => import("../admin/Counsellors"));
+const UniversitiesAdmin = lazy(() => import("../admin/Universities"));
+const Notifications = lazy(() => import("../admin/Notifications"));
+const AdmissionDetails = lazy(() => import("../../src/admin/admissions/AdmissionDetails"));
+const SettingsAdmin = lazy(() => import("../admin/Settings"));
+const LeadDetails = lazy(() => import("../admin/LeadDetails"));
+const CounsellorProfile = lazy(() => import("../admin/CounsellorProfile"));
+const Commissions = lazy(() => import("../admin/commission/Commission"));
+const CommissionDetails = lazy(() => import("../admin/commission/CommissionDetails"));
+const Admissions = lazy(() => import("../admin/admissions/Admissions"));
+const Students = lazy(() => import("../admin/Students"));
+const AddCounsellor = lazy(() => import("../admin/AddCounsellor"));
+const EditCounsellor = lazy(() => import("../admin/EditCounsellor"));
+const UniversityProfile = lazy(() => import("../admin/UniversityProfile"));
+const ReviewsAdmin = lazy(() => import("../admin/Reviews"));
 
 /* Counsellor */
 import CounsellorLayout from "../counsellor/CounsellorLayout";
-import CounsellorDashboard from "../counsellor/CounsellorDashboard";
-import MyLeads from "../counsellor/MyLeads";
-import CounsellorCommission from "../counsellor/CounsellorCommission";
-import Profile from "../counsellor/Profile";
-import CounsellorLeadDetails from "../counsellor/CounsellorLeadDetails";
-import ProtectedRoute from "../auth/ProtectedRoute";
-import CounsellorStudents from "../counsellor/students/CounsellorStudents"
-import CounsellorFollowUps from "../counsellor/CounsellorFollowUps"
+const CounsellorDashboard = lazy(() => import("../counsellor/CounsellorDashboard"));
+const MyLeads = lazy(() => import("../counsellor/MyLeads"));
+const CounsellorCommission = lazy(() => import("../counsellor/CounsellorCommission"));
+const Profile = lazy(() => import("../counsellor/Profile"));
+const CounsellorLeadDetails = lazy(() => import("../counsellor/CounsellorLeadDetails"));
+const CounsellorStudents = lazy(() => import("../counsellor/students/CounsellorStudents"));
+const CounsellorFollowUps = lazy(() => import("../counsellor/CounsellorFollowUps"));
 
 /* Auth */
-import Login from "../auth/Login";
-import CounsellorLogin from "../auth/CounsellorLogin";
-import AdminLogin from "../auth/AdminLogin";
-import SuperAdminLogin from "../auth/SuperAdminLogin";
+const Login = lazy(() => import("../auth/Login"));
+const CounsellorLogin = lazy(() => import("../auth/CounsellorLogin"));
+const AdminLogin = lazy(() => import("../auth/AdminLogin"));
+const SuperAdminLogin = lazy(() => import("../auth/SuperAdminLogin"));
+
+const SuperAdminDashboard = lazy(() => import("../superadmin/Dashboard"));
+const Admins = lazy(() => import("../superadmin/Admins"));
+const CounsellorsManagement = lazy(() => import("../superadmin/CounsellorsManagement"));
+const ActivityLogs = lazy(() => import("../superadmin/ActivityLogs"));
+const AdminPerformance = lazy(() => import("../superadmin/AdminPerformance"));
+
+import ProtectedRoute from "../auth/ProtectedRoute";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <Routes>
+      <Suspense fallback={null}>
+        <Routes>
         {/* Website */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
@@ -101,7 +101,7 @@ export default function AppRoutes() {
 
           <Route path="how-to-apply" element={<HowToApply />} />
           <Route path="admission-process" element={<AdmissionProcess />} />
-           <Route path="admission-faq" element={<faqs/>} />
+           <Route path="admission-faq" element={<FAQs />} />
            <Route
   path="education-trends"
   element={<EducationTrends />}
@@ -248,7 +248,8 @@ export default function AppRoutes() {
         </Route>
 
         {/* footer */}
-      </Routes>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
