@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { API_V1_URL } from "../../config/api";
 
 import {
   User,
@@ -39,7 +40,7 @@ export default function CounsellingForm() {
       setLoading(true);
 
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/contact/form",
+        `${API_V1_URL}/contact/form`,
         {
           username: formData.name,
           email: formData.email,

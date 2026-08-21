@@ -13,8 +13,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import { API_V1_URL } from "../config/api";
 
-const API_URL = "http://localhost:8000/api/v1/auth/login";
+const API_URL = `${API_V1_URL}/auth/login`;
 
 export default function AdminLogin() {
   const navigate = useNavigate();
