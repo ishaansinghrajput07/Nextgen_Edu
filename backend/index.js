@@ -76,7 +76,16 @@ app.use("/api/v1/notification", notificationRoute);
 app.use("/api/v1/email", emailRoute);
 app.use("/api/commissions", commissionRoutes);
 
-app.listen(PORT, () => {
-  connectDB();
-  console.log(`listening port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`listening port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Backend startup failed. Check MONGO_URI and MongoDB Atlas access.");
+    process.exitCode = 1;
+  }
+};
+
+startServer();
