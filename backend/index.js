@@ -47,16 +47,15 @@ const allowedOrigins = [
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`Origin ${origin} is not allowed by CORS`));
+      return callback(null, true);
     }
+
+    return callback(new Error(`Origin ${origin} is not allowed by CORS`));
   },
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-app.options(/.*/, cors(corsOptions));
 
 const PORT = process.env.PORT || 3000;
 
