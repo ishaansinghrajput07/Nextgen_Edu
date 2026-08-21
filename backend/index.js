@@ -2,10 +2,10 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 import contactRoute from "./Routes/contact.js";
 dotenv.config({});
 import websiteRoute from "./Routes/website_routes.js";
-import connectDB from "./util/db.js";
 import universityRoute from "./Routes/university.js";
 
 import dashboardRoute from "./Routes/dashboard.js";
@@ -57,7 +57,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 // api
 app.use("/api/v1/contact", contactRoute);
@@ -76,16 +76,11 @@ app.use("/api/v1/notification", notificationRoute);
 app.use("/api/v1/email", emailRoute);
 app.use("/api/commissions", commissionRoutes);
 
-const startServer = async () => {
-  try {
-    await connectDB();
-    app.listen(PORT, () => {
-      console.log(`listening port ${PORT}`);
-    });
-  } catch (error) {
-    console.error("Backend startup failed. Check MONGO_URI and MongoDB Atlas access.");
-    process.exitCode = 1;
-  }
-};
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`API listening on port ${PORT}`);
+});
 
-startServer();
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch((error) => console.error("MongoDB connection failed:", error));
