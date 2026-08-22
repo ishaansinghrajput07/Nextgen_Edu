@@ -80,6 +80,18 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log(`API listening on port ${PORT}`);
 });
 
+mongoose.connection.on("connected", () => {
+  console.log("MongoDB connection: connected");
+});
+
+mongoose.connection.on("error", (err) => {
+  console.error("MongoDB connection: failed", err.message);
+});
+
+mongoose.connection.on("disconnected", () => {
+  console.log("MongoDB connection: disconnected");
+});
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
