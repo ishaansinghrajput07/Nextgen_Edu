@@ -13,7 +13,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { API_V1_URL, validateLoginResponse } from "../config/api";
+import { API_V1_URL } from "../config/api";
 
 const API_URL = `${API_V1_URL}/auth/login`;
 
@@ -48,7 +48,9 @@ export default function SuperAdminLogin() {
         }
       );
 
-      validateLoginResponse(data);
+      if (!data.success) {
+        throw new Error(data.message || "Login failed.");
+      }
 
       const { user, token } = data;
 
