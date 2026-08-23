@@ -1,8 +1,10 @@
 import express from "express";
+import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import { fileURLToPath } from "url";
 import contactRoute from "./Routes/contact.js";
 dotenv.config({});
 import websiteRoute from "./Routes/website_routes.js";
@@ -22,6 +24,8 @@ import emailRoute from "./Routes/email_route.js";
 import commissionRoutes from "./Routes/commission_route.js";
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // middleware
 app.use(express.json({ limit: "50mb" }));
@@ -75,6 +79,23 @@ app.use("/api/admissions", admissionRoutes);
 app.use("/api/v1/notification", notificationRoute);
 app.use("/api/v1/email", emailRoute);
 app.use("/api/commissions", commissionRoutes);
+
+// Serve the frontend only after all API routes have been registered.
+const frontendDistPath = path.join(__dirname, "../frontend/dist");
+app.use(express.static(frontendDistPath));
+
+// Keep unknown API requests from falling through to the SPA entry point.
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api/")) {
+    return res.status(404).json({ message: "API route not found" });
+  }
+
+  return res.sendFile(path.join(frontendDistPath, "index.html"), (error) => {
+    if (error) {
+      next(error);
+    }
+  });
+});
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`API listening on port ${PORT}`);
