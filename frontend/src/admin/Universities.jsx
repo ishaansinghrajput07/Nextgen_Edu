@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 
 export default function UniversitiesAdmin() {
   const [universities, setUniversities] = useState([]);
-  const token = localStorage.getItem("token");
+  const getToken = () => localStorage.getItem("token");
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [search, setSearch] = useState("");
@@ -81,6 +81,13 @@ export default function UniversitiesAdmin() {
 
   const saveUniversity = async () => {
     try {
+      const token = getToken();
+
+      if (!token) {
+        toast.error("Please log in again.");
+        return;
+      }
+
       const data = new FormData();
 
       Object.entries(formData).forEach(([key, value]) => {
@@ -143,6 +150,8 @@ export default function UniversitiesAdmin() {
 
   const deleteUniversity = async (id) => {
     try {
+      const token = getToken();
+
       await axios.delete(
         `http://localhost:8000/api/v1/university/delete/${id}`,
         {
@@ -182,6 +191,8 @@ export default function UniversitiesAdmin() {
 
   const approveUniversity = async (id) => {
     try {
+      const token = getToken();
+
       await axios.patch(
         `http://localhost:8000/api/v1/university/approve/${id}`,
         {},
@@ -203,6 +214,8 @@ export default function UniversitiesAdmin() {
 
   const hideUniversity = async (id) => {
     try {
+      const token = getToken();
+
       await axios.patch(
         `http://localhost:8000/api/v1/university/hide/${id}`,
         {},
