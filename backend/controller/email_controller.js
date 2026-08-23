@@ -9,27 +9,37 @@ import Email from "../models/email.model.js";
 // EMAIL TRANSPORTER
 // =====================================================
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
+const hasEmailConfig = Boolean(
+  process.env.EMAIL_USER && process.env.EMAIL_PASSWORD,
+);
 
-  auth: {
-    user: process.env.EMAIL_USER,
-
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
+const transporter = hasEmailConfig
+  ? nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    })
+  : null;
 
 // =====================================================
 // VERIFY EMAIL CONFIGURATION
 // =====================================================
 
-transporter.verify((error, success) => {
-  if (error) {
-    console.log("EMAIL CONFIG ERROR:", error);
-  } else {
-    console.log("EMAIL SERVER READY");
-  }
-});
+if (transporter) {
+  transporter.verify((error) => {
+    if (error) {
+      console.error(`[startup] Email configuration failed: ${error.message}`);
+    } else {
+      console.log("[startup] Email server ready");
+    }
+  });
+} else {
+  console.warn(
+    "[startup] Email disabled: set EMAIL_USER and EMAIL_PASSWORD to enable email sending.",
+  );
+}
 
 // =====================================================
 // SEND EMAIL
@@ -63,6 +73,10 @@ export const sendEmail = async ({
     });
 
     // Send Mail
+
+    if (!transporter) {
+      throw new Error("Email service is not configured");
+    }
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
