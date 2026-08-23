@@ -1,4 +1,5 @@
 import express from "express";
+import fs from "fs";
 import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -63,6 +64,15 @@ app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 8000;
 
+console.log("Environment configuration:", {
+  MONGO_URI: Boolean(process.env.MONGO_URI),
+  MONGODB_URI: Boolean(process.env.MONGODB_URI),
+  JWT_SECRET: Boolean(process.env.JWT_SECRET),
+  EMAIL_USER: Boolean(process.env.EMAIL_USER),
+  EMAIL_PASSWORD: Boolean(process.env.EMAIL_PASSWORD),
+  PORT,
+});
+
 // api
 app.use("/api/v1/contact", contactRoute);
 app.use("/api/v1/university", universityRoute);
@@ -81,7 +91,19 @@ app.use("/api/v1/email", emailRoute);
 app.use("/api/commissions", commissionRoutes);
 
 // Serve the frontend only after all API routes have been registered.
-const frontendDistPath = path.join(__dirname, "../frontend/dist");
+const frontendDistCandidates = [
+  process.env.FRONTEND_DIST_PATH,
+  path.join(__dirname, "../frontend/dist"),
+  path.join(__dirname, "../dist"),
+  path.join(process.cwd(), "dist"),
+].filter(Boolean);
+
+const frontendDistPath = frontendDistCandidates
+  .map((candidate) => path.resolve(candidate))
+  .find((candidate) => fs.existsSync(path.join(candidate, "index.html")))
+  || path.resolve(frontendDistCandidates[0]);
+
+console.log(`Frontend build path: ${frontendDistPath}`);
 app.use(express.static(frontendDistPath));
 
 // Keep unknown API requests from falling through to the SPA entry point.
