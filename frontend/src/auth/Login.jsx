@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import { API_CONFIGURATION_ERROR, API_V1_URL } from "../config/api";
+import { API_V1_URL } from "../config/api";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -42,13 +42,6 @@ export default function Login() {
         }
       );
 
-      if (typeof res.data !== "object" || !res.data?.success || !res.data?.token || !res.data?.user) {
-        throw new Error(
-          API_CONFIGURATION_ERROR ||
-            "The server returned an invalid login response. Check the deployed API URL."
-        );
-      }
-
       const { token, user } = res.data;
 
       login(user, token);
@@ -62,9 +55,7 @@ export default function Login() {
       }
     } catch (error) {
       alert(
-        error.message === API_CONFIGURATION_ERROR
-          ? error.message
-          : error.response?.data?.message ||
+        error.response?.data?.message ||
           "Unable to login. Please check your credentials."
       );
     } finally {
