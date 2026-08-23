@@ -58,18 +58,14 @@ export default function CoursesSection() {
 
         setCourses(validCourses);
 
-console.log("PUBLIC COURSES RESPONSE", res);
-console.log("FIRST COURSE", res?.courses?.[0]);
-
-
       }
       catch(err){
 
 
-        console.log(err);
+        console.error("PUBLIC COURSES ERROR:", err.message);
 
         setError(
-          "Unable to load courses."
+          err.message || "Unable to load courses."
         );
 
 
