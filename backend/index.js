@@ -97,8 +97,8 @@ app.use((req, res, next) => {
   });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`API listening on port ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
 mongoose.connection.on("connected", () => {
