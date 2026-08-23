@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
 
 // Components
@@ -9,6 +8,7 @@ import ReviewImage from "../components/reviews/ReviewImage";
 import ReviewForm from "../components/reviews/ReviewForm";
 import ReviewCards from "../components/reviews/ReviewCards";
 import ReviewCTA from "../components/reviews/ReviewCTA";
+import api from "../services/api";
 
 export default function Reviews() {
   const [reviews, setReviews] = useState([]);
@@ -30,9 +30,7 @@ export default function Reviews() {
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/reviews"
-      );
+      const res = await api.get("/../reviews");
 
       setReviews(res.data.reviews);
     } catch (error) {
@@ -48,10 +46,7 @@ export default function Reviews() {
     e.preventDefault();
 
     try {
-      await axios.post(
-        "http://localhost:8000/api/reviews",
-        formData
-      );
+      await api.post("/../reviews", formData);
 
       toast.success("Review Submitted Successfully ❤️");
 
