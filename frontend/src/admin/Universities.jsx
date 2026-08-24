@@ -14,9 +14,9 @@ import {
   Building2,
   ShieldCheck,
 } from "lucide-react";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import api from "../services/api";
 
 export default function UniversitiesAdmin() {
   const [universities, setUniversities] = useState([]);
@@ -109,8 +109,8 @@ export default function UniversitiesAdmin() {
       }
 
       if (editingId) {
-        await axios.put(
-          `http://localhost:8000/api/v1/university/update/${editingId}`,
+        await api.put(
+          `/university/update/${editingId}`,
           data,
           {
             headers: {
@@ -122,8 +122,8 @@ export default function UniversitiesAdmin() {
 
         toast.success("University Updated");
       } else {
-        await axios.post(
-          "http://localhost:8000/api/v1/university/add",
+        await api.post(
+          "/university/add",
           data,
           {
             headers: {
@@ -152,8 +152,8 @@ export default function UniversitiesAdmin() {
     try {
       const token = getToken();
 
-      await axios.delete(
-        `http://localhost:8000/api/v1/university/delete/${id}`,
+      await api.delete(
+        `/university/delete/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -174,8 +174,8 @@ export default function UniversitiesAdmin() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await axios.get(
-        "http://localhost:8000/api/v1/university/alluniversity",
+      const res = await api.get(
+        "/university/alluniversity",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -193,8 +193,8 @@ export default function UniversitiesAdmin() {
     try {
       const token = getToken();
 
-      await axios.patch(
-        `http://localhost:8000/api/v1/university/approve/${id}`,
+      await api.patch(
+        `/university/approve/${id}`,
         {},
         {
           headers: {
@@ -216,8 +216,8 @@ export default function UniversitiesAdmin() {
     try {
       const token = getToken();
 
-      await axios.patch(
-        `http://localhost:8000/api/v1/university/hide/${id}`,
+      await api.patch(
+        `/university/hide/${id}`,
         {},
         {
           headers: {

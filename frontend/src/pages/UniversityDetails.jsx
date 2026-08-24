@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { getUniversityBySlug } from "../services/universityService";
+import nextLogo from "../assets/logo/NEXTGEN LOGO.png";
 
 export default function UniversityDetails() {
   const { slug } = useParams();
@@ -177,7 +178,7 @@ export default function UniversityDetails() {
             {/* Banner Image */}
 
             <img
-              src={university.universityBanner || "/university-placeholder.jpg"}
+              src={university.universityBanner || nextLogo}
               alt={university.universityName}
               className="
                 h-full
@@ -261,7 +262,7 @@ export default function UniversityDetails() {
       "
                 >
                   <img
-                    src={university.universityLogo || "/logo.png"}
+                    src={university.universityLogo || nextLogo}
                     alt={university.universityName}
                     className="
           h-full
