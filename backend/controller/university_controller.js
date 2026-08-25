@@ -43,6 +43,20 @@ export const addUniversity = async (req, res) => {
       });
     }
 
+    const slug = slugify(universityName, {
+      lower: true,
+      strict: true,
+    });
+
+    const existingUniversity = await University.exists({ slug });
+
+    if (existingUniversity) {
+      return res.status(409).json({
+        success: false,
+        message: "A university with this name already exists",
+      });
+    }
+
     let universityLogo = "";
     let universityBanner = "";
 
@@ -66,10 +80,7 @@ export const addUniversity = async (req, res) => {
 
     const university = await University.create({
       universityName,
-      slug: slugify(universityName, {
-        lower: true,
-        strict: true,
-      }),
+      slug,
       universityLogo,
       universityBanner,
       location,
@@ -112,6 +123,13 @@ export const addUniversity = async (req, res) => {
   } catch (error) {
     console.log(error);
 
+    if (error?.code === 11000 && error?.keyPattern?.slug) {
+      return res.status(409).json({
+        success: false,
+        message: "A university with this name already exists",
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: "Server Error",
@@ -146,6 +164,13 @@ export const getAllUniversities = async (req, res) => {
   } catch (error) {
     console.log(error);
 
+    if (error?.code === 11000 && error?.keyPattern?.slug) {
+      return res.status(409).json({
+        success: false,
+        message: "A university with this name already exists",
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: "Server Error",
@@ -157,7 +182,6 @@ export const getAllUniversities = async (req, res) => {
 export const getSingleUniversity = async (req, res) => {
   try {
     const university = await University.findById(req.params.id);
-
     if (!university) {
       return res.status(404).json({
         success: false,
