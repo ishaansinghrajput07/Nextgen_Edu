@@ -31,6 +31,15 @@ export const addCourse = async (req, res) => {
       .trim()
       .replace(/\s+/g, "-");
 
+    const existingCourse = await Course.exists({ slug });
+
+    if (existingCourse) {
+      return res.status(409).json({
+        success: false,
+        message: "A course with this name already exists",
+      });
+    }
+
     const course = await Course.create({
       university: universityId,
       courseName,
@@ -55,6 +64,13 @@ export const addCourse = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+
+    if (error?.code === 11000 && error?.keyPattern?.slug) {
+      return res.status(409).json({
+        success: false,
+        message: "A course with this name already exists",
+      });
+    }
 
     return res.status(500).json({
       success: false,
@@ -190,6 +206,18 @@ export const updateCourse = async (req, res) => {
       .trim()
       .replace(/\s+/g, "-");
 
+    const existingCourse = await Course.exists({
+      slug,
+      _id: { $ne: course._id },
+    });
+
+    if (existingCourse) {
+      return res.status(409).json({
+        success: false,
+        message: "A course with this name already exists",
+      });
+    }
+
     course.courseName = courseName;
     course.slug = slug;
     course.duration = duration;
@@ -210,6 +238,13 @@ export const updateCourse = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+
+    if (error?.code === 11000 && error?.keyPattern?.slug) {
+      return res.status(409).json({
+        success: false,
+        message: "A course with this name already exists",
+      });
+    }
 
     return res.status(500).json({
       success: false,
