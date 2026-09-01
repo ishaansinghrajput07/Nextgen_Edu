@@ -526,7 +526,7 @@ export default function Footer() {
     <p className="text-xs text-slate-500 mt-1">
       Designed & Developed by
       <span className="font-semibold text-slate-700">
-        {" "}Blue Brain® Technologies Pvt. Ltd.
+        {" "}PimsInfotech Pvt Ltd.
       </span>
     </p>
 
