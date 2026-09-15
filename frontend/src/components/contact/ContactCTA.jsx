@@ -6,7 +6,6 @@ import { submitLead } from "../../services/contactService";
 
 const ContactCTA = () => {
   const [loading, setLoading] = useState(false);
-
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -17,18 +16,14 @@ const ContactCTA = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     if (name === "phoneNumber") {
       const phone = value.replace(/\D/g, "").slice(0, 10);
-
       setFormData((prev) => ({
         ...prev,
         phoneNumber: phone,
       }));
-
       return;
     }
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -37,7 +32,6 @@ const ContactCTA = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (
       !formData.username.trim() ||
       !formData.email.trim() ||
@@ -48,7 +42,6 @@ const ContactCTA = () => {
       toast.error("Please fill all fields.");
       return;
     }
-
     if (formData.phoneNumber.length !== 10) {
       toast.error("Please enter a valid 10-digit phone number.");
       return;
@@ -56,7 +49,6 @@ const ContactCTA = () => {
 
     try {
       setLoading(true);
-
       await submitLead({
         ...formData,
         username: formData.username.trim(),
@@ -66,9 +58,7 @@ const ContactCTA = () => {
         message: formData.message.trim(),
         source: "Contact CTA",
       });
-
       toast.success("Your enquiry has been submitted successfully.");
-
       setFormData({
         username: "",
         email: "",
@@ -78,10 +68,9 @@ const ContactCTA = () => {
       });
     } catch (error) {
       console.error("CONTACT CTA ERROR:", error);
-
       toast.error(
         error?.response?.data?.message ||
-          "Something went wrong. Please try again.",
+          "Something went wrong. Please try again."
       );
     } finally {
       setLoading(false);
@@ -89,163 +78,53 @@ const ContactCTA = () => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-white py-16 sm:py-20 lg:py-24">
-      {/* =====================================================
-          SOFT BACKGROUND
-      ===================================================== */}
-
+    <section className="relative overflow-hidden bg-slate-50 py-16 sm:py-20 lg:py-24">
+      {/* Background Soft Lights */}
       <div className="pointer-events-none absolute -left-40 top-10 h-80 w-80 rounded-full bg-cyan-100/60 blur-3xl" />
-
       <div className="pointer-events-none absolute -right-40 bottom-0 h-96 w-96 rounded-full bg-sky-100/70 blur-3xl" />
-
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-50 blur-3xl" />
 
-      {/* =====================================================
-          CONTAINER
-      ===================================================== */}
-
+      {/* Main Container */}
       <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-        {/* =====================================================
-            MAIN CARD
-        ===================================================== */}
-
-        <div
-          className="
-            overflow-hidden
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            shadow-xl
-            shadow-slate-200/60
-          "
-        >
+        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60">
           <div className="grid lg:grid-cols-2">
-            {/* =================================================
-                LEFT CONTENT
-            ================================================= */}
-
-            <div
-              className="
-                relative
-                overflow-hidden
-                bg-gradient-to-br
-                from-cyan-50
-                via-white
-                to-sky-50
-                p-7
-                sm:p-10
-                lg:p-12
-              "
-            >
-              {/* Decorative circle */}
-
+            {/* Left Content */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-cyan-50 via-white to-sky-50 p-7 sm:p-10 lg:p-12">
               <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-cyan-200/40 blur-2xl" />
-
               <div className="relative">
                 {/* Icon */}
-
-                <div
-                  className="
-                    mb-6
-                    flex
-                    h-16
-                    w-16
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    bg-gradient-to-br
-                    from-cyan-500
-                    to-blue-600
-                    text-white
-                    shadow-lg
-                    shadow-cyan-500/20
-                  "
-                >
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20">
                   <GraduationCap className="h-8 w-8" />
                 </div>
 
-                {/* Small Badge */}
-
-                <div
-                  className="
-                    mb-4
-                    inline-flex
-                    items-center
-                    rounded-full
-                    border
-                    border-cyan-200
-                    bg-white
-                    px-4
-                    py-2
-                    text-xs
-                    font-bold
-                    uppercase
-                    tracking-wider
-                    text-cyan-700
-                    shadow-sm
-                  "
-                >
+                {/* Badge */}
+                <div className="mb-4 inline-flex items-center rounded-full border border-cyan-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-cyan-700 shadow-sm">
                   Admission Assistance
                 </div>
 
-                {/* Heading */}
-
-                <h2
-                  className="
-                    text-3xl
-                    font-black
-                    leading-tight
-                    tracking-tight
-                    text-slate-900
-                    sm:text-4xl
-                    lg:text-5xl
-                  "
-                >
+                {/* Title */}
+                <h2 className="text-3xl font-black leading-tight tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
                   Ready To Start Your{" "}
-                  <span
-                    className="
-                      bg-gradient-to-r
-                      from-cyan-600
-                      via-sky-600
-                      to-blue-600
-                      bg-clip-text
-                      text-transparent
-                    "
-                  >
+                  <span className="bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 bg-clip-text text-transparent">
                     Career Journey?
                   </span>
                 </h2>
 
-                {/* Description */}
-
-                <p
-                  className="
-                    mt-5
-                    max-w-xl
-                    text-sm
-                    leading-7
-                    text-slate-600
-                    sm:text-base
-                  "
-                >
+                <p className="mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
                   Connect with our expert counsellors and get personalized
                   guidance for choosing the right course and university.
                 </p>
 
-                {/* Benefits */}
-
+                {/* Features List */}
                 <div className="mt-8 space-y-4">
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-100 text-cyan-700">
                       <GraduationCap className="h-5 w-5" />
                     </div>
-
                     <div>
                       <h3 className="font-bold text-slate-800">
                         Expert Admission Guidance
                       </h3>
-
                       <p className="mt-1 text-sm leading-6 text-slate-500">
                         Get help choosing the right course and university.
                       </p>
@@ -256,12 +135,10 @@ const ContactCTA = () => {
                     <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
                       <Phone className="h-5 w-5" />
                     </div>
-
                     <div>
                       <h3 className="font-bold text-slate-800">
                         Personalised Counselling
                       </h3>
-
                       <p className="mt-1 text-sm leading-6 text-slate-500">
                         Our counsellors help you understand your options.
                       </p>
@@ -272,12 +149,10 @@ const ContactCTA = () => {
                     <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
                       <Mail className="h-5 w-5" />
                     </div>
-
                     <div>
                       <h3 className="font-bold text-slate-800">
                         Quick Response
                       </h3>
-
                       <p className="mt-1 text-sm leading-6 text-slate-500">
                         Submit your enquiry and our team will get back to you.
                       </p>
@@ -285,71 +160,31 @@ const ContactCTA = () => {
                   </div>
                 </div>
 
-                {/* Admission Button */}
-
                 <Link
                   to="/admission"
-                  className="
-                    group
-                    mt-8
-                    inline-flex
-                    items-center
-                    gap-2
-                    rounded-xl
-                    bg-gradient-to-r
-                    from-cyan-600
-                    to-blue-600
-                    px-6
-                    py-3.5
-                    text-sm
-                    font-bold
-                    text-white
-                    shadow-lg
-                    shadow-cyan-600/20
-                    transition-all
-                    duration-300
-                    hover:-translate-y-1
-                    hover:shadow-xl
-                  "
+                  className="group mt-8 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-cyan-600/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
                   Explore Admissions
-
-                  <ArrowRight
-                    className="
-                      h-4
-                      w-4
-                      transition-transform
-                      duration-300
-                      group-hover:translate-x-1
-                    "
-                  />
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>
 
-            {/* =================================================
-                CONTACT FORM
-            ================================================= */}
-
+            {/* Right Form */}
             <div className="bg-white p-7 sm:p-10 lg:p-12">
               <div className="mb-7">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-600">
                   Get In Touch
                 </p>
-
                 <h3 className="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">
                   Talk To A Counsellor
                 </h3>
-
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Fill in your details and our admission team will contact
-                  you.
+                  Fill in your details and our admission team will contact you.
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Name + Email */}
-
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label
@@ -358,7 +193,6 @@ const ContactCTA = () => {
                     >
                       Full Name
                     </label>
-
                     <input
                       id="cta-username"
                       type="text"
@@ -366,24 +200,7 @@ const ContactCTA = () => {
                       placeholder="Enter your full name"
                       value={formData.username}
                       onChange={handleChange}
-                      className="
-                        w-full
-                        rounded-xl
-                        border
-                        border-slate-200
-                        bg-slate-50
-                        px-4
-                        py-3.5
-                        text-sm
-                        text-slate-900
-                        outline-none
-                        transition
-                        placeholder:text-slate-400
-                        focus:border-cyan-500
-                        focus:bg-white
-                        focus:ring-4
-                        focus:ring-cyan-500/10
-                      "
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
                     />
                   </div>
 
@@ -394,7 +211,6 @@ const ContactCTA = () => {
                     >
                       Email Address
                     </label>
-
                     <input
                       id="cta-email"
                       type="email"
@@ -402,29 +218,10 @@ const ContactCTA = () => {
                       placeholder="Enter your email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="
-                        w-full
-                        rounded-xl
-                        border
-                        border-slate-200
-                        bg-slate-50
-                        px-4
-                        py-3.5
-                        text-sm
-                        text-slate-900
-                        outline-none
-                        transition
-                        placeholder:text-slate-400
-                        focus:border-cyan-500
-                        focus:bg-white
-                        focus:ring-4
-                        focus:ring-cyan-500/10
-                      "
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
                     />
                   </div>
                 </div>
-
-                {/* Phone + Course */}
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
@@ -434,7 +231,6 @@ const ContactCTA = () => {
                     >
                       Phone Number
                     </label>
-
                     <input
                       id="cta-phone"
                       type="tel"
@@ -444,24 +240,7 @@ const ContactCTA = () => {
                       placeholder="10-digit mobile number"
                       value={formData.phoneNumber}
                       onChange={handleChange}
-                      className="
-                        w-full
-                        rounded-xl
-                        border
-                        border-slate-200
-                        bg-slate-50
-                        px-4
-                        py-3.5
-                        text-sm
-                        text-slate-900
-                        outline-none
-                        transition
-                        placeholder:text-slate-400
-                        focus:border-cyan-500
-                        focus:bg-white
-                        focus:ring-4
-                        focus:ring-cyan-500/10
-                      "
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
                     />
                   </div>
 
@@ -472,7 +251,6 @@ const ContactCTA = () => {
                     >
                       Interested Course
                     </label>
-
                     <input
                       id="cta-course"
                       type="text"
@@ -480,29 +258,10 @@ const ContactCTA = () => {
                       placeholder="e.g. B.Tech, MBA"
                       value={formData.interestedCourse}
                       onChange={handleChange}
-                      className="
-                        w-full
-                        rounded-xl
-                        border
-                        border-slate-200
-                        bg-slate-50
-                        px-4
-                        py-3.5
-                        text-sm
-                        text-slate-900
-                        outline-none
-                        transition
-                        placeholder:text-slate-400
-                        focus:border-cyan-500
-                        focus:bg-white
-                        focus:ring-4
-                        focus:ring-cyan-500/10
-                      "
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
                     />
                   </div>
                 </div>
-
-                {/* Message */}
 
                 <div>
                   <label
@@ -511,7 +270,6 @@ const ContactCTA = () => {
                   >
                     Message
                   </label>
-
                   <textarea
                     id="cta-message"
                     name="message"
@@ -519,59 +277,14 @@ const ContactCTA = () => {
                     placeholder="Tell us what you need help with..."
                     value={formData.message}
                     onChange={handleChange}
-                    className="
-                      w-full
-                      resize-none
-                      rounded-xl
-                      border
-                      border-slate-200
-                      bg-slate-50
-                      px-4
-                      py-3.5
-                      text-sm
-                      leading-6
-                      text-slate-900
-                      outline-none
-                      transition
-                      placeholder:text-slate-400
-                      focus:border-cyan-500
-                      focus:bg-white
-                      focus:ring-4
-                      focus:ring-cyan-500/10
-                    "
+                    className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
                   />
                 </div>
-
-                {/* Submit */}
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="
-                    group
-                    flex
-                    w-full
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-xl
-                    bg-gradient-to-r
-                    from-cyan-600
-                    to-blue-600
-                    px-6
-                    py-4
-                    text-sm
-                    font-bold
-                    text-white
-                    shadow-lg
-                    shadow-cyan-600/20
-                    transition-all
-                    duration-300
-                    hover:-translate-y-0.5
-                    hover:shadow-xl
-                    disabled:cursor-not-allowed
-                    disabled:opacity-60
-                  "
+                  className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-cyan-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading ? (
                     <>

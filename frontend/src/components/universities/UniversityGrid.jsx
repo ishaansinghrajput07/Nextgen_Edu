@@ -1,19 +1,45 @@
 import UniversityCard from "./UniversityCard";
 import { GraduationCap } from "lucide-react";
+import { useCompare } from "../../context/CompareContext";
 
 export default function UniversityGrid({
   universities = [],
   loading = false,
-  columns = 3, // default 3 columns
+  columns = 3,
 }) {
-  // ================= Grid Layout =================
+  const {
+    compareItems,
+    addToCompare,
+    removeFromCompare,
+  } = useCompare();
+
+  // =====================================================
+  // GRID
+  // =====================================================
 
   const gridClass =
-  columns === 4
-    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
-    : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5";
+    columns === 4
+      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+      : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5";
 
-  // ================= Loading =================
+  // =====================================================
+  // COMPARE TOGGLE
+  // =====================================================
+
+  const handleCompareToggle = (
+    university,
+    isChecked
+  ) => {
+    if (isChecked) {
+      addToCompare(university);
+    } else {
+      removeFromCompare(university._id);
+    }
+  };
+
+  // =====================================================
+  // LOADING
+  // =====================================================
 
   if (loading) {
     return (
@@ -23,14 +49,13 @@ export default function UniversityGrid({
             key={index}
             className="
               h-[380px]
+              overflow-hidden
               rounded-[28px]
-              bg-white
               border
               border-slate-200
-              overflow-hidden
+              bg-white
               animate-pulse
             "
-
           >
             <div className="h-40 bg-slate-200" />
 
@@ -60,32 +85,34 @@ export default function UniversityGrid({
     );
   }
 
-  // ================= Empty =================
+  // =====================================================
+  // EMPTY
+  // =====================================================
 
   if (!universities.length) {
     return (
       <div
         className="
-        py-24
-        text-center
-        rounded-[32px]
-        bg-white
-        border
-        border-slate-200
-        shadow-lg
-      "
+          rounded-[32px]
+          border
+          border-slate-200
+          bg-white
+          py-24
+          text-center
+          shadow-lg
+        "
       >
         <div
           className="
-          mx-auto
-          flex
-          items-center
-          justify-center
-          h-24
-          w-24
-          rounded-full
-          bg-blue-50
-        "
+            mx-auto
+            flex
+            h-24
+            w-24
+            items-center
+            justify-center
+            rounded-full
+            bg-blue-50
+          "
         >
           <GraduationCap
             size={44}
@@ -104,7 +131,9 @@ export default function UniversityGrid({
     );
   }
 
-  // ================= Cards =================
+  // =====================================================
+  // UNIVERSITIES
+  // =====================================================
 
   return (
     <div className={gridClass}>
@@ -112,6 +141,11 @@ export default function UniversityGrid({
         <UniversityCard
           key={university._id}
           university={university}
+          onCompareToggle={handleCompareToggle}
+          isCompared={compareItems.some(
+            (item) =>
+              item._id === university._id
+          )}
         />
       ))}
     </div>

@@ -1,21 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 
-import {
-  GraduationCap,
-  Sparkles,
-  ArrowRight,
-} from "lucide-react";
-
-import UniversityGrid from "../universities/UniversityGrid";
 import { getApprovedUniversities } from "../../services/universityService";
+import { useCompare } from "../../context/CompareContext";
+
+import UniversityCard from "../home/Trusteduniver/UniversityCard";
 
 export default function UniversitiesSection() {
-
   const [universities, setUniversities] = useState([]);
-
   const [loading, setLoading] = useState(true);
+
+  const {
+    compareItems,
+    addToCompare,
+    removeFromCompare,
+  } = useCompare();
 
   useEffect(() => {
     fetchUniversities();
@@ -23,509 +22,210 @@ export default function UniversitiesSection() {
 
   const fetchUniversities = async () => {
     try {
-
       setLoading(true);
 
-      const response =
-        await getApprovedUniversities();
+      const response = await getApprovedUniversities();
 
-      setUniversities(
-        response.universities || []
+      console.log(
+        "COMPLETE UNIVERSITY RESPONSE:",
+        response
       );
 
+      const universityData =
+        response?.universities ||
+        response?.data?.universities ||
+        response?.data ||
+        [];
+
+      setUniversities(
+        Array.isArray(universityData)
+          ? universityData
+          : []
+      );
     } catch (error) {
+      console.error(
+        "Failed to fetch universities:",
+        error
+      );
 
-      console.log(error);
-
+      setUniversities([]);
     } finally {
-
       setLoading(false);
-
     }
   };
 
-  const featuredUniversities =
-    useMemo(() => {
-      return universities.slice(0, 8);
-    }, [universities]);
+  /*
+   * Backend se complete universities state me rahengi.
+   * Sirf first 8 cards me display honge.
+   */
+  const featuredUniversities = useMemo(() => {
+    return universities.slice(0, 8);
+  }, [universities]);
+
+  const handleCompareToggle = (
+    university,
+    isChecked
+  ) => {
+    if (!university?._id) return;
+
+    if (isChecked) {
+      const added = addToCompare(university);
+
+      /*
+       * Agar 4 universities already selected hain,
+       * to card ko checked mat rakho.
+       */
+      if (!added) {
+        console.log(
+          "Maximum 4 universities can be compared."
+        );
+      }
+    } else {
+      removeFromCompare(university._id);
+    }
+  };
 
   return (
+    <section className="w-full bg-white px-[30px] py-[45px]">
 
-    <section
-      className="
-      relative
-      overflow-hidden
+      {/* HEADER */}
+      <div className="mb-10 text-center">
+        <h2 className="text-2xl font-extrabold tracking-tight text-[#131371] sm:text-3xl lg:text-4xl">
+          Explore over 200 online universities & Compare on 30+ factors
+        </h2>
 
-      py-16
-      lg:py-12
+        <p className="mx-auto mt-2 max-w-2xl text-sm text-slate-600 sm:text-base">
+          Explore flexible, recognized online programs from leading
+          universities in India and beyond.
+        </p>
+      </div>
 
-      bg-gradient-to-b
-      from-[#f9fcff]
-      via-white
-      to-[#f8fbff]
-      "
-    >
-
-      {/* ================= Soft Glow ================= */}
-
-      <div
-        className="
-        absolute
-
-        -top-52
-        -left-52
-
-        h-[650px]
-        w-[650px]
-
-        rounded-full
-
-        bg-cyan-200/30
-
-        blur-[180px]
-        "
-      />
-
-      <div
-        className="
-        absolute
-
-        bottom-0
-        right-0
-
-        h-[550px]
-        w-[550px]
-
-        rounded-full
-
-        bg-sky-200/30
-
-        blur-[180px]
-        "
-      />
-
-      {/* ================= Premium Dot Pattern ================= */}
-
-      <div
-        className="
-        absolute
-        inset-0
-
-        opacity-[0.04]
-
-        [background-image:radial-gradient(#06b6d4_1px,transparent_1px)]
-
-        [background-size:28px_28px]
-        "
-      />
-
-      {/* ================= Container ================= */}
-
-      <div
-        className="
-        relative
-        z-10
-
-        max-w-[1450px]
-
-        mx-auto
-
-        px-5
-        lg:px-8
-        "
-      >
-
-        {/* ================= Header ================= */}
-
-        <motion.div
-
-          initial={{
-            opacity: 0,
-            y: 50,
-          }}
-
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-
-          viewport={{
-            once: true,
-          }}
-
-          transition={{
-            duration: .8,
-          }}
-
-          className="
-          flex
-          flex-col
-
-          lg:flex-row
-
-          lg:items-end
-          lg:justify-between
-
-          gap-8
-
-          mb-10
-          "
-        >
-
-          {/* Left */}
-
-          <div className="max-w-3xl">
-
+      {/* LOADING */}
+      {loading ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {[...Array(8)].map((_, index) => (
             <div
+              key={index}
               className="
-              inline-flex
-
-              items-center
-
-              gap-2
-
-              rounded-full
-
-              border
-              border-cyan-200
-
-              bg-cyan-50
-
-              px-5
-              py-2
-
-              text-cyan-700
-
-              font-semibold
-              "
-            >
-
-              <Sparkles size={18} />
-
-              Featured Universities
-
-            </div>
-
-            <h2
-              className="
-              mt-4
-
-              text-4xl
-              lg:text-5xl
-
-              font-black
-
-              leading-tight
-
-              text-slate-900
-              "
-            >
-
-              Find Your
-
-              <span
-                className="
-                block
-
-                bg-gradient-to-r
-
-                from-cyan-600
-                via-blue-600
-                to-indigo-600
-
-                bg-clip-text
-                text-transparent
-                "
-              >
-
-                Dream University
-
-              </span>
-
-            </h2>
-
-            <p
-              className="
-              mt-4
-
-              max-w-2xl
-
-              text-lg
-
-              leading-8
-
-              text-slate-600
-              "
-            >
-
-              Explore India's leading universities with verified
-              information, affordable tuition fees, admission support,
-              placement insights and expert counselling — all in one
-              trusted platform.
-
-            </p>
-
-          </div>
-
-          {/* Right */}
-
-          <div
-            className="
-            flex
-            flex-col
-
-            items-start
-            lg:items-end
-
-            gap-5
-            "
-          >
-
-            <div
-              className="
-              flex
-
-              items-center
-
-              gap-3
-
-              rounded-2xl
-
-              border
-              border-slate-200
-
-              bg-white/90
-
-              backdrop-blur-xl
-
-              px-5
-              py-4
-
-              shadow-lg
-              "
-            >
-
-              <div
-                className="
-                flex
-
-                h-12
-                w-12
-
-                items-center
-                justify-center
-
+                h-64
+                animate-pulse
                 rounded-2xl
+                bg-slate-100
+                shadow-[0_15px_35px_rgba(15,23,42,0.06)]
+              "
+            />
+          ))}
+        </div>
+      ) : featuredUniversities.length === 0 ? (
+        <div className="py-16 text-center">
+          <p className="text-lg font-semibold text-slate-500">
+            No universities found.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 
-                bg-cyan-100
+          {featuredUniversities.map((uni) => {
+            const isCompared = compareItems.some(
+              (item) => item?._id === uni?._id
+            );
+
+            return (
+              <div
+                key={uni._id}
+                className="
+                  group
+                  relative
+                  rounded-2xl
+                  transition-all
+                  duration-500
+                  ease-out
+                  [transform-style:preserve-3d]
+                  hover:-translate-y-2
+                  hover:[transform:perspective(1000px)_rotateX(1deg)_rotateY(-1deg)]
                 "
               >
 
-                <GraduationCap
-                  size={24}
-                  className="text-cyan-700"
+                {/* GLOW */}
+                <div
+                  className="
+                    pointer-events-none
+                    absolute
+                    -inset-1
+                    rounded-[1.15rem]
+                    bg-gradient-to-br
+                    from-blue-500/10
+                    via-transparent
+                    to-violet-500/10
+                    opacity-0
+                    blur-xl
+                    transition-all
+                    duration-500
+                    group-hover:opacity-100
+                  "
                 />
 
+                {/* SHADOW */}
+                <div
+                  className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                    rounded-2xl
+                    shadow-[0_10px_25px_rgba(15,23,42,0.08)]
+                    transition-all
+                    duration-500
+                    group-hover:shadow-[0_25px_55px_rgba(15,23,42,0.16)]
+                  "
+                />
+
+                {/* CARD */}
+                <div className="relative z-10">
+                  <UniversityCard
+                    university={uni}
+                    onCompareToggle={
+                      handleCompareToggle
+                    }
+                    isCompared={isCompared}
+                  />
+                </div>
+
               </div>
+            );
+          })}
 
-              <div>
+        </div>
+      )}
 
-                <p className="text-xs text-slate-500">
-
-                  Available Universities
-
-                </p>
-
-                <h3 className="text-3xl font-black text-slate-900">
-
-                  {universities.length}+
-
-                </h3>
-
-              </div>
-
-            </div>
-
+      {/* VIEW ALL */}
+      {!loading &&
+        featuredUniversities.length > 0 && (
+          <div className="mt-10 text-center">
             <Link
               to="/universities"
               className="
-              inline-flex
-
-              items-center
-
-              gap-3
-
-              rounded-2xl
-
-              bg-gradient-to-r
-              from-cyan-600
-              to-blue-600
-
-              px-7
-              py-4
-
-              text-white
-
-              font-semibold
-
-              shadow-xl
-
-              transition-all
-
-              duration-300
-
-              hover:scale-[1.04]
-              hover:shadow-cyan-300/50
+                inline-flex
+                items-center
+                justify-center
+                rounded-xl
+                bg-yellow-400
+                px-8
+                py-3.5
+                text-sm
+                font-black
+                text-black
+                shadow-[0_8px_20px_rgba(250,204,21,0.18)]
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:bg-yellow-500
+                hover:shadow-[0_14px_30px_rgba(250,204,21,0.28)]
               "
             >
-
               View All Universities
-
-              <ArrowRight size={20} />
-
             </Link>
-
           </div>
-
-        </motion.div>
-                {/* ================= Universities Grid ================= */}
-
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 50,
-          }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{
-            once: true,
-          }}
-          transition={{
-            duration: 0.8,
-            delay: 0.2,
-          }}
-          className="
-          relative
-
-          overflow-hidden
-
-          rounded-[36px]
-
-          border
-          border-cyan-100
-
-          bg-white/80
-
-          backdrop-blur-xl
-
-          p-4
-          md:p-5
-
-          shadow-[0_30px_80px_rgba(14,165,233,0.08)]
-          "
-        >
-
-          {/* Top Glow */}
-
-          <div
-            className="
-            absolute
-
-            -top-28
-            -right-24
-
-            h-80
-            w-80
-
-            rounded-full
-
-            bg-cyan-100/60
-
-            blur-3xl
-            "
-          />
-
-          {/* Bottom Glow */}
-
-          <div
-            className="
-            absolute
-
-            -bottom-28
-            -left-24
-
-            h-80
-            w-80
-
-            rounded-full
-
-            bg-blue-100/60
-
-            blur-3xl
-            "
-          />
-
-          {/* Grid */}
-
-          <div className="relative z-10">
-
-            <UniversityGrid
-              universities={featuredUniversities}
-              loading={loading}
-              columns={4}
-            />
-
-          </div>
-
-        </motion.div>
-
-        {/* ================= Small Bottom Text ================= */}
-
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 30,
-          }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{
-            once: true,
-          }}
-          transition={{
-            duration: .8,
-            delay: .3,
-          }}
-          className="
-          mt-8
-
-          text-center
-          "
-        >
-
-          <p
-            className="
-            text-slate-500
-
-            text-sm
-            md:text-base
-            "
-          >
-
-            Trusted by thousands of students across India for verified
-            university information, admission guidance and career support.
-
-          </p>
-
-        </motion.div>
-
-      </div>
-
+        )}
     </section>
-
   );
-
 }

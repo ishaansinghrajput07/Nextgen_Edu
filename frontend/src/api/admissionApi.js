@@ -1,8 +1,7 @@
 import axios from "axios";
-import { API_URL } from "../config/api";
 
 const admissionApi = axios.create({
-  baseURL: API_URL,
+  baseURL: "http://localhost:8000/api",
   withCredentials: true,
 });
 

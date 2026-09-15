@@ -186,12 +186,8 @@ export default function Courses() {
           transition={{
             duration: 0.7,
           }}
-          className="text-center  pt-10"  
+          className="text-center  pt-10"
         >
-
-
-
-        
           {/* Badge */}
 
           <div
@@ -217,8 +213,8 @@ export default function Courses() {
 
           {/* Heading */}
 
-         <h1
-  className="
+          <h1
+            className="
   mt-8
   text-3xl
   font-black
@@ -227,11 +223,10 @@ export default function Courses() {
   text-slate-900
   md:text-5xl
   "
->
-  Find The Right{" "}
-
-  <span
-    className="
+          >
+            Find The Right{" "}
+            <span
+              className="
     bg-gradient-to-r
     from-sky-600
     via-cyan-500
@@ -239,19 +234,12 @@ export default function Courses() {
     bg-clip-text
     text-transparent
     "
-  >
-    Online Course
-  </span>
-
-  <br />
-
-  For Your Dream Career
-</h1>
-
-
-
-
-
+            >
+              Online Course
+            </span>
+            <br />
+            For Your Dream Career
+          </h1>
 
           {/* Description */}
 
@@ -273,38 +261,33 @@ export default function Courses() {
 
         {/* STATISTICS */}
 
-
-
-
-
         <motion.section
-  initial={{
-    opacity: 0,
-    y: 40,
-  }}
-  whileInView={{
-    opacity: 1,
-    y: 0,
-  }}
-  viewport={{
-    once: true,
-  }}
-  transition={{
-    duration: 0.7,
-  }}
-  className="
+          initial={{
+            opacity: 0,
+            y: 40,
+          }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          viewport={{
+            once: true,
+          }}
+          transition={{
+            duration: 0.7,
+          }}
+          className="
   mt-10
   grid
   gap-5
   sm:grid-cols-2
   lg:grid-cols-4
   "
->
+        >
+          {/* Courses */}
 
-  {/* Courses */}
-
-  <div
-    className="
+          <div
+            className="
     flex
     items-center
     gap-4
@@ -316,10 +299,9 @@ export default function Courses() {
     shadow-lg
     shadow-sky-100/50
     "
-  >
-
-    <div
-      className="
+          >
+            <div
+              className="
       flex
       h-12
       w-12
@@ -329,38 +311,29 @@ export default function Courses() {
       rounded-2xl
       bg-sky-50
       "
-    >
-      <GraduationCap
-        size={28}
-        className="text-sky-600"
-      />
-    </div>
+            >
+              <GraduationCap size={28} className="text-sky-600" />
+            </div>
 
-
-    <div>
-      <h2
-        className="
+            <div>
+              <h2
+                className="
         text-3xl
         font-black
         text-slate-900
         "
-      >
-        {courses.length}+
-      </h2>
+              >
+                {courses.length}+
+              </h2>
 
-      <p className="text-sm text-slate-600">
-        Professional Courses
-      </p>
-    </div>
+              <p className="text-sm text-slate-600">Professional Courses</p>
+            </div>
+          </div>
 
-  </div>
+          {/* Universities */}
 
-
-
-  {/* Universities */}
-
-  <div
-    className="
+          <div
+            className="
     flex
     items-center
     gap-4
@@ -372,10 +345,9 @@ export default function Courses() {
     shadow-lg
     shadow-sky-100/50
     "
-  >
-
-    <div
-      className="
+          >
+            <div
+              className="
       flex
       h-12
       w-12
@@ -385,41 +357,29 @@ export default function Courses() {
       rounded-2xl
       bg-blue-50
       "
-    >
-      <Building2
-        size={26}
-        className="text-blue-600"
-      />
-    </div>
+            >
+              <Building2 size={26} className="text-blue-600" />
+            </div>
 
-
-    <div>
-
-      <h2
-        className="
+            <div>
+              <h2
+                className="
         text-3xl
         font-black
         text-slate-900
         "
-      >
-        {universities.length}+
-      </h2>
+              >
+                {universities.length}+
+              </h2>
 
+              <p className="text-sm text-slate-600">Partner Universities</p>
+            </div>
+          </div>
 
-      <p className="text-sm text-slate-600">
-        Partner Universities
-      </p>
+          {/* Admission Support */}
 
-    </div>
-
-  </div>
-
-
-
-  {/* Admission Support */}
-
-  <div
-    className="
+          <div
+            className="
     flex
     items-center
     gap-4
@@ -431,10 +391,9 @@ export default function Courses() {
     shadow-lg
     shadow-sky-100/50
     "
-  >
-
-    <div
-      className="
+          >
+            <div
+              className="
       flex
       h-12
       w-12
@@ -444,42 +403,29 @@ export default function Courses() {
       rounded-2xl
       bg-emerald-50
       "
-    >
-      <Filter
-        size={26}
-        className="text-emerald-600"
-      />
-    </div>
+            >
+              <Filter size={26} className="text-emerald-600" />
+            </div>
 
-
-    <div>
-
-      <h2
-        className="
+            <div>
+              <h2
+                className="
         text-3xl
         font-black
         text-slate-900
         "
-      >
-        100%
-      </h2>
+              >
+                100%
+              </h2>
 
+              <p className="text-sm text-slate-600">Admission Support</p>
+            </div>
+          </div>
 
-      <p className="text-sm text-slate-600">
-        Admission Support
-      </p>
+          {/* Updated */}
 
-    </div>
-
-  </div>
-
-
-
-
-  {/* Updated */}
-
-  <div
-    className="
+          <div
+            className="
     flex
     items-center
     gap-4
@@ -491,10 +437,9 @@ export default function Courses() {
     shadow-lg
     shadow-sky-100/50
     "
-  >
-
-    <div
-      className="
+          >
+            <div
+              className="
       flex
       h-12
       w-12
@@ -504,58 +449,44 @@ export default function Courses() {
       rounded-2xl
       bg-purple-50
       "
-    >
-      <ArrowUpDown
-        size={26}
-        className="text-purple-600"
-      />
-    </div>
+            >
+              <ArrowUpDown size={26} className="text-purple-600" />
+            </div>
 
-
-    <div>
-
-      <h2
-        className="
+            <div>
+              <h2
+                className="
         text-3xl
         font-black
         text-slate-900
         "
-      >
-        Daily
-      </h2>
+              >
+                Daily
+              </h2>
 
+              <p className="text-sm text-slate-600">Course Updates</p>
+            </div>
+          </div>
+        </motion.section>
 
-      <p className="text-sm text-slate-600">
-        Course Updates
-      </p>
+        {/* SEARCH & FILTER SECTION */}
 
-    </div>
-
-  </div>
-
-
-</motion.section>
-
-
-
-     {/* SEARCH & FILTER SECTION */}
-
-<motion.section
-  initial={{
-    opacity: 0,
-    y: 40,
-  }}
-  whileInView={{
-    opacity: 1,
-    y: 0,
-  }}
-  viewport={{
-    once: true,
-  }}
-  transition={{
-    duration: 0.6,
-  }}
-  className="
+        <motion.section
+          initial={{
+            opacity: 0,
+            y: 40,
+          }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          viewport={{
+            once: true,
+          }}
+          transition={{
+            duration: 0.6,
+          }}
+          className="
   mt-10
   rounded-3xl
   border
@@ -566,43 +497,39 @@ export default function Courses() {
   shadow-sky-100/40
   backdrop-blur-xl
   "
->
-
-  <div
-    className="
+        >
+          <div
+            className="
     grid
     gap-3
     lg:grid-cols-4
     "
-  >
+          >
+            {/* Search Input */}
 
-    {/* Search Input */}
-
-    <div
-      className="
+            <div
+              className="
       relative
       lg:col-span-2
       "
-    >
-
-      <Search
-        size={18}
-        className="
+            >
+              <Search
+                size={18}
+                className="
         absolute
         left-4
         top-1/2
         -translate-y-1/2
         text-sky-600
         "
-      />
+              />
 
-
-      <input
-        type="text"
-        placeholder="Search course or university..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="
+              <input
+                type="text"
+                placeholder="Search course or university..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="
         w-full
         rounded-xl
         border
@@ -619,18 +546,15 @@ export default function Courses() {
         focus:border-sky-500
         focus:bg-white
         "
-      />
+              />
+            </div>
 
-    </div>
+            {/* University Filter */}
 
-
-
-    {/* University Filter */}
-
-    <select
-      value={selectedUniversity}
-      onChange={(e) => setSelectedUniversity(e.target.value)}
-      className="
+            <select
+              value={selectedUniversity}
+              onChange={(e) => setSelectedUniversity(e.target.value)}
+              className="
       rounded-xl
       border
       border-slate-200
@@ -643,34 +567,22 @@ export default function Courses() {
       transition
       focus:border-sky-500
       "
-    >
+            >
+              <option value="All">All Universities</option>
 
-      <option value="All">
-        All Universities
-      </option>
+              {universities.map((uni) => (
+                <option key={uni} value={uni}>
+                  {uni}
+                </option>
+              ))}
+            </select>
 
+            {/* Sort Filter */}
 
-      {universities.map((uni) => (
-        <option
-          key={uni}
-          value={uni}
-        >
-          {uni}
-        </option>
-      ))}
-
-
-    </select>
-
-
-
-
-    {/* Sort Filter */}
-
-    <select
-      value={sortBy}
-      onChange={(e) => setSortBy(e.target.value)}
-      className="
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="
       rounded-xl
       border
       border-slate-200
@@ -683,37 +595,21 @@ export default function Courses() {
       transition
       focus:border-sky-500
       "
-    >
+            >
+              <option value="latest">Latest</option>
 
-      <option value="latest">
-        Latest
-      </option>
+              <option value="name">Course Name</option>
 
-      <option value="name">
-        Course Name
-      </option>
+              <option value="low">Fees Low → High</option>
 
-      <option value="low">
-        Fees Low → High
-      </option>
+              <option value="high">Fees High → Low</option>
+            </select>
+          </div>
 
-      <option value="high">
-        Fees High → Low
-      </option>
+          {/* Bottom Filter Row */}
 
-
-    </select>
-
-
-  </div>
-
-
-
-  {/* Bottom Filter Row */}
-
-
-  <div
-    className="
+          <div
+            className="
     mt-4
     flex
     flex-col
@@ -722,45 +618,35 @@ export default function Courses() {
     md:items-center
     md:justify-between
     "
-  >
-
-
-    <p
-      className="
+          >
+            <p
+              className="
       text-sm
       text-slate-600
       "
-    >
-
-      Showing
-
-      <span
-        className="
+            >
+              Showing
+              <span
+                className="
         mx-2
         font-black
         text-sky-600
         "
-      >
-        {filteredCourses.length}
-      </span>
+              >
+                {filteredCourses.length}
+              </span>
+              Courses
+            </p>
 
-      Courses
+            <button
+              onClick={() => {
+                setSearch("");
 
-    </p>
+                setSelectedUniversity("All");
 
-
-
-    <button
-      onClick={() => {
-
-        setSearch("");
-
-        setSelectedUniversity("All");
-
-        setSortBy("latest");
-
-      }}
-      className="
+                setSortBy("latest");
+              }}
+              className="
       rounded-xl
       border
       border-sky-200
@@ -774,21 +660,11 @@ export default function Courses() {
       hover:bg-sky-600
       hover:text-white
       "
-    >
-
-      Reset Filters
-
-    </button>
-
-
-  </div>
-
-
-</motion.section>
-
-
-
-
+            >
+              Reset Filters
+            </button>
+          </div>
+        </motion.section>
 
         {/* COURSES HEADER */}
 

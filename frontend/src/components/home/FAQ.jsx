@@ -6,6 +6,9 @@ import {
   MessageCircle,
 } from "lucide-react";
 
+
+import NEXTGENlogo from "../../assets/logo/NEXTGEN LOGO.png";
+
 const faqs = [
   {
     question: "Is counselling completely free?",
@@ -43,214 +46,342 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section
-      className="
-        relative
-        overflow-hidden
-        py-24
-        bg-gradient-to-b
-        from-[#f8fcff]
-        via-[#eef7ff]
-        to-[#f8fcff]
-      "
-    >
-      {/* Background Glow */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-20 -left-20 w-80 h-80 rounded-full bg-cyan-200/30 blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-blue-200/30 blur-3xl"></div>
-      </div>
+    <section className="bg-white px-[30px] py-[45px]">
+      <div className="mx-auto max-w-[1500px]">
 
-      <div className="relative max-w-5xl mx-auto px-6">
-
-        {/* Heading */}
+        {/* =========================
+            Heading
+        ========================= */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="mb-10 text-center"
         >
-          <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-cyan-100 text-cyan-700 font-semibold text-sm mb-5">
-            <HelpCircle size={16} />
-            Frequently Asked Questions
-          </span>
+          {/* Eyebrow */}
+          <div className="mb-4 flex items-center justify-center gap-3">
+            <span className="h-px w-10 bg-slate-200" />
 
-          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900">
+            <span className="inline-flex items-center gap-2 text-[13px] font-black uppercase tracking-[0.18em] text-[#1a4d40]">
+              <HelpCircle size={16} />
+              Frequently Asked Questions
+            </span>
+
+            <span className="h-px w-10 bg-slate-200" />
+          </div>
+
+          {/* Heading */}
+          <h2 className="text-[38px] font-black leading-tight tracking-tight text-slate-950 md:text-[46px] lg:text-[52px]">
             Have Questions?
-            <span className="block text-cyan-600">
+            <span className="block 
+
+text-[#131371]">
               We've Got Answers
             </span>
           </h2>
 
-          <p className="max-w-2xl mx-auto mt-5 text-lg text-slate-600">
+          {/* Description */}
+          <p className="mx-auto mt-4 max-w-2xl text-[15px] font-semibold leading-7 text-slate-500 md:text-[16px]">
             Find answers to the most common questions about admissions,
-            counselling, universities, eligibility, and the application process.
+            counselling, universities, eligibility, and the application
+            process.
           </p>
         </motion.div>
 
-        {/* FAQ Cards */}
-        <div className="space-y-5">
-                    {faqs.map((faq, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                delay: index * 0.08,
-                duration: 0.4,
-              }}
-              className="
-                group
-                overflow-hidden
-                rounded-3xl
-                bg-white/75
-                backdrop-blur-xl
-                border
-                border-cyan-100
-                shadow-lg
-                hover:border-cyan-300
-                hover:shadow-cyan-100/60
-                transition-all
-                duration-300
-              "
-            >
-              <button
-                onClick={() =>
-                  setOpenIndex(openIndex === index ? null : index)
-                }
+        {/* =========================
+            FAQ Grid
+        ========================= */}
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: index * 0.08,
+                  duration: 0.4,
+                }}
                 className="
-                  w-full
-                  px-7
-                  py-6
-                  flex
-                  items-center
-                  justify-between
-                  text-left
+                  group
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-slate-200
+                  bg-white
+                  shadow-[0_8px_30px_rgba(15,23,42,0.05)]
+                  transition-all
+                  duration-300
+                  hover:border-teal-200
+                  hover:shadow-[0_16px_40px_rgba(15,23,42,0.08)]
                 "
               >
-                <div className="flex items-center gap-5">
+                {/* Question */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setOpenIndex(isOpen ? null : index)
+                  }
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    justify-between
+                    gap-4
+                    px-5
+                    py-4
+                    text-left
+                  "
+                >
+                  <div className="flex min-w-0 items-center gap-4">
 
-                  {/* Number */}
-                  <div
-                    className="
-                      w-12
-                      h-12
-                      rounded-2xl
-                      bg-gradient-to-r
-                      from-cyan-500
-                      to-blue-600
-                      text-white
-                      font-bold
-                      flex
-                      items-center
-                      justify-center
-                      shadow-md
-                      flex-shrink-0
-                    "
-                  >
-                    {String(index + 1).padStart(2, "0")}
-                  </div>
+                    {/* Number */}
+                    <div
+                      className={`
+                        flex
+                        h-11
+                        w-11
+                        shrink-0
+                        items-center
+                        justify-center
+                        rounded-xl
+                        border
+                        text-[12px]
+                        font-black
+                        transition-all
+                        duration-300
+                        ${
+                          index === 0
+                            ? "border-blue-100 bg-blue-50 text-blue-600"
+                            : index === 1
+                            ? "border-violet-100 bg-violet-50 text-violet-600"
+                            : index === 2
+                            ? "border-orange-100 bg-orange-50 text-orange-600"
+                            : index === 3
+                            ? "border-emerald-100 bg-emerald-50 text-emerald-600"
+                            : index === 4
+                            ? "border-rose-100 bg-rose-50 text-rose-600"
+                            : "border-teal-100 bg-teal-50 text-teal-700"
+                        }
+                      `}
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </div>
 
-                  {/* Question */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 group-hover:text-cyan-600 transition-colors">
+                    {/* Question Text */}
+                    <h3
+                      className={`
+                        text-[15px]
+                        font-black
+                        leading-6
+                        tracking-tight
+                        transition-colors
+                        duration-300
+                        md:text-[16px]
+                        ${
+                          isOpen
+                            ? "text-teal-700"
+                            : "text-slate-950 group-hover:text-teal-700"
+                        }
+                      `}
+                    >
                       {faq.question}
                     </h3>
                   </div>
-                </div>
 
-                {/* Arrow */}
-                <ChevronDown
-                  className={`w-6 h-6 text-cyan-600 transition-transform duration-300 ${
-                    openIndex === index ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
+                  {/* Arrow */}
+                  <ChevronDown
+                    className={`
+                      h-5
+                      w-5
+                      shrink-0
+                      text-teal-700
+                      transition-transform
+                      duration-300
+                      ${isOpen ? "rotate-180" : ""}
+                    `}
+                  />
+                </button>
 
-              {/* Animated Answer */}
-              <AnimatePresence initial={false}>
-                {openIndex === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.35 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-7 pb-7 pl-[96px]">
-                      <div className="border-t border-slate-200 pt-5">
-                        <p className="text-slate-600 leading-7">
-                          {faq.answer}
-                        </p>
+                {/* Answer */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{
+                        height: 0,
+                        opacity: 0,
+                      }}
+                      animate={{
+                        height: "auto",
+                        opacity: 1,
+                      }}
+                      exit={{
+                        height: 0,
+                        opacity: 0,
+                      }}
+                      transition={{
+                        duration: 0.3,
+                      }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-5 pb-5 pl-20">
+                        <div className="border-t border-slate-100 pt-4">
+                          <p className="text-[14px] font-semibold leading-6 text-slate-500">
+                            {faq.answer}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
         </div>
 
-        {/* Bottom CTA */}
+        {/* =========================
+            Bottom CTA
+        ========================= */}
         <motion.div
-          initial={{ opacity: 0, y: 35 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
+  initial={{ opacity: 0, y: 35 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  transition={{ delay: 0.3 }}
+  className="
+    mt-10
+    rounded-3xl
+    bg-slate-950
+    px-6
+    py-7
+    shadow-[0_16px_50px_rgba(15,23,42,0.12)]
+    md:px-8
+  "
+>
+  <div
+    className="
+      flex
+      flex-col
+      items-center
+      gap-6
+      md:flex-row
+      md:items-center
+      md:justify-between
+    "
+  >
+    {/* =========================
+        Company Logo
+    ========================= */}
+    <div className="flex shrink-0 items-center justify-center">
+      <div
+        className="
+          flex
+          h-16
+          w-16
+          items-center
+          justify-center
+          rounded-2xl
+          border
+          border-slate-800
+          bg-white
+          p-2
+        "
+      >
+        <img
+          src={NEXTGENlogo}
+          alt="Company Logo"
+          className="h-full w-full object-contain"
+        />
+      </div>
+    </div>
+
+    {/* =========================
+        Text
+    ========================= */}
+    <div className="min-w-0 flex-1 text-center md:text-left">
+      <h3
+        className="
+          text-[24px]
+          font-black
+          leading-tight
+          tracking-tight
+          text-white
+          md:text-[28px]
+        "
+      >
+        Still Have Questions?
+      </h3>
+
+      <p
+        className="
+          mt-2
+          max-w-3xl
+          text-[13px]
+          font-semibold
+          leading-6
+          text-slate-400
+          md:text-[14px]
+        "
+      >
+        Our admission experts are available to guide you through
+        university selection, eligibility, fees, scholarships, and the
+        complete admission process.
+      </p>
+    </div>
+
+    {/* =========================
+        CTA Button
+    ========================= */}
+    <div className="shrink-0">
+      <button
+        type="button"
+        className="
+          inline-flex
+          items-center
+          gap-3
+          whitespace-nowrap
+          rounded-xl
+          bg-yellow-400
+          px-6
+          py-3
+          text-[13px]
+          font-black
+          text-black
+          shadow-sm
+          transition-all
+          duration-300
+          hover:-translate-y-0.5
+          hover:bg-yellow-300
+          hover:shadow-md
+        "
+      >
+        Talk to an Expert
+
+        <span
           className="
-            mt-16
-            rounded-[32px]
-            bg-gradient-to-r
-            from-cyan-600
-            via-sky-600
-            to-blue-700
-            p-10
-            text-center
-            shadow-2xl
+            flex
+            h-7
+            w-7
+            items-center
+            justify-center
+            rounded-full
+            bg-slate-950
+            text-sm
+            text-white
           "
         >
-          <div className="flex justify-center mb-5">
-            <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
-              <MessageCircle className="w-8 h-8 text-white" />
-            </div>
-          </div>
-
-          <h3 className="text-3xl font-bold text-white mb-4">
-            Still Have Questions?
-          </h3>
-
-          <p className="max-w-2xl mx-auto text-cyan-100 mb-8">
-            Our admission experts are available to guide you through university
-            selection, eligibility, fees, scholarships, and the complete
-            admission process.
-          </p>
-
-          <button
-            className="
-              inline-flex
-              items-center
-              gap-2
-              bg-white
-              text-cyan-700
-              font-semibold
-              px-8
-              py-4
-              rounded-full
-              shadow-lg
-              hover:scale-105
-              hover:shadow-xl
-              transition-all
-              duration-300
-            "
-          >
-            <MessageCircle size={20} />
-            Talk to an Expert
-          </button>
-        </motion.div>
+          →
+        </span>
+      </button>
+    </div>
+  </div>
+</motion.div>
 
       </div>
     </section>
   );
 }
-      

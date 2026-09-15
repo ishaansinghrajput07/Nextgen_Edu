@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
@@ -15,7 +14,7 @@ import LoginDropdown from "./LoginDropdown";
 import BookCounsellingButton from "./BookCounsellingButton";
 
 import TopBar from "./TopBar";
-import AnnouncementBar from "./AnnouncementBar";
+// import AnnouncementBar from "./AnnouncementBar";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -42,7 +41,7 @@ const Navbar = () => {
 
       {/* ================= ANNOUNCEMENT BAR ================= */}
 
-      <AnnouncementBar />
+      {/* <AnnouncementBar /> */}
 
       {/* ================= MAIN NAVBAR ================= */}
 
@@ -71,22 +70,22 @@ const Navbar = () => {
           }
         `}
       >
+        {/* ================= NAVBAR CONTAINER ================= */}
+
         <div
           className="
-            mx-auto
-            max-w-[1400px]
-            px-3
-            sm:px-5
-            lg:px-6
+            w-full
+            px-[30px]
           "
         >
           <div
             className="
               flex
-              h-16
+              h-[68px]
+              w-full
               items-center
               justify-between
-              gap-4
+              gap-5
             "
           >
             {/* ================= LEFT BRAND ================= */}
@@ -171,7 +170,7 @@ const Navbar = () => {
                 flex
                 shrink-0
                 items-center
-                gap-2
+                gap-3
               "
             >
               {/* Login */}
@@ -219,9 +218,9 @@ const Navbar = () => {
                 "
               >
                 {mobileOpen ? (
-                  <X className="h-5 w-5" />
+                  <X className="h-5 w-5 text-rose-500" />
                 ) : (
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-5 w-5 text-sky-600" />
                 )}
               </motion.button>
             </div>
@@ -245,4 +244,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

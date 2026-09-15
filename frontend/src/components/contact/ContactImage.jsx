@@ -1,17 +1,11 @@
 import { motion } from "framer-motion";
-import {
-  Phone,
-  Mail,
-  MapPin,
-  MessageCircle,
-} from "lucide-react";
+import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 
 import contactImage from "../../assets/hero/contact.png";
 
 export default function ContactImage() {
   return (
     <div className="relative flex items-center justify-center">
-
       {/* ================= Background Glow ================= */}
 
       <div className="absolute w-[700px] h-[700px] rounded-full bg-cyan-300/20 blur-[150px]" />
@@ -83,10 +77,7 @@ export default function ContactImage() {
           justify-center
         "
       >
-        <Phone
-          size={28}
-          className="text-cyan-600"
-        />
+        <Phone size={28} className="text-cyan-600" />
       </motion.div>
 
       {/* ================= Floating Mail ================= */}
@@ -114,10 +105,7 @@ export default function ContactImage() {
           justify-center
         "
       >
-        <Mail
-          size={28}
-          className="text-blue-600"
-        />
+        <Mail size={28} className="text-blue-600" />
       </motion.div>
 
       {/* ================= Floating Map ================= */}
@@ -145,10 +133,7 @@ export default function ContactImage() {
           justify-center
         "
       >
-        <MapPin
-          size={28}
-          className="text-emerald-600"
-        />
+        <MapPin size={28} className="text-emerald-600" />
       </motion.div>
 
       {/* ================= Floating Chat ================= */}
@@ -177,10 +162,7 @@ export default function ContactImage() {
           justify-center
         "
       >
-        <MessageCircle
-          size={22}
-          className="text-white"
-        />
+        <MessageCircle size={22} className="text-white" />
       </motion.div>
 
       {/* ================= Main Image ================= */}
@@ -247,27 +229,17 @@ export default function ContactImage() {
         "
       >
         <div className="flex items-center justify-between">
-
           <div>
-            <h3 className="text-3xl font-bold text-slate-900">
-              24/7
-            </h3>
+            <h3 className="text-3xl font-bold text-slate-900">24/7</h3>
 
-            <p className="text-sm text-slate-500">
-              Admission Support
-            </p>
+            <p className="text-sm text-slate-500">Admission Support</p>
           </div>
 
           <div className="w-14 h-14 rounded-2xl bg-cyan-100 flex items-center justify-center">
-            <Phone
-              size={28}
-              className="text-cyan-600"
-            />
+            <Phone size={28} className="text-cyan-600" />
           </div>
-
         </div>
       </motion.div>
-
     </div>
   );
 }

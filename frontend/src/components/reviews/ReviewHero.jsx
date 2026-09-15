@@ -2,74 +2,73 @@ import { Star } from "lucide-react";
 
 export default function ReviewHero() {
   return (
-    <div className="relative overflow-hidden rounded-[40px] border border-white/70 bg-gradient-to-br from-sky-50 via-white to-cyan-50 px-8 py-12 lg:py-8 shadow-[0_30px_80px_rgba(14,165,233,.12)]">
+    <div
+      className="
+        relative
+        overflow-hidden
+        rounded-3xl
+        border
+        border-slate-200
+        bg-white
+        px-6
+        py-10
+        shadow-[0_12px_40px_rgba(15,23,42,0.06)]
+        md:px-10
+        lg:py-12
+      "
+    >
+      <div className="relative z-10 mx-auto max-w-4xl text-center">
+        {/* Eyebrow */}
+        <div className="flex items-center justify-center gap-4">
+          <span className="h-px w-10 bg-slate-300" />
 
-      {/* Blur Circle */}
-      <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-cyan-300/20 blur-[120px]" />
-
-      <div className="absolute -bottom-24 -right-20 h-80 w-80 rounded-full bg-sky-300/20 blur-[130px]" />
-
-      {/* Dot Pattern */}
-      <div className="absolute left-10 top-14 opacity-20">
-
-        <div className="grid grid-cols-6 gap-2">
-
-          {Array.from({ length: 36 }).map((_, i) => (
-
-            <span
-              key={i}
-              className="h-2 w-2 rounded-full bg-sky-500"
+          <span className="inline-flex items-center gap-2 text-[14px] font-black uppercase tracking-[0.18em] text-teal-700">
+            <Star
+              size={15}
+              className="fill-yellow-400 text-yellow-400"
             />
-
-          ))}
-
-        </div>
-
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-3xl text-center">
-
-        {/* Badge */}
-
-        <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white px-4 py-2 shadow-lg">
-
-          <Star
-            className="fill-yellow-400 text-yellow-400"
-            size={18}
-          />
-
-          <span className="font-semibold text-sky-700">
-
-            Trusted by 15,000+ Students
-
+            Student Reviews
           </span>
 
+          <span className="h-px w-10 bg-slate-300" />
         </div>
 
         {/* Heading */}
-
-        <h2 className="mt-5 text-4xl md:text-5xl font-black leading-tight text-slate-900">
-
+        <h2
+          className="
+            mt-4
+            text-[38px]
+            font-black
+            leading-[1.12]
+            tracking-tight
+            text-slate-950
+            md:text-[46px]
+            lg:text-[52px]
+          "
+        >
           Student{" "}
-
-          <span className="bg-gradient-to-r from-sky-500 to-cyan-500 bg-clip-text text-transparent">
-
-            Success Stories
-
+          <span className="text-teal-700">
+            Success Stories.
           </span>
-
         </h2>
 
         {/* Subtitle */}
-
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-
+        <p
+          className="
+            mx-auto
+            mt-4
+            max-w-2xl
+            text-[15px]
+            font-semibold
+            leading-7
+            text-slate-500
+            md:text-[16px]
+          "
+        >
           Discover how thousands of students secured admissions in
           India's top universities through expert counselling,
           personalized guidance, and a seamless admission process.
-
         </p>
-
       </div>
     </div>
   );

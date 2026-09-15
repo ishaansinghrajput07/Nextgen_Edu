@@ -209,11 +209,7 @@ const ContactFAQ = () => {
                         leading-6
                         sm:text-base
                         lg:text-lg
-                        ${
-                          isOpen
-                            ? "text-cyan-700"
-                            : "text-slate-800"
-                        }
+                        ${isOpen ? "text-cyan-700" : "text-slate-800"}
                       `}
                     >
                       {item.question}

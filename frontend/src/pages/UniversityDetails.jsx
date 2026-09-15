@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 
 import ApplyNowModal from "../components/universities/ApplyNowModal";
@@ -14,14 +14,16 @@ import {
   TrendingUp,
   IndianRupee,
   Award,
+  CheckCircle2,
   ExternalLink,
 } from "lucide-react";
 
 import { getUniversityBySlug } from "../services/universityService";
-import nextLogo from "../assets/logo/NEXTGEN LOGO.png";
 
 export default function UniversityDetails() {
   const { slug } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [university, setUniversity] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,14 +32,40 @@ export default function UniversityDetails() {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState("");
 
+  /* =========================================================
+     REMEMBER WHERE USER CAME FROM
+  ========================================================= */
+
+  useEffect(() => {
+    /*
+      Save the current details URL.
+
+      Browser history itself will remember the previous page,
+      so Back button can return exactly where user came from.
+    */
+    sessionStorage.setItem(
+      "lastUniversityDetailsPage",
+      location.pathname
+    );
+  }, [location.pathname]);
+
+  /* =========================================================
+     FETCH UNIVERSITY
+  ========================================================= */
+
   useEffect(() => {
     const fetchUniversity = async () => {
       try {
         setLoading(true);
+        setError("");
 
         const res = await getUniversityBySlug(slug);
 
-        setUniversity(res.university);
+        if (res?.university) {
+          setUniversity(res.university);
+        } else {
+          setError("University not found.");
+        }
       } catch (err) {
         console.log(err);
         setError("University not found.");
@@ -46,20 +74,46 @@ export default function UniversityDetails() {
       }
     };
 
-    fetchUniversity();
+    if (slug) {
+      fetchUniversity();
+    }
   }, [slug]);
+
+  /* =========================================================
+     BACK TO PREVIOUS PAGE
+  ========================================================= */
+
+  const handleBack = () => {
+    /*
+      If there is browser history available,
+      go exactly to the page from which the user came.
+    */
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    /*
+      Direct URL fallback.
+    */
+    navigate("/universities");
+  };
+
+  /* =========================================================
+     LOADING
+  ========================================================= */
 
   if (loading) {
     return (
-      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-cyan-50">
+      <section className="flex min-h-screen w-full items-center justify-center bg-white px-[30px] py-[30px]">
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto rounded-full border-[6px] border-cyan-200 border-t-cyan-600 animate-spin" />
+          <div className="mx-auto h-14 w-14 animate-spin rounded-full border-[5px] border-slate-200 border-t-teal-700" />
 
-          <h2 className="mt-6 text-2xl font-bold text-slate-800">
+          <h2 className="mt-6 text-2xl font-bold text-slate-950">
             Loading University...
           </h2>
 
-          <p className="mt-2 text-slate-500">
+          <p className="mt-2 text-sm text-slate-500">
             Please wait while we fetch university details.
           </p>
         </div>
@@ -67,476 +121,253 @@ export default function UniversityDetails() {
     );
   }
 
+  /* =========================================================
+     ERROR
+  ========================================================= */
+
   if (error || !university) {
     return (
-      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-cyan-50">
-        <div className="bg-white rounded-3xl shadow-2xl p-12 text-center max-w-lg">
-          <h2 className="text-4xl font-black text-slate-900">
+      <section className="flex min-h-screen w-full items-center justify-center bg-white px-[30px] py-[30px]">
+        <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-xl">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-red-500">
+            <Building2 size={30} />
+          </div>
+
+          <h2 className="mt-6 text-3xl font-black text-slate-950">
             University Not Found
           </h2>
 
-          <p className="mt-4 text-slate-500">
+          <p className="mt-4 leading-7 text-slate-500">
             We couldn't find the university you're looking for.
           </p>
 
-          <Link
-            to="/universities"
-            className="
-              inline-flex
-              items-center
-              gap-2
-              mt-8
-              px-8
-              py-4
-              rounded-2xl
-              bg-gradient-to-r
-              from-cyan-500
-              to-blue-600
-              text-white
-              font-semibold
-              shadow-xl
-              hover:scale-105
-              transition
-            "
+          <button
+            type="button"
+            onClick={handleBack}
+            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-teal-700 px-7 py-3.5 font-semibold text-white shadow-lg shadow-teal-700/20 transition hover:bg-teal-800"
           >
             <ArrowLeft size={18} />
-            Back to Universities
-          </Link>
+            Go Back
+          </button>
         </div>
       </section>
     );
   }
 
+  /* =========================================================
+     DATA
+  ========================================================= */
+
   const courses = university.courses || [];
 
+  const validFees = courses
+    .map((course) => Number(course.fees || 0))
+    .filter((fee) => fee > 0);
+
   const lowestFee =
-    courses.length > 0 ? Math.min(...courses.map((course) => course.fees)) : 0;
+    validFees.length > 0 ? Math.min(...validFees) : 0;
+
+  const locationText = [
+    university.city,
+    university.state,
+    university.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  /* =========================================================
+     MAIN UI
+  ========================================================= */
 
   return (
-    <section
-      className="
-      relative
-      overflow-hidden
-      bg-gradient-to-br
-      from-sky-50
-      via-white
-      to-cyan-50
-      min-h-screen
-    "
-    >
-      {/* ================= Background Blur ================= */}
+    <section className="min-h-screen w-full bg-white px-[30px] py-[30px]">
+      {/* =====================================================
+          MAIN CONTENT
+          IMPORTANT:
+          No max-width / mx-auto here.
+          This gives exact 30px viewport spacing.
+      ====================================================== */}
 
-      <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-cyan-200/30 blur-[120px]" />
+      <div className="w-full">
+        {/* ===================================================
+            TOP NAVIGATION
+        ==================================================== */}
 
-      <div className="absolute top-40 right-0 w-[420px] h-[420px] rounded-full bg-blue-200/20 blur-[120px]" />
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700"
+          >
+            <ArrowLeft size={17} />
+            Back
+          </button>
 
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[320px] rounded-full bg-sky-100/40 blur-[120px]" />
+          <div className="hidden text-sm text-slate-400 sm:block">
+            University Details
+          </div>
+        </div>
 
-      {/* Grid Pattern */}
-
-      <div
-        className="
-        absolute
-        inset-0
-        opacity-[0.04]
-        [background-image:radial-gradient(#0284c7_1px,transparent_1px)]
-        [background-size:24px_24px]
-      "
-      />
-
-      {/* ================= Main Container ================= */}
-
-      <div className="relative z-10 max-w-[1450px] mx-auto px-6 lg:px-10 pt-24 pb-20">
-        {/* Hero Section */}
+        {/* ===================================================
+            HERO
+        ==================================================== */}
 
         <motion.div
-          initial={{
-            opacity: 0,
-            y: 40,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            duration: 0.8,
-          }}
-          className="
-            relative
-            overflow-hidden
-            rounded-[36px]
-            border
-            border-white/70
-            bg-white/70
-            backdrop-blur-xl
-            shadow-[0_25px_80px_rgba(15,23,42,.08)]
-          "
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
         >
-          {/* ================= Banner ================= */}
-
-          <div className="relative h-[430px] overflow-hidden">
-            {/* Banner Image */}
+          <div className="relative min-h-[500px] overflow-hidden">
+            {/* Banner */}
 
             <img
-              src={university.universityBanner || nextLogo}
+              src={
+                university.universityBanner ||
+                "/university-placeholder.jpg"
+              }
               alt={university.universityName}
-              className="
-                h-full
-                w-full
-                object-cover
-              "
+              className="absolute inset-0 h-full w-full object-cover"
             />
 
             {/* Overlay */}
 
-            <div
-              className="
-                absolute
-                inset-0
+            <div className="absolute inset-0 bg-slate-950/55" />
 
-                bg-gradient-to-r
-                from-slate-900/50
-                via-slate-900/40
-                to-cyan-900/25
-              "
-            />
+            <div className="absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-slate-950/95 via-slate-950/45 to-transparent" />
 
-            <div
-              className="
-                absolute
-                inset-0
+            {/* Back */}
 
-                bg-gradient-to-t
-                from-white
-                via-transparent
-                to-transparent
-              "
-            />
-
-            {/* ================= University Information ================= */}
-
-            <div
-              className="
-    absolute
-    left-8
-    bottom-10
-    z-20
-    right-8
-  "
+            <button
+              type="button"
+              onClick={handleBack}
+              className="absolute left-6 top-6 z-20 inline-flex items-center gap-2 rounded-xl border border-white/20 bg-slate-950/45 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-slate-950/70"
             >
-              <div
-                className="
-      flex
-      flex-col
-      gap-8
-      lg:flex-row
-      lg:items-end
-    "
-              >
-                {/* University Logo */}
+              <ArrowLeft size={17} />
+              Back
+            </button>
+
+            {/* Hero Content */}
+
+            <div className="absolute inset-x-6 bottom-7 z-10">
+              <div className="flex flex-col gap-7 lg:flex-row lg:items-end">
+                {/* Logo */}
 
                 <motion.div
-                  initial={{
-                    opacity: 0,
-                    scale: 0.9,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                  }}
-                  transition={{
-                    delay: 0.2,
-                  }}
-                  className="
-        flex
-        h-36
-        w-36
-        items-center
-        justify-center
-        rounded-[30px]
-        border
-        border-white/70
-        bg-white
-        p-5
-        shadow-2xl
-      "
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.15 }}
+                  className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/70 bg-white p-4 shadow-2xl"
                 >
                   <img
-                    src={university.universityLogo || nextLogo}
+                    src={
+                      university.universityLogo || "/logo.png"
+                    }
                     alt={university.universityName}
-                    className="
-          h-full
-          w-full
-          object-contain
-        "
+                    className="h-full w-full object-contain"
                   />
                 </motion.div>
 
-                {/* University Details */}
+                {/* University Information */}
 
-                <div className="flex-1 text-white drop-shadow-lg">
-                  {/* Ranking */}
-
+                <div className="min-w-0 flex-1 text-white">
                   {university.ranking && (
-                    <div
-                      className="
-            inline-flex
-            items-center
-            gap-2
-            rounded-full
-           bg-white/90
-border-white
-text-amber-700
-            px-4
-            py-2
-            text-sm
-            font-semibold
-            
-          "
-                    >
-                      🏆 Ranked #{university.ranking}
+                    <div className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950 shadow-lg">
+                      <Award size={16} />
+                      Ranked #{university.ranking}
                     </div>
                   )}
 
-                  {/* University Name */}
-
-                  <h1
-                    className="
-          mt-5
-          text-4xl
-          md:text-5xl
-          lg:text-6xl
-          font-black
-          leading-tight
-          text-black
-        "
-                  >
+                  <h1 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl lg:text-5xl">
                     {university.universityName}
                   </h1>
 
-                  {/* Location */}
+                  <div className="mt-4 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/90">
+                    {locationText && (
+                      <div className="flex items-center gap-2">
+                        <MapPin
+                          size={17}
+                          className="text-teal-300"
+                        />
 
-                  <div
-                    className="
-          mt-5
-          flex
-          flex-wrap
-          gap-6
-         text-black
-drop-shadow-md
-        "
-                  >
+                        <span>{locationText}</span>
+                      </div>
+                    )}
+
                     <div className="flex items-center gap-2">
-                      <MapPin size={18} className="text-cyan-300" />
+                      <Building2
+                        size={17}
+                        className="text-teal-300"
+                      />
 
                       <span>
-                        {[university.city, university.state, university.country]
-                          .filter(Boolean)
-                          .join(", ")}
+                        {university.universityType ||
+                          "University"}
                       </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Building2 size={18} className="text-blue-300" />
-
-                      <span>{university.universityType}</span>
                     </div>
                   </div>
 
                   {/* Approval Badges */}
 
-                  <div className="mt-6 flex flex-wrap gap-3">
+                  <div className="mt-5 flex flex-wrap gap-2">
                     {university.ugcApproved && (
-                      <div
-                        className="
-flex
-items-center
-gap-2
-rounded-full
-bg-white/90
-border
-border-white
-px-4
-py-2
-text-sm
-font-bold
-text-green-700
-shadow-lg
-"
-                      >
-                        <BadgeCheck size={18} />
-                        UGC Approved
-                      </div>
+                      <ApprovalBadge
+                        icon={<BadgeCheck size={15} />}
+                        text="UGC Approved"
+                      />
                     )}
 
                     {university.naacVerified && (
-                      <div
-                        className="
-              flex
-              items-center
-              gap-2
-              rounded-full
-             
-              px-4
-              py-2
-             bg-white/90
-border-white
-text-cyan-700
-              font-semibold
-              text-cyan-200
-            "
-                      >
-                        <BadgeCheck size={18} />
-                        NAAC Accredited
-                      </div>
+                      <ApprovalBadge
+                        icon={<BadgeCheck size={15} />}
+                        text="NAAC Accredited"
+                      />
                     )}
 
                     {university.aiuApproved && (
-                      <div
-                        className="
-              flex
-              items-center
-              gap-2
-              rounded-full
-              bg-purple-500/20
-              border
-              border-purple-300/30
-              px-4
-              py-2
-              text-sm
-              font-semibold
-              text-purple-200
-            "
-                      >
-                        <BadgeCheck size={18} />
-                        AIU Approved
-                      </div>
+                      <ApprovalBadge
+                        icon={<BadgeCheck size={15} />}
+                        text="AIU Approved"
+                      />
                     )}
 
                     {university.nirfRanked && (
-                      <div
-                        className="
-              rounded-full
-              bg-white/90
-border-white
-text-purple-700
-              px-4
-              py-2
-               text-sm           
-              font-semibold
-             
-            "
-                      >
-                        ⭐ NIRF Ranked
-                      </div>
+                      <ApprovalBadge
+                        icon={<Award size={15} />}
+                        text="NIRF Ranked"
+                      />
                     )}
                   </div>
                 </div>
 
+                {/* Desktop Apply Card */}
+
                 <motion.div
-                  initial={{ opacity: 0, x: 40 }}
+                  initial={{ opacity: 0, x: 30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="hidden lg:block w-[360px]"
+                  transition={{ delay: 0.25 }}
+                  className="hidden w-[320px] shrink-0 lg:block"
                 >
-                  <div
-                    className="
-
-      rounded-[28px]
-
-
-
-      bg-white/95
-
-
-
-      p-7
-
-
-
-      shadow-2xl
-
-
-
-      backdrop-blur-xl
-
-    "
-                  >
-                    <div
-                      className="
-
-        inline-flex
-
-
-
-        rounded-full
-
-
-
-        bg-green-100
-
-
-
-        px-4
-
-        py-2
-
-
-
-        text-sm
-
-        font-bold
-
-
-
-        text-green-700
-
-      "
-                    >
-                      🟢 Admissions Open 2026
+                  <div className="rounded-2xl bg-white p-6 shadow-2xl">
+                    <div className="inline-flex rounded-full bg-green-50 px-3 py-1.5 text-sm font-bold text-green-700">
+                      ● Admissions Open 2026
                     </div>
 
-                    <p className="mt-5 text-lg text-slate-600">
-                      Apply now and secure your future!
+                    <h3 className="mt-4 text-xl font-bold text-slate-950">
+                      Start Your Admission
+                    </h3>
+
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      Apply now and get expert guidance for your
+                      admission journey.
                     </p>
 
                     <button
+                      type="button"
                       onClick={() => setApplyModalOpen(true)}
-                      className="
-
-          mt-6
-
-
-
-          w-full
-
-
-
-          rounded-2xl
-
-
-
-          bg-gradient-to-r
-
-          from-cyan-500
-
-          to-blue-600
-
-
-
-          py-4
-
-
-
-          font-bold
-
-
-
-          text-white
-
-        "
+                      className="mt-5 w-full rounded-xl bg-yellow-400 py-3.5 font-bold text-slate-950 transition hover:bg-yellow-300"
                     >
-                      Apply Now →
+                      Apply Now
                     </button>
 
                     {university.website && (
@@ -544,1175 +375,504 @@ text-purple-700
                         href={university.website}
                         target="_blank"
                         rel="noreferrer"
-                        className="
-
-            mt-4
-
-
-
-            flex
-
-
-
-            items-center
-
-            justify-center
-
-
-
-            gap-2
-
-
-
-            rounded-2xl
-
-
-
-            border
-
-
-
-            py-4
-
-
-
-            font-semibold
-
-
-
-            text-slate-700
-
-          "
+                        className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-slate-200 py-3.5 font-semibold text-slate-700 transition hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700"
                       >
-                        <Globe size={18} />
-                        Visit Official Website
+                        <Globe size={17} />
+                        Official Website
+                        <ExternalLink size={15} />
                       </a>
                     )}
                   </div>
                 </motion.div>
               </div>
             </div>
-
-            {/* Back Button */}
-
-            <Link
-              to="/universities"
-              className="
-                absolute
-                left-8
-                top-8
-
-                inline-flex
-                items-center
-                gap-2
-
-                rounded-2xl
-
-                border
-                border-white/30
-
-                bg-white/40
-
-                px-5
-                py-3
-
-                text-white
-
-                backdrop-blur-xl
-
-                transition
-
-                hover:bg-white/30
-              "
-            >
-              <ArrowLeft size={18} />
-              Back to Universities
-            </Link>
           </div>
 
-        {/* ================= Premium Stats Cards ================= */}
+          {/* =================================================
+              STATS
+          ================================================== */}
 
-<div className="pt-8 px-6 pb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {/* Total Courses */}
+          <div className="grid gap-4 p-5 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard
+              icon={<GraduationCap size={24} />}
+              iconBg="bg-teal-50"
+              iconColor="text-teal-700"
+              label="Total Courses"
+              value={`${courses.length}+`}
+            />
 
-            <div
-              className="
-flex
-items-center
-gap-4
-rounded-3xl
-bg-white/90
-backdrop-blur-xl
-border
-border-white
-p-5
-shadow-lg
-"
-            >
-              <div
-                className="
-flex
-h-14
-w-14
-shrink-0
-items-center
-justify-center
-rounded-2xl
-bg-cyan-100
-"
-              >
-                <GraduationCap className="text-cyan-600" size={26} />
-              </div>
+            <StatCard
+              icon={<IndianRupee size={24} />}
+              iconBg="bg-green-50"
+              iconColor="text-green-600"
+              label="Lowest Fee"
+              value={
+                lowestFee > 0
+                  ? `₹${lowestFee.toLocaleString("en-IN")}`
+                  : "N/A"
+              }
+            />
 
-              <div>
-                <p className="text-sm text-slate-500">Total Courses</p>
+            <StatCard
+              icon={<TrendingUp size={24} />}
+              iconBg="bg-amber-50"
+              iconColor="text-amber-600"
+              label="Placement Rate"
+              value={`${university.placementPercentage || 0}%`}
+            />
 
-                <h3
-                  className="
-text-2xl
-font-black
-text-slate-900
-"
-                >
-                  {courses.length}+
-                </h3>
-              </div>
-            </div>
-
-            {/* Lowest Fee */}
-
-            <div
-              className="
-flex
-items-center
-gap-4
-rounded-3xl
-bg-white/90
-backdrop-blur-xl
-border
-border-white
-p-5
-shadow-lg
-"
-            >
-              <div
-                className="
-flex
-h-14
-w-14
-shrink-0
-items-center
-justify-center
-rounded-2xl
-bg-green-100
-"
-              >
-                <IndianRupee className="text-green-600" size={26} />
-              </div>
-
-              <div>
-                <p className="text-sm text-slate-500">Lowest Fee</p>
-
-                <h3
-                  className="
-text-2xl
-font-black
-text-slate-900
-"
-                >
-                  ₹{lowestFee.toLocaleString()}
-                </h3>
-              </div>
-            </div>
-
-            {/* Placement Rate */}
-
-            <div
-              className="
-flex
-items-center
-gap-4
-rounded-3xl
-bg-white/90
-backdrop-blur-xl
-border
-border-white
-p-5
-shadow-lg
-"
-            >
-              <div
-                className="
-flex
-h-14
-w-14
-shrink-0
-items-center
-justify-center
-rounded-2xl
-bg-amber-100
-"
-              >
-                <TrendingUp className="text-amber-600" size={26} />
-              </div>
-
-              <div>
-                <p className="text-sm text-slate-500">Placement Rate</p>
-
-                <h3
-                  className="
-text-2xl
-font-black
-text-slate-900
-"
-                >
-                  {university.placementPercentage || 0}%
-                </h3>
-              </div>
-            </div>
-
-            {/* Highest Package */}
-
-            <div
-              className="
-flex
-items-center
-gap-4
-rounded-3xl
-bg-white/90
-backdrop-blur-xl
-border
-border-white
-p-5
-shadow-lg
-"
-            >
-              <div
-                className="
-flex
-h-14
-w-14
-shrink-0
-items-center
-justify-center
-rounded-2xl
-bg-purple-100
-"
-              >
-                <Award className="text-purple-600" size={26} />
-              </div>
-
-              <div>
-                <p className="text-sm text-slate-500">Highest Package</p>
-
-                <h3
-                  className="
-text-2xl
-font-black
-text-slate-900
-"
-                >
-                  ₹{university.highestPackage || 0} LPA
-                </h3>
-              </div>
-            </div>
+            <StatCard
+              icon={<Award size={24} />}
+              iconBg="bg-purple-50"
+              iconColor="text-purple-600"
+              label="Highest Package"
+              value={`₹${university.highestPackage || 0} LPA`}
+            />
           </div>
         </motion.div>
 
-        {/* ========================================================= */}
-        {/* About + Quick Information */}
-        {/* ========================================================= */}
+        {/* ===================================================
+            ABOUT + QUICK INFORMATION
+        ==================================================== */}
 
-        <div className="mt-14 grid gap-8 lg:grid-cols-3">
-          {/* ================= About University ================= */}
+        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+          {/* About */}
 
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="lg:col-span-2"
+            transition={{ duration: 0.5 }}
+            className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm sm:p-9"
           >
-            <div
-              className="
-                relative
-                overflow-hidden
-
-                rounded-[32px]
-
-                border
-                border-white/70
-
-                bg-white/80
-
-                backdrop-blur-xl
-
-                p-8
-                lg:p-10
-
-                shadow-[0_20px_60px_rgba(15,23,42,.06)]
-              "
-            >
-              {/* Glow */}
-
-              <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-cyan-200/30 blur-[100px]" />
-
-              <div className="relative z-10">
-                <div className="inline-flex items-center gap-2 rounded-full bg-cyan-100 px-4 py-2 text-sm font-semibold text-cyan-700">
-                  🏛 About University
-                </div>
-
-                <h2 className="mt-5 text-4xl font-black text-slate-900">
-                  Know Your University
-                </h2>
-
-                <p className="mt-6 leading-9 text-[17px] text-slate-600 whitespace-pre-line">
-                  {university.description ||
-                    "No description available for this university."}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* ================= Quick Information ================= */}
-
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div
-              className="
-                rounded-[32px]
-
-                border
-                border-white/70
-
-                bg-white/80
-
-                backdrop-blur-xl
-
-                p-8
-
-                shadow-[0_20px_60px_rgba(15,23,42,.06)]
-              "
-            >
-              <h3 className="text-3xl font-black text-slate-900">
-                Quick Information
-              </h3>
-
-              <div className="mt-8 space-y-5">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">University Type</span>
-
-                  <span className="font-bold text-slate-900">
-                    {university.universityType || "N/A"}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Established</span>
-
-                  <span className="font-bold text-slate-900">
-                    {university.establishedYear || "N/A"}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Country</span>
-
-                  <span className="font-bold text-slate-900">
-                    {university.country || "N/A"}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">State</span>
-
-                  <span className="font-bold text-slate-900">
-                    {university.state || "N/A"}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">City</span>
-
-                  <span className="font-bold text-slate-900">
-                    {university.city || "N/A"}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Admission</span>
-
-                  <span
-                    className={`font-bold ${
-                      university.admissionOpen
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {university.admissionOpen ? "Open" : "Closed"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* ========================================================= */}
-        {/* Premium Information Cards */}
-        {/* ========================================================= */}
-
-        <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {/* Courses */}
-
-          <div
-            className="
-flex
-items-center
-gap-4
-rounded-[28px]
-border
-border-white
-bg-white/80
-backdrop-blur-xl
-p-5
-shadow-lg
-"
-          >
-            <div
-              className="
-flex
-h-14
-w-14
-shrink-0
-items-center
-justify-center
-rounded-2xl
-bg-cyan-100
-"
-            >
-              <GraduationCap className="text-cyan-600" size={28} />
-            </div>
-
-            <div>
-              <p className="text-sm text-slate-500">Total Courses</p>
-
-              <h3
-                className="
-text-3xl
-font-black
-text-slate-900
-"
-              >
-                {courses.length}+
-              </h3>
-            </div>
-          </div>
-
-          {/* Fee */}
-
-          <div
-            className="
-flex
-items-center
-gap-4
-rounded-[28px]
-border
-border-white
-bg-white/80
-backdrop-blur-xl
-p-5
-shadow-lg
-"
-          >
-            <div
-              className="
-flex
-h-14
-w-14
-shrink-0
-items-center
-justify-center
-rounded-2xl
-bg-green-100
-"
-            >
-              <IndianRupee className="text-green-600" size={28} />
-            </div>
-
-            <div>
-              <p className="text-sm text-slate-500">Starting Fee</p>
-
-              <h3
-                className="
-text-2xl
-font-black
-text-slate-900
-"
-              >
-                ₹{lowestFee.toLocaleString()}
-              </h3>
-            </div>
-          </div>
-
-          {/* Placement */}
-
-          <div
-            className="
-flex
-items-center
-gap-4
-rounded-[28px]
-border
-border-white
-bg-white/80
-backdrop-blur-xl
-p-5
-shadow-lg
-"
-          >
-            <div
-              className="
-flex
-h-14
-w-14
-shrink-0
-items-center
-justify-center
-rounded-2xl
-bg-amber-100
-"
-            >
-              <TrendingUp className="text-amber-600" size={28} />
-            </div>
-
-            <div>
-              <p className="text-sm text-slate-500">Placement Rate</p>
-
-              <h3
-                className="
-text-3xl
-font-black
-text-slate-900
-"
-              >
-                {university.placementPercentage || 0}%
-              </h3>
-            </div>
-          </div>
-
-          {/* Package */}
-
-          <div
-            className="
-flex
-items-center
-gap-4
-rounded-[28px]
-border
-border-white
-bg-white/80
-backdrop-blur-xl
-p-5
-shadow-lg
-"
-          >
-            <div
-              className="
-flex
-h-14
-w-14
-shrink-0
-items-center
-justify-center
-rounded-2xl
-bg-violet-100
-"
-            >
-              <Award className="text-violet-600" size={28} />
-            </div>
-
-            <div>
-              <p className="text-sm text-slate-500">Highest Package</p>
-
-              <h3
-                className="
-text-2xl
-font-black
-text-slate-900
-"
-              >
-                ₹{university.highestPackage || 0} LPA
-              </h3>
-            </div>
-          </div>
-        </div>
-        {/* ========================================================= */}
-        {/* Available Courses */}
-        {/* ========================================================= */}
-
-        <div className="mt-20">
-          <div className="text-center">
-            <span className="inline-flex rounded-full bg-cyan-100 px-4 py-2 text-sm font-semibold text-cyan-700">
-              🎓 Programs Offered
+            <span className="inline-flex rounded-full bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-700">
+              About University
             </span>
 
-            <h2 className="mt-4 text-5xl font-black text-slate-900">
-              Available Courses
+            <h2 className="mt-5 text-3xl font-black text-slate-950 sm:text-4xl">
+              Know Your University
             </h2>
+
+            <p className="mt-5 whitespace-pre-line text-[16px] leading-8 text-slate-500">
+              {university.description ||
+                "No description available for this university."}
+            </p>
+          </motion.div>
+
+          {/* Quick Information */}
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm sm:p-8"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-bold uppercase tracking-wider text-teal-700">
+                  Overview
+                </p>
+
+                <h3 className="mt-1 text-2xl font-black text-slate-950">
+                  Quick Information
+                </h3>
+              </div>
+
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+                <Building2 size={22} />
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <InfoRow
+                label="University Type"
+                value={university.universityType}
+              />
+
+              <InfoRow
+                label="Established"
+                value={university.establishedYear}
+              />
+
+              <InfoRow
+                label="Country"
+                value={university.country}
+              />
+
+              <InfoRow
+                label="State"
+                value={university.state}
+              />
+
+              <InfoRow
+                label="City"
+                value={university.city}
+              />
+
+              <div className="flex items-center justify-between gap-4 pt-4">
+                <span className="text-sm text-slate-500">
+                  Admission
+                </span>
+
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-bold ${
+                    university.admissionOpen
+                      ? "bg-green-50 text-green-700"
+                      : "bg-red-50 text-red-700"
+                  }`}
+                >
+                  {university.admissionOpen
+                    ? "Open"
+                    : "Closed"}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* ===================================================
+            AVAILABLE COURSES
+        ==================================================== */}
+
+        <section className="mt-10">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <span className="inline-flex rounded-full bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-700">
+                Programs Offered
+              </span>
+
+              <h2 className="mt-4 text-3xl font-black text-slate-950 sm:text-4xl">
+                Available Courses
+              </h2>
+
+              <p className="mt-2 text-slate-500">
+                Explore courses, duration, fees and admission
+                options.
+              </p>
+            </div>
+
+            <div className="text-sm font-semibold text-slate-500">
+              {courses.length} Programs Available
+            </div>
           </div>
 
           {courses.length > 0 ? (
-            <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {courses.map((course) => (
-                <div
-                  key={course._id}
-                  className="
-                  group
-
-                  rounded-[30px]
-
-                  border
-                  border-white
-
-                  bg-white/85
-
-                  backdrop-blur-xl
-
-                  p-7
-
-                  shadow-lg
-
-                  transition-all
-                  duration-300
-
-                  hover:-translate-y-2
-                  hover:shadow-2xl
-                "
+            <div className="mt-7 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {courses.map((course, index) => (
+                <motion.div
+                  key={course._id || index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{
+                    duration: 0.4,
+                    delay: index * 0.05,
+                  }}
+                  className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-xl"
                 >
                   <div className="flex items-center justify-between">
                     <span
-                      className={`
-                      rounded-full
-                      px-3
-                      py-1
-                      text-xs
-                      font-semibold
-
-                      ${
+                      className={`rounded-full px-3 py-1 text-xs font-bold ${
                         course.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }
-                    `}
+                          ? "bg-green-50 text-green-700"
+                          : "bg-red-50 text-red-700"
+                      }`}
                     >
-                      {course.status}
+                      {course.status || "Available"}
                     </span>
 
-                    <GraduationCap className="text-cyan-600" size={22} />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+                      <GraduationCap size={21} />
+                    </div>
                   </div>
 
-                  <h3 className="mt-5 text-2xl font-black text-slate-900">
+                  <h3 className="mt-5 text-2xl font-black text-slate-950">
                     {course.courseName}
                   </h3>
 
                   <div className="mt-6 space-y-4">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Duration</span>
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                      <span className="text-sm text-slate-500">
+                        Duration
+                      </span>
 
-                      <span className="font-bold text-slate-900">
-                        {course.duration}
+                      <span className="text-sm font-bold text-slate-950">
+                        {course.duration || "N/A"}
                       </span>
                     </div>
 
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Course Fee</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-500">
+                        Course Fee
+                      </span>
 
                       <span className="font-black text-green-600">
-                        ₹{course.fees?.toLocaleString()}
+                        {course.fees
+                          ? `₹${Number(
+                              course.fees
+                            ).toLocaleString("en-IN")}`
+                          : "Contact Us"}
                       </span>
                     </div>
                   </div>
 
                   <button
+                    type="button"
                     onClick={() => {
                       setSelectedCourse(course.courseName);
                       setApplyModalOpen(true);
                     }}
-                    className="
-                    mt-7
-                    w-full
-
-                    rounded-2xl
-
-                    bg-gradient-to-r
-                    from-cyan-500
-                    to-blue-600
-
-                    py-3
-
-                    font-bold
-                    text-white
-                  "
+                    className="mt-7 w-full rounded-xl bg-teal-700 py-3.5 font-bold text-white transition hover:bg-teal-800"
                   >
-                    Apply Now
+                    Apply for this Course
                   </button>
-                </div>
+                </motion.div>
               ))}
             </div>
           ) : (
-            <div className="mt-10 rounded-3xl bg-white p-10 text-center shadow-lg">
-              No Courses Available
+            <div className="mt-7 rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-12 text-center">
+              <GraduationCap
+                size={42}
+                className="mx-auto text-slate-400"
+              />
+
+              <p className="mt-4 font-semibold text-slate-500">
+                No Courses Available
+              </p>
             </div>
           )}
-        </div>
+        </section>
 
-        {/* ========================================================= */}
-        {/* Placement Highlights */}
-        {/* ========================================================= */}
+        {/* ===================================================
+            PLACEMENT HIGHLIGHTS
+        ==================================================== */}
 
-        <div className="mt-20">
-          <h2 className="text-4xl font-black text-slate-900">
-            Placement Highlights
-          </h2>
+        <section className="mt-10">
+          <div>
+            <span className="inline-flex rounded-full bg-green-50 px-4 py-2 text-sm font-semibold text-green-700">
+              Career Opportunities
+            </span>
 
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {/* Placement Rate */}
-
-            <div
-              className="
-      flex
-      items-center
-      gap-5
-      rounded-3xl
-      bg-white
-      p-5
-      shadow-lg
-    "
-            >
-              <div
-                className="
-        flex
-        h-14
-        w-14
-        shrink-0
-        items-center
-        justify-center
-        rounded-2xl
-        bg-green-100
-      "
-              >
-                <TrendingUp size={30} className="text-green-600" />
-              </div>
-
-              <div>
-                <p className="text-sm text-slate-500">Placement Rate</p>
-
-                <h3
-                  className="
-          text-3xl
-          font-black
-          text-slate-900
-        "
-                >
-                  {university.placementPercentage || 0}%
-                </h3>
-              </div>
-            </div>
-
-            {/* Highest Package */}
-
-            <div
-              className="
-      flex
-      items-center
-      gap-5
-      rounded-3xl
-      bg-white
-      p-5
-      shadow-lg
-    "
-            >
-              <div
-                className="
-        flex
-        h-14
-        w-14
-        shrink-0
-        items-center
-        justify-center
-        rounded-2xl
-        bg-amber-100
-      "
-              >
-                <Award size={30} className="text-amber-600" />
-              </div>
-
-              <div>
-                <p className="text-sm text-slate-500">Highest Package</p>
-
-                <h3
-                  className="
-          text-3xl
-          font-black
-          text-slate-900
-        "
-                >
-                  ₹{university.highestPackage || 0}
-                </h3>
-              </div>
-            </div>
-
-            {/* Average Package */}
-
-            <div
-              className="
-      flex
-      items-center
-      gap-5
-      rounded-3xl
-      bg-white
-      p-5
-      shadow-lg
-    "
-            >
-              <div
-                className="
-        flex
-        h-14
-        w-14
-        shrink-0
-        items-center
-        justify-center
-        rounded-2xl
-        bg-cyan-100
-      "
-              >
-                <IndianRupee size={30} className="text-cyan-600" />
-              </div>
-
-              <div>
-                <p className="text-sm text-slate-500">Average Package</p>
-
-                <h3
-                  className="
-          text-3xl
-          font-black
-          text-slate-900
-        "
-                >
-                  ₹{university.averagePackage || 0}
-                </h3>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ========================================================= */}
-        {/* Facilities */}
-        {/* ========================================================= */}
-
-        <div className="mt-20">
-          <h2 className="text-4xl font-black text-slate-900">
-            Campus Facilities
-          </h2>
-
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {/* Hostel */}
-
-            <div
-              className="
-flex
-items-center
-gap-5
-rounded-3xl
-bg-white
-p-5
-shadow-lg
-"
-            >
-              <div
-                className="
-flex
-h-14
-w-14
-shrink-0
-items-center
-justify-center
-rounded-2xl
-bg-cyan-100
-"
-              >
-                <Building2 size={30} className="text-cyan-600" />
-              </div>
-
-              <div>
-                <h3
-                  className="
-text-xl
-font-bold
-text-slate-900
-"
-                >
-                  Hostel Facility
-                </h3>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  {university.hostelAvailable
-                    ? "Available for students."
-                    : "Currently unavailable."}
-                </p>
-              </div>
-            </div>
-
-            {/* Scholarship */}
-
-            <div
-              className="
-flex
-items-center
-gap-5
-rounded-3xl
-bg-white
-p-5
-shadow-lg
-"
-            >
-              <div
-                className="
-flex
-h-14
-w-14
-shrink-0
-items-center
-justify-center
-rounded-2xl
-bg-green-100
-"
-              >
-                <GraduationCap size={30} className="text-green-600" />
-              </div>
-
-              <div>
-                <h3
-                  className="
-text-xl
-font-bold
-text-slate-900
-"
-                >
-                  Scholarship
-                </h3>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  {university.scholarshipAvailable
-                    ? "Scholarships available."
-                    : "Information unavailable."}
-                </p>
-              </div>
-            </div>
-
-            {/* Accreditation */}
-
-            <div
-              className="
-flex
-items-center
-gap-5
-rounded-3xl
-bg-white
-p-5
-shadow-lg
-"
-            >
-              <div
-                className="
-flex
-h-14
-w-14
-shrink-0
-items-center
-justify-center
-rounded-2xl
-bg-purple-100
-"
-              >
-                <Award size={30} className="text-purple-600" />
-              </div>
-
-              <div>
-                <h3
-                  className="
-text-xl
-font-bold
-text-slate-900
-"
-                >
-                  Accreditation
-                </h3>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  UGC, NAAC & AICTE Approved
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ========================================================= */}
-        {/* Eligibility & Admission */}
-        {/* ========================================================= */}
-
-        <div className="mt-20 grid gap-8 lg:grid-cols-2">
-          <div className="rounded-[32px] bg-white p-8 shadow-lg">
-            <h2 className="text-3xl font-black text-slate-900">
-              Eligibility Criteria
+            <h2 className="mt-4 text-3xl font-black text-slate-950 sm:text-4xl">
+              Placement Highlights
             </h2>
+          </div>
 
-            <p className="mt-5 leading-8 text-slate-600 whitespace-pre-line">
+          <div className="mt-7 grid gap-5 md:grid-cols-3">
+            <HighlightCard
+              icon={<TrendingUp size={26} />}
+              iconBg="bg-green-50"
+              iconColor="text-green-600"
+              label="Placement Rate"
+              value={`${university.placementPercentage || 0}%`}
+            />
+
+            <HighlightCard
+              icon={<Award size={26} />}
+              iconBg="bg-amber-50"
+              iconColor="text-amber-600"
+              label="Highest Package"
+              value={`₹${university.highestPackage || 0} LPA`}
+            />
+
+            <HighlightCard
+              icon={<IndianRupee size={26} />}
+              iconBg="bg-teal-50"
+              iconColor="text-teal-700"
+              label="Average Package"
+              value={`₹${university.averagePackage || 0} LPA`}
+            />
+          </div>
+        </section>
+
+        {/* ===================================================
+            CAMPUS FACILITIES
+        ==================================================== */}
+
+        <section className="mt-10">
+          <div>
+            <span className="inline-flex rounded-full bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700">
+              Student Experience
+            </span>
+
+            <h2 className="mt-4 text-3xl font-black text-slate-950 sm:text-4xl">
+              Campus Facilities
+            </h2>
+          </div>
+
+          <div className="mt-7 grid gap-5 md:grid-cols-3">
+            <FacilityCard
+              icon={<Building2 size={25} />}
+              iconBg="bg-teal-50"
+              iconColor="text-teal-700"
+              title="Hostel Facility"
+              description={
+                university.hostelAvailable
+                  ? "Available for students."
+                  : "Currently unavailable."
+              }
+            />
+
+            <FacilityCard
+              icon={<GraduationCap size={25} />}
+              iconBg="bg-green-50"
+              iconColor="text-green-600"
+              title="Scholarship"
+              description={
+                university.scholarshipAvailable
+                  ? "Scholarships available."
+                  : "Information unavailable."
+              }
+            />
+
+            <FacilityCard
+              icon={<Award size={25} />}
+              iconBg="bg-purple-50"
+              iconColor="text-purple-600"
+              title="Accreditation"
+              description="UGC, NAAC & AICTE Approved"
+            />
+          </div>
+        </section>
+
+        {/* ===================================================
+            ELIGIBILITY + ADMISSION
+        ==================================================== */}
+
+        <section className="mt-10 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm sm:p-8">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+                <CheckCircle2 size={22} />
+              </div>
+
+              <h2 className="text-2xl font-black text-slate-950 sm:text-3xl">
+                Eligibility Criteria
+              </h2>
+            </div>
+
+            <p className="mt-5 whitespace-pre-line text-[16px] leading-8 text-slate-500">
               {university.eligibility ||
                 "Eligibility information not available."}
             </p>
           </div>
 
-          <div className="rounded-[32px] bg-white p-8 shadow-lg">
-            <h2 className="text-3xl font-black text-slate-900">
-              Admission Process
-            </h2>
+          <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm sm:p-8">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-yellow-50 text-yellow-700">
+                <GraduationCap size={22} />
+              </div>
 
-            <p className="mt-5 leading-8 text-slate-600 whitespace-pre-line">
+              <h2 className="text-2xl font-black text-slate-950 sm:text-3xl">
+                Admission Process
+              </h2>
+            </div>
+
+            <p className="mt-5 whitespace-pre-line text-[16px] leading-8 text-slate-500">
               {university.admissionProcess ||
                 "Admission process information not available."}
             </p>
           </div>
-        </div>
+        </section>
 
-        {/* ========================================================= */}
-        {/* Contact */}
-        {/* ========================================================= */}
+        {/* ===================================================
+            CONTACT INFORMATION
+        ==================================================== */}
 
-        <div className="mt-20 rounded-[32px] bg-white p-10 shadow-xl">
-          <h2 className="text-4xl font-black text-slate-900">
-            Contact Information
-          </h2>
-
-          <div className="mt-8 grid gap-8 md:grid-cols-2">
+        <section className="mt-10 rounded-3xl border border-slate-200 bg-white p-7 shadow-sm sm:p-9">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <h4 className="font-bold text-slate-900">Contact Details</h4>
+              <span className="inline-flex rounded-full bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-700">
+                Get In Touch
+              </span>
 
-              <div className="mt-5 space-y-4 text-slate-600">
-                <p>Email: {university.email || "Not Available"}</p>
-
-                <p>Phone: {university.phoneNumber || "Not Available"}</p>
-
-                <p>
-                  Location:{" "}
-                  {[university.city, university.state]
-                    .filter(Boolean)
-                    .join(", ")}
-                </p>
-              </div>
+              <h2 className="mt-4 text-3xl font-black text-slate-950 sm:text-4xl">
+                Contact Information
+              </h2>
             </div>
 
-            <div>
-              <h4 className="font-bold text-slate-900">Official Website</h4>
-
-              <p className="mt-4 text-slate-600">
-                Visit official website for latest updates.
-              </p>
-
-              {university.website && (
-                <a
-                  href={university.website}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="
-                  mt-5
-                  inline-flex
-                  items-center
-                  gap-2
-
-                  rounded-2xl
-
-                  bg-gradient-to-r
-                  from-cyan-500
-                  to-blue-600
-
-                  px-6
-                  py-3
-
-                  font-bold
-                  text-white
-                "
-                >
-                  <Globe size={18} />
-                  Visit Website
-                </a>
-              )}
-            </div>
+            {university.website && (
+              <a
+                href={university.website}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-bold text-teal-700 hover:text-teal-800"
+              >
+                Visit Official Website
+                <ExternalLink size={16} />
+              </a>
+            )}
           </div>
-        </div>
 
-        {/* ========================================================= */}
-        {/* Final CTA */}
-        {/* ========================================================= */}
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            <ContactCard
+              icon={<MapPin size={21} />}
+              title="Location"
+              value={
+                [university.city, university.state]
+                  .filter(Boolean)
+                  .join(", ") || "Not Available"
+              }
+            />
 
-        <div className="mt-20">
-          <div
-            className="
-            relative
-            overflow-hidden
+            <ContactCard
+              icon={<Globe size={21} />}
+              title="Website"
+              value={
+                university.website
+                  ? "Official website available"
+                  : "Not Available"
+              }
+            />
 
-            rounded-[40px]
+            <ContactCard
+              icon={<Building2 size={21} />}
+              title="Contact"
+              value={
+                university.phoneNumber ||
+                university.email ||
+                "Not Available"
+              }
+            />
+          </div>
+        </section>
 
-            bg-gradient-to-r
-            from-cyan-500
-            via-sky-500
-            to-blue-600
+        {/* ===================================================
+            FINAL CTA
+        ==================================================== */}
 
-            p-12
+        <section className="mt-10 overflow-hidden rounded-[32px] bg-slate-950 px-7 py-12 sm:px-10 lg:px-14">
+          <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl">
+              <span className="inline-flex rounded-full bg-teal-700/20 px-4 py-2 text-sm font-semibold text-teal-300">
+                Start Your Journey
+              </span>
 
-            text-center
+              <h2 className="mt-5 text-3xl font-black text-white sm:text-4xl">
+                Ready to start your admission journey?
+              </h2>
 
-            shadow-[0_30px_80px_rgba(14,165,233,.25)]
-          "
-          >
-            <h2 className="text-5xl font-black text-white">
-              Ready To Start Your Journey?
-            </h2>
-
-            <p className="mx-auto mt-5 max-w-3xl text-cyan-50 text-lg">
-              Apply today and get expert counselling, admission support and
-              career guidance.
-            </p>
+              <p className="mt-4 max-w-2xl leading-7 text-slate-300">
+                Apply now and get expert counselling, admission
+                support and personalised guidance.
+              </p>
+            </div>
 
             <button
+              type="button"
               onClick={() => setApplyModalOpen(true)}
-              className="
-              mt-8
-
-              rounded-2xl
-
-              bg-white
-
-              px-8
-              py-4
-
-              font-bold
-
-              text-cyan-700
-
-              shadow-xl
-            "
+              className="shrink-0 rounded-xl bg-yellow-400 px-8 py-4 font-bold text-slate-950 shadow-lg transition hover:bg-yellow-300"
             >
               Apply Now
             </button>
           </div>
-        </div>
+        </section>
       </div>
+
+      {/* ===================================================
+          APPLY MODAL
+      ==================================================== */}
 
       <ApplyNowModal
         isOpen={applyModalOpen}
@@ -1721,5 +881,152 @@ text-slate-900
         course={selectedCourse}
       />
     </section>
+  );
+}
+
+/* =========================================================
+   STAT CARD
+========================================================= */
+
+function StatCard({
+  icon,
+  iconBg,
+  iconColor,
+  label,
+  value,
+}) {
+  return (
+    <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-slate-300 hover:shadow-sm">
+      <div
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconBg} ${iconColor}`}
+      >
+        {icon}
+      </div>
+
+      <div className="min-w-0">
+        <p className="text-sm text-slate-500">{label}</p>
+
+        <h3 className="mt-1 truncate text-2xl font-black text-slate-950">
+          {value}
+        </h3>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   APPROVAL BADGE
+========================================================= */
+
+function ApprovalBadge({ icon, text }) {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm">
+      {icon}
+      {text}
+    </div>
+  );
+}
+
+/* =========================================================
+   INFO ROW
+========================================================= */
+
+function InfoRow({ label, value }) {
+  return (
+    <div className="flex items-center justify-between gap-4 border-b border-slate-100 py-4 last:border-b-0">
+      <span className="text-sm text-slate-500">
+        {label}
+      </span>
+
+      <span className="max-w-[60%] text-right text-sm font-bold text-slate-950">
+        {value || "N/A"}
+      </span>
+    </div>
+  );
+}
+
+/* =========================================================
+   HIGHLIGHT CARD
+========================================================= */
+
+function HighlightCard({
+  icon,
+  iconBg,
+  iconColor,
+  label,
+  value,
+}) {
+  return (
+    <div className="flex items-center gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+      <div
+        className={`flex h-13 w-13 shrink-0 items-center justify-center rounded-xl ${iconBg} ${iconColor}`}
+      >
+        {icon}
+      </div>
+
+      <div>
+        <p className="text-sm text-slate-500">{label}</p>
+
+        <h3 className="mt-1 text-2xl font-black text-slate-950">
+          {value}
+        </h3>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   FACILITY CARD
+========================================================= */
+
+function FacilityCard({
+  icon,
+  iconBg,
+  iconColor,
+  title,
+  description,
+}) {
+  return (
+    <div className="flex items-center gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+      <div
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconBg} ${iconColor}`}
+      >
+        {icon}
+      </div>
+
+      <div>
+        <h3 className="text-lg font-bold text-slate-950">
+          {title}
+        </h3>
+
+        <p className="mt-1 text-sm leading-6 text-slate-500">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   CONTACT CARD
+========================================================= */
+
+function ContactCard({ icon, title, value }) {
+  return (
+    <div className="flex items-start gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-teal-700 shadow-sm">
+        {icon}
+      </div>
+
+      <div className="min-w-0">
+        <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          {title}
+        </p>
+
+        <p className="mt-1 break-words text-sm font-semibold leading-6 text-slate-700">
+          {value}
+        </p>
+      </div>
+    </div>
   );
 }

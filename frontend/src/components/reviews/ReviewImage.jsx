@@ -10,19 +10,8 @@ import review from "../../assets/logo/review.png";
 export default function ReviewImage() {
   return (
     <div className="relative flex justify-center">
-
-      {/* Background Glow */}
-
-      <div className="absolute -top-10 left-10 h-60 w-60 rounded-full bg-cyan-300/20 blur-[120px]" />
-
-      <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-sky-300/20 blur-[140px]" />
-
-      {/* Main Container */}
-
-      <div className="relative flex items-center justify-center">
-
+      <div className="relative flex w-full items-center justify-center">
         {/* Image */}
-
         <img
           src={review}
           alt="Students"
@@ -30,222 +19,210 @@ export default function ReviewImage() {
             relative
             z-10
             w-full
-           max-w-[700px] lg:max-w-[760px]
+            max-w-[700px]
             object-contain
-            transition-all
-            duration-700
-            hover:scale-105
+            transition-transform
+            duration-500
+            hover:scale-[1.02]
           "
         />
 
         {/* Rating Card */}
-
         <div
           className="
             absolute
-           left-1
--top-16
+            left-0
+            top-4
             z-20
-            rounded-3xl
+            rounded-2xl
             border
-            border-white/70
-            bg-white/90
-            px-5
-            py-4
-            shadow-2xl
-            backdrop-blur-xl
-            transition
-            duration-500
-            hover:-translate-y-2
+            border-slate-200
+            bg-white
+            px-4
+            py-3
+            shadow-[0_12px_35px_rgba(15,23,42,0.08)]
+            transition-all
+            duration-300
+            hover:-translate-y-1
           "
         >
-
           <div className="flex items-center gap-2">
-
             <Star
               className="fill-yellow-400 text-yellow-400"
-              size={20}
+              size={18}
             />
 
-            <h4 className="font-bold text-slate-900">
-
+            <h4 className="text-[13px] font-black text-slate-950">
               4.9 Rating
-
             </h4>
-
           </div>
 
-          <p className="mt-2 text-sm text-slate-500">
-
+          <p className="mt-1.5 text-[12px] font-semibold text-slate-500">
             Based on 15,000+ Reviews
-
           </p>
-
         </div>
 
         {/* University Card */}
-
         <div
           className="
             absolute
-            -right-6
--top-25
+            right-0
+            top-10
             z-20
-            rounded-3xl
+            rounded-2xl
             border
-            border-white/70
-            bg-white/90
-            p-5
-            shadow-2xl
-            backdrop-blur-xl
-            transition
-            duration-500
-            hover:-translate-y-2
-          "
-        >
-
-          <div className="flex items-center gap-4">
-
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-100">
-
-              <GraduationCap
-                className="text-sky-600"
-                size={28}
-              />
-
-            </div>
-
-            <div>
-
-              <h3 className="text-3xl font-black">
-
-                250+
-
-              </h3>
-
-              <p className="text-sm text-slate-500">
-
-                Universities
-
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-                {/* Verified Card */}
-
-        <div
-          className="
-            absolute
-            -left-14
-bottom-32
-            z-20
-            rounded-3xl
-            border
-            border-white/70
-            bg-white/90
-            px-5
-            py-4
-            backdrop-blur-xl
-            shadow-2xl
+            border-slate-200
+            bg-white
+            p-4
+            shadow-[0_12px_35px_rgba(15,23,42,0.08)]
             transition-all
-            duration-500
-            hover:-translate-y-2
-            hover:shadow-cyan-200/60
+            duration-300
+            hover:-translate-y-1
           "
         >
           <div className="flex items-center gap-3">
-
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
-
-              <BadgeCheck
-                className="text-emerald-500"
-                size={26}
+            <div
+              className="
+                flex
+                h-12
+                w-12
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-teal-100
+                bg-teal-50
+              "
+            >
+              <GraduationCap
+                className="text-teal-700"
+                size={24}
               />
-
             </div>
 
             <div>
+              <h3 className="text-2xl font-black leading-none text-slate-950">
+                250+
+              </h3>
 
-              <h4 className="font-bold text-slate-900">
+              <p className="mt-1 text-[12px] font-semibold text-slate-500">
+                Universities
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Verified Card */}
+        <div
+          className="
+            absolute
+            bottom-20
+            left-0
+            z-20
+            rounded-2xl
+            border
+            border-slate-200
+            bg-white
+            px-4
+            py-3
+            shadow-[0_12px_35px_rgba(15,23,42,0.08)]
+            transition-all
+            duration-300
+            hover:-translate-y-1
+          "
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="
+                flex
+                h-11
+                w-11
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-teal-100
+                bg-teal-50
+              "
+            >
+              <BadgeCheck
+                className="text-teal-700"
+                size={23}
+              />
+            </div>
+
+            <div>
+              <h4 className="text-[13px] font-black text-slate-950">
                 Verified
               </h4>
 
-              <p className="text-sm text-slate-500">
+              <p className="mt-1 text-[12px] font-semibold text-slate-500">
                 Trusted Platform
               </p>
-
             </div>
-
           </div>
         </div>
 
         {/* Students Card */}
-
         <div
           className="
             absolute
-            -right-10
-          bottom-20
-
+            bottom-8
+            right-0
             z-20
-            rounded-3xl
+            rounded-2xl
             border
-            border-white/70
-            bg-white/90
-            px-6
-            py-5
-            backdrop-blur-xl
-            shadow-2xl
+            border-slate-200
+            bg-white
+            px-4
+            py-4
+            shadow-[0_12px_35px_rgba(15,23,42,0.08)]
             transition-all
-            duration-500
-            hover:-translate-y-2
-            hover:shadow-cyan-200/60
+            duration-300
+            hover:-translate-y-1
           "
         >
-          <div className="flex items-center gap-4">
-
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-100">
-
+          <div className="flex items-center gap-3">
+            <div
+              className="
+                flex
+                h-12
+                w-12
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-teal-100
+                bg-teal-50
+              "
+            >
               <Users
-                className="text-sky-600"
-                size={25}
+                className="text-teal-700"
+                size={23}
               />
-
             </div>
 
             <div>
-
-              <h3 className="text-3xl font-black text-slate-700">
+              <h3 className="text-2xl font-black leading-none text-slate-950">
                 15,000+
               </h3>
 
-              <p className="text-sm text-slate-300">
+              <p className="mt-1 text-[12px] font-semibold text-slate-500">
                 Students Guided
               </p>
-
             </div>
-
           </div>
-
         </div>
 
-        {/* Decorative Elements */}
+        {/* Small Decorative Element */}
+        <div className="absolute right-16 top-16 h-3 w-3 rounded-full bg-teal-400" />
 
-        <div className="absolute top-20 right-24 h-4 w-4 rounded-full bg-cyan-400 animate-pulse" />
+        <div className="absolute bottom-24 left-1/2 h-2.5 w-2.5 rounded-full bg-yellow-400" />
 
-        <div className="absolute bottom-32 left-1/2 h-3 w-3 rounded-full bg-sky-500 animate-ping" />
+        <div className="absolute right-5 top-1/2 h-12 w-12 rounded-full border border-teal-100" />
 
-        <div className="absolute top-1/2 right-8 h-16 w-16 rounded-full border border-cyan-300/40" />
-
-        <div className="absolute left-10 top-1/2 h-20 w-20 rounded-full bg-sky-300/20 blur-2xl" />
-
-        <div className="absolute right-0 bottom-20 h-24 w-24 rounded-full bg-cyan-300/20 blur-3xl" />
-
+        <div className="absolute left-8 top-1/2 h-14 w-14 rounded-full border border-slate-100" />
       </div>
-
     </div>
   );
 }

@@ -1,226 +1,56 @@
 import { motion } from "framer-motion";
-import { ShieldCheck } from "lucide-react";
 
 export default function SectionHeader() {
   return (
-    <div
-      className="
-relative
-max-w-5xl
-mx-auto
-text-center
-"
-    >
-      {/* Trusted Badge */}
-
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 20,
-        }}
-        whileInView={{
-          opacity: 1,
-          y: 0,
-        }}
-        viewport={{
-          once: true,
-        }}
-        transition={{
-          duration: 0.6,
-        }}
-        className="
-inline-flex
-items-center
-gap-2
-rounded-full
-border
-border-sky-200
-bg-white/90
-backdrop-blur-xl
-px-6
-py-3
-shadow-[0_10px_30px_rgba(14,165,233,.12)]
-"
-      >
-        <div
-          className="
-flex
-items-center
-justify-center
-w-7
-h-7
-rounded-full
-bg-gradient-to-br
-from-blue-600
-to-cyan-500
-text-white
-"
+    <section className="w-full bg-white px-[30px] pt-[45px] pb-0">
+      <div className="w-full mx-auto max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7 }}
+          className="w-full text-center"
         >
-          <ShieldCheck size={16} />
-        </div>
+          {/* Subtitle with Lines */}
+          <div className="mb-5 flex items-center justify-center gap-3">
+            <span className="h-px w-10 bg-slate-400" />
 
-        <span
-          className="
-text-sm
-font-bold
-tracking-[0.18em]
-uppercase
-text-blue-700
-"
-        >
-          Trusted Network
-        </span>
-      </motion.div>
+            <p className="text-[14px] font-[900] uppercase tracking-[0.18em] text-[#1a4d40]">
+              Trusted Network
+            </p>
 
-      {/* Heading */}
+            <span className="h-px w-10 bg-slate-400" />
+          </div>
 
-      <motion.h2
-        initial={{
-          opacity: 0,
-          y: 35,
-        }}
-        whileInView={{
-          opacity: 1,
-          y: 0,
-        }}
-        viewport={{
-          once: true,
-        }}
-        transition={{
-          delay: 0.15,
-          duration: 0.7,
-        }}
-        className="
-mt-8
-text-4xl
-leading-tight
-font-black
-tracking-tight
-text-slate-900
-sm:text-5xl
-lg:text-6xl
-"
-      >
-        A Network You Can Trust,
-        <br />
+          {/* Main Heading */}
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1, duration: 0.6 }}
+            className="text-[38px] font-[900] leading-[1.1] tracking-[-0.025em] text-slate-950 sm:text-[46px] lg:text-[52px]"
+          >
+            A Network You Can Trust.
+            <span className="block font-[900] text-[#131371]">
+              A Future You Can Build.
+            </span>
+          </motion.h2>
 
-        <span
-          className="
-bg-gradient-to-r
-from-blue-700
-via-sky-600
-to-cyan-500
-bg-clip-text
-text-transparent
-"
-        >
-          A Future You Can Build
-        </span>
-      </motion.h2>
-
-      {/* Decorative Line */}
-
-      <motion.div
-        initial={{
-          width: 0,
-          opacity: 0,
-        }}
-        whileInView={{
-          width: 170,
-          opacity: 1,
-        }}
-        viewport={{
-          once: true,
-        }}
-        transition={{
-          delay: 0.35,
-          duration: 0.6,
-        }}
-        className="
-mx-auto
-mt-8
-flex
-items-center
-justify-center
-gap-3
-"
-      >
-        <div
-          className="
-h-[2px]
-w-full
-rounded-full
-bg-gradient-to-r
-from-transparent
-to-cyan-500
-"
-        />
-
-        <div
-          className="
-flex
-items-center
-justify-center
-w-10
-h-10
-rounded-full
-bg-white
-border
-border-sky-200
-shadow-lg
-"
-        >
-          <ShieldCheck
-            size={18}
-            className="text-sky-600"
-          />
-        </div>
-
-        <div
-          className="
-h-[2px]
-w-full
-rounded-full
-bg-gradient-to-l
-from-transparent
-to-cyan-500
-"
-        />
-      </motion.div>
-
-      {/* Description */}
-
-      <motion.p
-        initial={{
-          opacity: 0,
-          y: 25,
-        }}
-        whileInView={{
-          opacity: 1,
-          y: 0,
-        }}
-        viewport={{
-          once: true,
-        }}
-        transition={{
-          delay: 0.45,
-          duration: 0.7,
-        }}
-        className="
-mx-auto
-mt-8
-max-w-3xl
-text-lg
-leading-9
-text-slate-600
-md:text-xl
-"
-      >
-        We collaborate with India's leading universities to deliver
-        trusted admission guidance, scholarship opportunities,
-        personalized counselling, and a seamless enrollment
-        experience that helps every student build a brighter future.
-      </motion.p>
-    </div>
+          {/* Description */}
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="mx-auto mt-5 max-w-3xl text-[15px] font-semibold leading-7 text-slate-500 sm:text-[16px]"
+          >
+            We collaborate with India's leading universities to deliver
+            trusted admission guidance, scholarship opportunities, personalized
+            counselling, and a seamless enrollment experience that helps every
+            student build a brighter future.
+          </motion.p>
+        </motion.div>
+      </div>
+    </section>
   );
 }

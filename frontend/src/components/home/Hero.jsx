@@ -7,15 +7,16 @@ import { heroSlides } from "./heroData";
 export default function Hero() {
   const [activeSlide, setActiveSlide] = useState(0);
 
+  // ================= AUTO SLIDE =================
   useEffect(() => {
-    const interval = setInterval(() => {
+    const timer = setTimeout(() => {
       setActiveSlide((prev) =>
         prev === heroSlides.length - 1 ? 0 : prev + 1
       );
-    }, 6000);
+    }, 40000);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearTimeout(timer);
+  }, [activeSlide]);
 
   const currentSlide = heroSlides[activeSlide];
 
@@ -23,11 +24,13 @@ export default function Hero() {
     <section
       className="
         relative
+        w-full
         overflow-hidden
-        min-h-[720px]
-        sm:min-h-[760px]
-        lg:h-[92vh]
-        lg:min-h-[720px]
+        min-h-[620px]
+        sm:min-h-[680px]
+        lg:h-[calc(100vh-80px)]
+        lg:min-h-[600px]
+        xl:min-h-[620px]
         bg-slate-900
       "
     >
@@ -90,7 +93,7 @@ export default function Hero() {
           absolute
           inset-x-0
           bottom-0
-          h-32
+          h-24
           bg-gradient-to-t
           from-black/35
           to-transparent
@@ -103,75 +106,56 @@ export default function Hero() {
         className="
           relative
           z-20
-          mx-auto
+          flex
+          h-full
           w-full
-          max-w-[1450px]
-          px-4
-          sm:px-6
-          lg:px-10
+          items-center
+          px-[30px]
         "
       >
-        <div
-  className="
-    flex
-    min-h-[720px]
-    items-start
-    pt-32
-    pb-28
-
-    sm:min-h-[760px]
-    sm:pt-28
-    sm:pb-28
-
-    lg:h-full
-    lg:min-h-0
-    lg:items-center
-    lg:translate-y-[3px]
-    lg:pt-0
-    lg:pb-0
-  "
->
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentSlide.id}
-              initial={{
-                opacity: 0,
-                x: -60,
-              }}
-              animate={{
-                opacity: 1,
-                x: 0,
-              }}
-              exit={{
-                opacity: 0,
-                x: -30,
-              }}
-              transition={{
-                duration: 0.8,
-              }}
-              className="
-                w-full
-                max-w-4xl
-              "
-            >
-              <HeroContent slide={currentSlide} />
-            </motion.div>
-          </AnimatePresence>
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentSlide.id}
+            initial={{
+              opacity: 0,
+              x: -60,
+            }}
+            animate={{
+              opacity: 1,
+              x: 0,
+            }}
+            exit={{
+              opacity: 0,
+              x: -30,
+            }}
+            transition={{
+              duration: 0.8,
+            }}
+            className="
+              w-full
+              max-w-4xl
+              py-16
+              sm:py-20
+              lg:py-10
+            "
+          >
+            <HeroContent slide={currentSlide} />
+          </motion.div>
+        </AnimatePresence>
 
         {/* ================= DOTS ================= */}
 
         <div
           className="
             absolute
-            bottom-7
+            bottom-5
             left-1/2
             z-30
             flex
             -translate-x-1/2
             items-center
             gap-2.5
-            sm:bottom-8
+            sm:bottom-6
             sm:gap-3
           "
         >
