@@ -1,18 +1,16 @@
 import Hero from "../components/home/Hero";
-// import Stats from "../components/home/Stats/Stats";
+import Stats from "../components/home/Stats/Stats";
 
 import UniversitiesSection from "../components/home/UniversitiesSection";
 import CoursesSection from "../components/home/CoursesSection";
-// import WhyChooseUs from "../components/home/WhyChooseUs";
-// import CounsellingForm from "../components/home/CounsellingForm";
+import WhyChooseUs from "../components/home/WhyChooseUs";
+import CounsellingForm from "../components/home/CounsellingForm";
 import FAQ from "../components/home/FAQ";
 import ProcessSection from "../components/home/ProcessSection";
-// import Reviews from "./Reviews";
-import ReviewCardss from "../components/reviews/ReviewCardss";
-// import WhatWeOffer from "../components/home/WhatWeOffer";
+import Reviews from "./Reviews";
+import WhatWeOffer from "../components/home/WhatWeOffer";
 import TrustedUniversities from "../components/home/Trusteduniver/TrustedUniversities";
-import AboutContent from "../components/about/AboutContent";
-
+import AboutHero from "../components/about/AboutHero";
 
 
 
@@ -20,20 +18,18 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <TrustedUniversities />
-      <AboutContent/>
+      <AboutHero/>
     
-      
-      {/* <Stats /> */}
+      <TrustedUniversities />
+      <Stats />
      
       <UniversitiesSection />
       <CoursesSection />
-      {/* <WhyChooseUs /> */}
-      {/* <CounsellingForm /> */}
-      {/* <Reviews /> */}
-      <ReviewCardss/>
+      <WhyChooseUs />
+      <CounsellingForm />
+      <Reviews />
       <ProcessSection />
-      {/* <WhatWeOffer /> */}
+      <WhatWeOffer />
       <FAQ />
       
     </>

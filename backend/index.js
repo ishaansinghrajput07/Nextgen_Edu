@@ -4,8 +4,8 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
 import { fileURLToPath } from "url";
+import connectDB from "./util/db.js";
 import contactRoute from "./Routes/contact.js";
 dotenv.config({});
 import websiteRoute from "./Routes/website_routes.js";
@@ -119,23 +119,16 @@ app.use((req, res, next) => {
   });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Server startup aborted because MongoDB is unavailable.");
+    process.exitCode = 1;
+  }
+};
 
-mongoose.connection.on("connected", () => {
-  console.log("MongoDB connection: connected");
-});
-
-mongoose.connection.on("error", (err) => {
-  console.error("MongoDB connection: failed", err.message);
-});
-
-mongoose.connection.on("disconnected", () => {
-  console.log("MongoDB connection: disconnected");
-});
-
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((error) => console.error("MongoDB connection failed:", error));
+startServer();

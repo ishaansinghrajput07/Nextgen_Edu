@@ -20,12 +20,10 @@ const TopBar = () => {
   return (
     <div
       className="
-        hidden
-        lg:block
+        hidden lg:block
         relative
         overflow-hidden
-        border-b
-        border-sky-400/20
+        border-b border-sky-400/20
         bg-gradient-to-r
         from-slate-950
         via-sky-950
@@ -33,8 +31,7 @@ const TopBar = () => {
         text-white
       "
     >
-      {/* ================= SUBTLE GLOW ================= */}
-
+      {/* Subtle Glow */}
       <div
         className="
           pointer-events-none
@@ -49,39 +46,30 @@ const TopBar = () => {
         "
       />
 
-      {/* ================= CONTAINER ================= */}
-
       <div
         className="
           relative
+          mx-auto
           flex
           min-h-[48px]
-          w-full
+          max-w-[1440px]
           items-center
           justify-between
-          gap-5
-          px-[30px]
+          gap-6
+          px-5
+          xl:px-8
         "
       >
         {/* ================= LEFT ================= */}
 
-        <div
-          className="
-            flex
-            min-w-0
-            items-center
-            gap-4
-            xl:gap-5
-          "
-        >
-          {/* ================= PHONE ================= */}
+        <div className="flex items-center gap-5 xl:gap-7">
+          {/* Phone */}
 
           <a
             href="tel:+919217381363"
             className="
               group
               flex
-              shrink-0
               items-center
               gap-2.5
               text-sm
@@ -97,38 +85,33 @@ const TopBar = () => {
                 flex
                 h-7
                 w-7
-                shrink-0
                 items-center
                 justify-center
                 rounded-lg
-                bg-cyan-400/10
+                bg-white/10
                 ring-1
-                ring-cyan-400/20
-                transition-all
-                duration-300
-                group-hover:bg-cyan-400/20
+                ring-white/10
+                transition
+                group-hover:bg-cyan-400/15
               "
             >
               <Phone className="h-3.5 w-3.5 text-cyan-300" />
             </span>
 
-            <span className="whitespace-nowrap">
-              +91 92173 81363
-            </span>
+            <span>+91 92173 81363</span>
           </a>
 
           {/* Divider */}
 
           <span className="hidden h-5 w-px bg-white/15 xl:block" />
 
-          {/* ================= EMAIL ================= */}
+          {/* Email */}
 
           <a
             href="mailto:Support@nextgenedu.co"
             className="
               group
               flex
-              min-w-0
               items-center
               gap-2.5
               text-sm
@@ -136,7 +119,7 @@ const TopBar = () => {
               text-white/90
               transition-all
               duration-300
-              hover:text-violet-300
+              hover:text-cyan-300
             "
           >
             <span
@@ -144,54 +127,36 @@ const TopBar = () => {
                 flex
                 h-7
                 w-7
-                shrink-0
                 items-center
                 justify-center
                 rounded-lg
-                bg-violet-400/10
+                bg-white/10
                 ring-1
-                ring-violet-400/20
-                transition-all
-                duration-300
-                group-hover:bg-violet-400/20
+                ring-white/10
+                transition
+                group-hover:bg-cyan-400/15
               "
             >
-              <Mail className="h-3.5 w-3.5 text-violet-300" />
+              <Mail className="h-3.5 w-3.5 text-cyan-300" />
             </span>
 
-            <span className="truncate">
-              Support@nextgenedu.co
-            </span>
+            <span>Support@nextgenedu.co</span>
           </a>
 
-          {/* ================= LOCATION ================= */}
+          {/* Location */}
 
           <div
             className="
               hidden
+              xl:flex
               items-center
               gap-2.5
               text-sm
               font-medium
               text-white/75
-              xl:flex
             "
           >
-            <span
-              className="
-                flex
-                h-7
-                w-7
-                items-center
-                justify-center
-                rounded-lg
-                bg-orange-400/10
-                ring-1
-                ring-orange-400/20
-              "
-            >
-              <MapPin className="h-3.5 w-3.5 text-orange-300" />
-            </span>
+            <MapPin className="h-4 w-4 text-cyan-300" />
 
             <span>PAN India Admission</span>
           </div>
@@ -199,19 +164,13 @@ const TopBar = () => {
 
         {/* ================= RIGHT ================= */}
 
-        <div
-          className="
-            flex
-            shrink-0
-            items-center
-            gap-3
-          "
-        >
-          {/* ================= TRUST BADGE ================= */}
+        <div className="flex items-center gap-4">
+          {/* Trust Badge */}
 
           <div
             className="
               hidden
+              xl:flex
               items-center
               gap-2
               rounded-full
@@ -221,17 +180,16 @@ const TopBar = () => {
               px-3.5
               py-1.5
               backdrop-blur-md
-              xl:flex
             "
           >
             <BadgeCheck className="h-4 w-4 text-emerald-300" />
 
-            <span className="whitespace-nowrap text-xs font-bold text-white/90">
+            <span className="text-xs font-bold text-white/90">
               Trusted Admission Experts
             </span>
           </div>
 
-          {/* ================= SOCIAL ICONS ================= */}
+          {/* Social Icons */}
 
           <div className="flex items-center gap-1.5">
             {/* WhatsApp */}
@@ -248,10 +206,10 @@ const TopBar = () => {
                 items-center
                 justify-center
                 rounded-full
-                bg-[#25D366]/10
-                text-[#25D366]
+                bg-white/5
+                text-white/80
                 ring-1
-                ring-[#25D366]/30
+                ring-white/10
                 transition-all
                 duration-300
                 hover:-translate-y-0.5
@@ -275,16 +233,15 @@ const TopBar = () => {
                 items-center
                 justify-center
                 rounded-full
-                bg-[#1877F2]/10
-                text-[#1877F2]
+                bg-white/5
+                text-white/80
                 ring-1
-                ring-[#1877F2]/30
+                ring-white/10
                 transition-all
                 duration-300
                 hover:-translate-y-0.5
                 hover:bg-[#1877F2]
                 hover:text-white
-                hover:ring-[#1877F2]
               "
             >
               <FaFacebookF size={13} />
@@ -302,16 +259,18 @@ const TopBar = () => {
                 items-center
                 justify-center
                 rounded-full
-                bg-[#E1306C]/10
-                text-[#E1306C]
+                bg-white/5
+                text-white/80
                 ring-1
-                ring-[#E1306C]/30
+                ring-white/10
                 transition-all
                 duration-300
                 hover:-translate-y-0.5
-                hover:bg-[#E1306C]
+                hover:bg-gradient-to-br
+                hover:from-purple-500
+                hover:via-pink-500
+                hover:to-orange-400
                 hover:text-white
-                hover:ring-[#E1306C]
               "
             >
               <FaInstagram size={14} />
@@ -324,22 +283,21 @@ const TopBar = () => {
               aria-label="LinkedIn"
               className="
                 hidden
+                xl:flex
                 h-8
                 w-8
                 items-center
                 justify-center
                 rounded-full
-                bg-[#0A66C2]/10
-                text-[#0A66C2]
+                bg-white/5
+                text-white/80
                 ring-1
-                ring-[#0A66C2]/30
+                ring-white/10
                 transition-all
                 duration-300
                 hover:-translate-y-0.5
                 hover:bg-[#0A66C2]
                 hover:text-white
-                hover:ring-[#0A66C2]
-                xl:flex
               "
             >
               <FaLinkedinIn size={13} />
@@ -352,22 +310,21 @@ const TopBar = () => {
               aria-label="YouTube"
               className="
                 hidden
+                xl:flex
                 h-8
                 w-8
                 items-center
                 justify-center
                 rounded-full
-                bg-[#FF0000]/10
-                text-[#FF0000]
+                bg-white/5
+                text-white/80
                 ring-1
-                ring-[#FF0000]/30
+                ring-white/10
                 transition-all
                 duration-300
                 hover:-translate-y-0.5
-                hover:bg-[#FF0000]
+                hover:bg-red-600
                 hover:text-white
-                hover:ring-[#FF0000]
-                xl:flex
               "
             >
               <FaYoutube size={14} />
@@ -376,9 +333,9 @@ const TopBar = () => {
 
           {/* Divider */}
 
-          <div className="hidden h-6 w-px bg-white/15 xl:block" />
+          <div className="h-6 w-px bg-white/15" />
 
-          {/* ================= WHATSAPP CTA ================= */}
+          {/* WhatsApp CTA */}
 
           <a
             href={`https://wa.me/${whatsappNumber}`}
@@ -387,6 +344,7 @@ const TopBar = () => {
             className="
               group
               hidden
+              xl:flex
               items-center
               gap-2
               rounded-full
@@ -400,12 +358,10 @@ const TopBar = () => {
               text-emerald-300
               transition-all
               duration-300
-              hover:-translate-y-0.5
               hover:bg-emerald-500
               hover:text-white
               hover:shadow-lg
               hover:shadow-emerald-500/20
-              xl:flex
             "
           >
             <FaWhatsapp size={14} />
@@ -417,58 +373,57 @@ const TopBar = () => {
                 h-3.5
                 w-3.5
                 transition-transform
-                duration-300
                 group-hover:translate-x-0.5
                 group-hover:-translate-y-0.5
               "
             />
           </a>
 
-          {/* ================= APPLY NOW ================= */}
+          {/* Apply Now */}
 
           <a
-            href="/registration-form"
-            className="
-              group
-              relative
-              z-10
-              inline-flex
-              items-center
-              justify-center
-              gap-1.5
-              rounded-full
-              bg-white
-              px-4
-              py-2
-              text-xs
-              font-extrabold
-              !text-sky-700
-              shadow-lg
-              shadow-black/10
-              transition-all
-              duration-300
-              hover:-translate-y-0.5
-              hover:bg-cyan-50
-              hover:!text-sky-800
-              hover:shadow-xl
-            "
-          >
-            <span className="!text-sky-700">
-              Apply Now
-            </span>
+  href="/registration-form"
+  className="
+    group
+    relative
+    z-10
+    inline-flex
+    items-center
+    justify-center
+    gap-1.5
+    rounded-full
+    bg-white
+    px-4
+    py-2
+    text-xs
+    font-extrabold
+    !text-sky-700
+    shadow-lg
+    shadow-black/10
+    transition-all
+    duration-300
+    hover:-translate-y-0.5
+    hover:bg-cyan-50
+    hover:!text-sky-800
+    hover:shadow-xl
+  "
+>
+  <span className="!text-sky-700">
+    Apply Now
+  </span>
 
-            <ArrowUpRight
-              className="
-                h-3.5
-                w-3.5
-                !text-sky-700
-                transition-transform
-                duration-300
-                group-hover:translate-x-0.5
-                group-hover:-translate-y-0.5
-              "
-            />
-          </a>
+  <ArrowUpRight
+    className="
+      h-3.5
+      w-3.5
+      !text-sky-700
+      transition-transform
+      duration-300
+      group-hover:translate-x-0.5
+      group-hover:-translate-y-0.5
+    "
+  />
+</a>
         </div>
       </div>
     </div>

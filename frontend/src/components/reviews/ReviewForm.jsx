@@ -1,10 +1,4 @@
-import {
-  User,
-  GraduationCap,
-  MessageSquare,
-  Star,
-  ArrowRight,
-} from "lucide-react";
+import { User, GraduationCap, MessageSquare, Star } from "lucide-react";
 
 export default function ReviewForm({
   formData,
@@ -16,52 +10,46 @@ export default function ReviewForm({
       className="
         relative
         overflow-hidden
-        rounded-3xl
+        rounded-[40px]
         border
-        border-slate-200
-        bg-white
-        p-6
-        shadow-[0_12px_40px_rgba(15,23,42,0.06)]
-        lg:p-7
+        border-white/70
+        bg-white/80
+        backdrop-blur-2xl
+        p-6 lg:p-7
+        shadow-[0_30px_80px_rgba(14,165,233,.15)]
       "
     >
+      {/* Background Glow */}
+
+      <div className="absolute -top-24 -right-20 h-60 w-60 rounded-full bg-cyan-300/20 blur-[120px]" />
+
+      <div className="absolute -bottom-24 -left-20 h-60 w-60 rounded-full bg-sky-300/20 blur-[120px]" />
+
       <div className="relative z-10">
         {/* Heading */}
-        <div className="flex items-center gap-4">
-          <span className="h-px w-8 bg-slate-300" />
 
-          <span className="text-[13px] font-black uppercase tracking-[0.16em] text-teal-700">
-            Student Feedback
-          </span>
+        <span className="rounded-full bg-sky-100 px-4 py-2 text-sm font-semibold text-sky-700">
+          Student Feedback
+        </span>
 
-          <span className="h-px w-8 bg-slate-300" />
-        </div>
-
-        <h2 className="mt-4 text-[30px] font-black leading-tight tracking-tight text-slate-950 lg:text-[34px]">
-          Share Your Experience.
+        <h2 className="mt-3 text-3xl lg:text-[34px] font-black text-slate-900 leading-tight">
+          Share Your Experience
         </h2>
 
-        <p className="mt-3 text-[15px] font-semibold leading-7 text-slate-500">
-          Your review helps thousands of students choose the right
-          university and inspires others to achieve their career goals.
+       <p className="mt-2 text-[15px] leading-6 text-slate-600">
+          Your review helps thousands of students choose the right university
+          and inspires others to achieve their career goals.
         </p>
 
         {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="mt-6 space-y-4"
-        >
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           {/* Name */}
+
           <div className="relative">
             <User
-              size={18}
-              className="
-                absolute
-                left-4
-                top-1/2
-                -translate-y-1/2
-                text-teal-700
-              "
+              size={20}
+              className="absolute left-5 top-1/2 -translate-y-1/2 text-sky-500"
             />
 
             <input
@@ -76,38 +64,30 @@ export default function ReviewForm({
                 })
               }
               className="
-                h-[52px]
+                h-[54px]
                 w-full
-                rounded-xl
+                rounded-2xl
                 border
                 border-slate-200
                 bg-white
-                pl-12
-                pr-4
-                text-[14px]
-                font-semibold
+                pl-14
+                pr-5
                 text-slate-800
                 outline-none
-                placeholder:text-slate-400
                 transition-all
-                focus:border-teal-500
+                focus:border-sky-500
                 focus:ring-4
-                focus:ring-teal-50
+                focus:ring-sky-100
               "
             />
           </div>
 
           {/* Course */}
+
           <div className="relative">
             <GraduationCap
-              size={18}
-              className="
-                absolute
-                left-4
-                top-1/2
-                -translate-y-1/2
-                text-teal-700
-              "
+              size={20}
+              className="absolute left-5 top-1/2 -translate-y-1/2 text-sky-500"
             />
 
             <input
@@ -122,32 +102,30 @@ export default function ReviewForm({
                 })
               }
               className="
-                h-[52px]
+                h-16
                 w-full
-                rounded-xl
+                rounded-2xl
                 border
                 border-slate-200
                 bg-white
-                pl-12
-                pr-4
-                text-[14px]
-                font-semibold
+                pl-14
+                pr-5
                 text-slate-800
                 outline-none
-                placeholder:text-slate-400
                 transition-all
-                focus:border-teal-500
+                focus:border-sky-500
                 focus:ring-4
-                focus:ring-teal-50
+                focus:ring-sky-100
               "
             />
           </div>
 
           {/* Review */}
+
           <div className="relative">
             <MessageSquare
-              size={18}
-              className="absolute left-4 top-4 text-teal-700"
+              size={20}
+              className="absolute left-5 top-6 text-sky-500"
             />
 
             <textarea
@@ -163,35 +141,33 @@ export default function ReviewForm({
               }
               className="
                 w-full
-                resize-none
-                rounded-xl
+                rounded-2xl
                 border
                 border-slate-200
                 bg-white
-                pl-12
-                pr-4
+                pl-14
+                pr-5
                 pt-4
-                text-[14px]
-                font-semibold
-                leading-6
+                pb-4
                 text-slate-800
                 outline-none
-                placeholder:text-slate-400
                 transition-all
-                focus:border-teal-500
+                resize-none
+                focus:border-sky-500
                 focus:ring-4
-                focus:ring-teal-50
+                focus:ring-sky-100
               "
             />
           </div>
 
           {/* Rating */}
+
           <div>
-            <label className="text-[13px] font-black text-slate-950">
+            <label className="font-semibold text-slate-800">
               Rate Your Experience
             </label>
 
-            <div className="mt-2 flex gap-1.5">
+            <div className="mt-2 flex gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
@@ -203,13 +179,13 @@ export default function ReviewForm({
                     })
                   }
                   className="
-                    transition-transform
-                    duration-200
-                    hover:scale-110
+                    transition-all
+                    duration-300
+                    hover:scale-125
                   "
                 >
                   <Star
-                    size={26}
+                    size={30}
                     className={
                       star <= formData.rating
                         ? "fill-yellow-400 text-yellow-400"
@@ -221,47 +197,35 @@ export default function ReviewForm({
             </div>
           </div>
 
-          {/* Submit */}
+          {/* Button */}
+
           <button
             type="submit"
             className="
               group
-              mt-1
               flex
-              h-[52px]
+              h-14
               w-full
               items-center
               justify-center
-              gap-3
-              rounded-xl
-              bg-yellow-400
-              text-[13px]
-              font-black
-              text-slate-950
+              rounded-2xl
+              bg-gradient-to-r
+              from-sky-500
+              to-cyan-500
+              text-base
+              font-bold
+              text-white
+              shadow-[0_20px_40px_rgba(14,165,233,.30)]
               transition-all
               duration-300
               hover:-translate-y-1
-              hover:bg-yellow-300
+              hover:shadow-[0_25px_60px_rgba(14,165,233,.45)]
             "
           >
             Submit Review
 
-            <span
-              className="
-                flex
-                h-7
-                w-7
-                items-center
-                justify-center
-                rounded-full
-                bg-slate-950
-                text-white
-                transition-transform
-                duration-300
-                group-hover:translate-x-1
-              "
-            >
-              <ArrowRight size={14} />
+            <span className="ml-3 transition-transform duration-300 group-hover:translate-x-2">
+              →
             </span>
           </button>
         </form>

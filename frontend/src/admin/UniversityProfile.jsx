@@ -21,8 +21,8 @@ import {
   Save,
   Clock,
 } from "lucide-react";
-import axios from "axios";
 import toast from "react-hot-toast";
+import api from "../services/api";
 
 export default function UniversityProfile() {
   const { id } = useParams();
@@ -46,8 +46,8 @@ export default function UniversityProfile() {
 
   const fetchUniversity = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8000/api/v1/university/${id}`,
+      const res = await api.get(
+        `/university/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,8 +70,8 @@ export default function UniversityProfile() {
 
   const fetchCourses = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8000/api/v1/course/university/${id}`,
+      const res = await api.get(
+        `/course/university/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -128,8 +128,8 @@ export default function UniversityProfile() {
 
     try {
       if (editingCourse) {
-        await axios.put(
-          `http://localhost:8000/api/v1/course/update/${editingCourse._id}`,
+        await api.put(
+          `/course/update/${editingCourse._id}`,
           {
             courseName,
             duration,
@@ -145,8 +145,8 @@ export default function UniversityProfile() {
 
         toast.success("Course Updated Successfully");
       } else {
-        await axios.post(
-          `http://localhost:8000/api/v1/course/add/${id}`,
+        await api.post(
+          `/course/add/${id}`,
           {
             courseName,
             duration,
@@ -203,8 +203,8 @@ export default function UniversityProfile() {
     if (!confirmed) return;
 
     try {
-      await axios.delete(
-        `http://localhost:8000/api/v1/course/delete/${courseId}`,
+      await api.delete(
+        `/course/delete/${courseId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

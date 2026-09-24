@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
@@ -162,7 +163,9 @@ export default function ContactForm() {
     }
 
     const finalCourse =
-      formData.course === "Other" ? customCourse.trim() : formData.course;
+      formData.course === "Other"
+        ? customCourse.trim()
+        : formData.course;
 
     const payload = {
       name: formData.name.trim(),
@@ -193,7 +196,9 @@ export default function ContactForm() {
         setCustomCourse("");
         setErrors({});
       } else {
-        toast.error(res?.message || "Something went wrong");
+        toast.error(
+          res?.message || "Something went wrong"
+        );
       }
     } catch (error) {
       console.error(error);
@@ -270,7 +275,10 @@ export default function ContactForm() {
             md:p-12
           "
         >
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-6"
+          >
             {/* Name + Email */}
 
             <div className="grid gap-6 md:grid-cols-2">
@@ -345,10 +353,15 @@ export default function ContactForm() {
                       focus:ring-cyan-500/10
                     "
                   >
-                    <option value="">Select State / UT</option>
+                    <option value="">
+                      Select State / UT
+                    </option>
 
                     {indianStatesAndUTs.map((state) => (
-                      <option key={state} value={state}>
+                      <option
+                        key={state}
+                        value={state}
+                      >
                         {state}
                       </option>
                     ))}
@@ -356,7 +369,9 @@ export default function ContactForm() {
                 </div>
 
                 {errors.state && (
-                  <p className="mt-1 text-sm text-red-500">{errors.state}</p>
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.state}
+                  </p>
                 )}
               </div>
             </div>
@@ -399,15 +414,22 @@ export default function ContactForm() {
                     focus:ring-cyan-500/10
                   "
                 >
-                  <option value="">Select Course</option>
+                  <option value="">
+                    Select Course
+                  </option>
 
                   {courses.map((course) => (
-                    <option key={course} value={course}>
+                    <option
+                      key={course}
+                      value={course}
+                    >
                       {course}
                     </option>
                   ))}
 
-                  <option value="Other">Other</option>
+                  <option value="Other">
+                    Other
+                  </option>
                 </select>
               </div>
 
@@ -457,7 +479,9 @@ export default function ContactForm() {
               )}
 
               {errors.course && (
-                <p className="mt-1 text-sm text-red-500">{errors.course}</p>
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.course}
+                </p>
               )}
             </div>
 
@@ -502,7 +526,9 @@ export default function ContactForm() {
               </div>
 
               {errors.message && (
-                <p className="mt-1 text-sm text-red-500">{errors.message}</p>
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.message}
+                </p>
               )}
             </div>
 
@@ -538,7 +564,10 @@ export default function ContactForm() {
             >
               {loading ? (
                 <>
-                  <LoaderCircle size={20} className="animate-spin" />
+                  <LoaderCircle
+                    size={20}
+                    className="animate-spin"
+                  />
                   Sending...
                 </>
               ) : (
@@ -601,7 +630,12 @@ function Input({
         />
       </div>
 
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      {error && (
+        <p className="mt-1 text-sm text-red-500">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
+

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useCompare } from "../../context/CompareContext";
+import nextLogo from "../../assets/logo/NEXTGEN LOGO.png";
 
 import {
   MapPin,
@@ -116,7 +117,7 @@ export default function UniversityCard({ university }) {
           <img
             src={
               university.universityBanner ||
-              "/images/university-placeholder.jpg"
+              nextLogo
             }
             alt={university.universityName}
             className="
@@ -179,7 +180,7 @@ export default function UniversityCard({ university }) {
       <img
         src={
           university.universityLogo ||
-          "/images/logo.png"
+          nextLogo
         }
         alt={university.universityName}
         className="

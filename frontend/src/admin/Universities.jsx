@@ -14,13 +14,13 @@ import {
   Building2,
   ShieldCheck,
 } from "lucide-react";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import api from "../services/api";
 
 export default function UniversitiesAdmin() {
   const [universities, setUniversities] = useState([]);
-  const token = localStorage.getItem("token");
+  const getToken = () => localStorage.getItem("token");
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [search, setSearch] = useState("");
@@ -81,6 +81,13 @@ export default function UniversitiesAdmin() {
 
   const saveUniversity = async () => {
     try {
+      const token = getToken();
+
+      if (!token) {
+        toast.error("Please log in again.");
+        return;
+      }
+
       const data = new FormData();
 
       Object.entries(formData).forEach(([key, value]) => {
@@ -102,8 +109,8 @@ export default function UniversitiesAdmin() {
       }
 
       if (editingId) {
-        await axios.put(
-          `http://localhost:8000/api/v1/university/update/${editingId}`,
+        await api.put(
+          `/university/update/${editingId}`,
           data,
           {
             headers: {
@@ -115,8 +122,8 @@ export default function UniversitiesAdmin() {
 
         toast.success("University Updated");
       } else {
-        await axios.post(
-          "http://localhost:8000/api/v1/university/add",
+        await api.post(
+          "/university/add",
           data,
           {
             headers: {
@@ -143,8 +150,10 @@ export default function UniversitiesAdmin() {
 
   const deleteUniversity = async (id) => {
     try {
-      await axios.delete(
-        `http://localhost:8000/api/v1/university/delete/${id}`,
+      const token = getToken();
+
+      await api.delete(
+        `/university/delete/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -165,8 +174,8 @@ export default function UniversitiesAdmin() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await axios.get(
-        "http://localhost:8000/api/v1/university/alluniversity",
+      const res = await api.get(
+        "/university/alluniversity",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -182,8 +191,10 @@ export default function UniversitiesAdmin() {
 
   const approveUniversity = async (id) => {
     try {
-      await axios.patch(
-        `http://localhost:8000/api/v1/university/approve/${id}`,
+      const token = getToken();
+
+      await api.patch(
+        `/university/approve/${id}`,
         {},
         {
           headers: {
@@ -203,8 +214,10 @@ export default function UniversitiesAdmin() {
 
   const hideUniversity = async (id) => {
     try {
-      await axios.patch(
-        `http://localhost:8000/api/v1/university/hide/${id}`,
+      const token = getToken();
+
+      await api.patch(
+        `/university/hide/${id}`,
         {},
         {
           headers: {

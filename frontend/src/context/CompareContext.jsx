@@ -1,79 +1,61 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useState,
+  useEffect,
 } from "react";
 
-const CompareContext = createContext(null);
+const CompareContext =
+  createContext();
 
-export function CompareProvider({ children }) {
+export function CompareProvider({
+  children,
+}) {
   const [compareItems, setCompareItems] = useState(() => {
-    try {
-      const saved = localStorage.getItem("compareUniversities");
+  const saved = localStorage.getItem("compareUniversities");
+  return saved ? JSON.parse(saved) : [];
+});
 
-      if (!saved) return [];
+  const addToCompare = (
+    university
+  ) => {
+    if (
+      compareItems.find(
+        (u) =>
+          u._id === university._id
+      )
+    )
+      return;
 
-      const parsed = JSON.parse(saved);
+    if (compareItems.length >= 4)
+      return;
 
-      return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-      console.error("Failed to load compare data:", error);
-      return [];
-    }
-  });
-
-  const addToCompare = (university) => {
-    if (!university?._id) {
-      return false;
-    }
-
-    const exists = compareItems.some(
-      (item) => item?._id === university._id
-    );
-
-    if (exists) {
-      return false;
-    }
-
-    if (compareItems.length >= 4) {
-      return false;
-    }
-
-    // COMPLETE BACKEND OBJECT STORE HOGA
-    setCompareItems((prev) => [
-      ...prev,
+    setCompareItems([
+      ...compareItems,
       university,
     ]);
-
-    return true;
   };
 
-  const removeFromCompare = (_id) => {
-    setCompareItems((prev) =>
-      prev.filter(
-        (university) => university?._id !== _id
+  const removeFromCompare = (
+    _id
+  ) => {
+    setCompareItems(
+      compareItems.filter(
+        (u) => u._id !== _id
       )
     );
   };
 
+  useEffect(() => {
+  localStorage.setItem(
+    "compareUniversities",
+    JSON.stringify(compareItems)
+  );
+}, [compareItems]);
+
   const clearCompare = () => {
     setCompareItems([]);
   };
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        "compareUniversities",
-        JSON.stringify(compareItems)
-      );
-    } catch (error) {
-      console.error(
-        "Failed to save compare data:",
-        error
-      );
-    }
-  }, [compareItems]);
 
   return (
     <CompareContext.Provider
@@ -89,14 +71,5 @@ export function CompareProvider({ children }) {
   );
 }
 
-export function useCompare() {
-  const context = useContext(CompareContext);
-
-  if (!context) {
-    throw new Error(
-      "useCompare must be used inside CompareProvider"
-    );
-  }
-
-  return context;
-}
+export const useCompare = () =>
+  useContext(CompareContext);

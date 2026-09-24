@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 export default function Reviews() {
   const [reviews, setReviews] = useState([]);
@@ -12,7 +12,7 @@ export default function Reviews() {
 
   const getReviews = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/reviews/admin", {
+      const res = await api.get("/../reviews/admin", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -26,8 +26,8 @@ export default function Reviews() {
 
   const approveReview = async (id) => {
     try {
-      await axios.put(
-        `http://localhost:8000/api/reviews/approve/${id}`,
+      await api.put(
+        `/../reviews/approve/${id}`,
         {},
         {
           headers: {
@@ -44,7 +44,7 @@ export default function Reviews() {
 
   const rejectReview = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/api/reviews/${id}`, {
+      await api.delete(`/../reviews/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

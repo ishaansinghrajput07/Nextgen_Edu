@@ -12,85 +12,110 @@ const steps = [
     icon: GraduationCap,
     title: "Choose University",
     desc: "Explore and compare top universities that match your career goals.",
-    iconBg: "bg-blue-50",
-    iconBorder: "border-blue-100",
-    iconColor: "text-blue-600",
+    color: "from-cyan-500 to-blue-500",
   },
   {
     number: "02",
     icon: MessageCircle,
     title: "Free Counselling",
     desc: "Connect with expert counsellors for personalized admission guidance.",
-    iconBg: "bg-violet-50",
-    iconBorder: "border-violet-100",
-    iconColor: "text-violet-600",
+    color: "from-violet-500 to-fuchsia-500",
   },
   {
     number: "03",
     icon: FileText,
     title: "Submit Application",
     desc: "Fill out your application and upload all required documents easily.",
-    iconBg: "bg-orange-50",
-    iconBorder: "border-orange-100",
-    iconColor: "text-orange-600",
+    color: "from-orange-500 to-amber-500",
   },
   {
     number: "04",
     icon: BadgeCheck,
     title: "Admission Confirmed",
     desc: "Receive your confirmation and begin your academic journey confidently.",
-    iconBg: "bg-emerald-50",
-    iconBorder: "border-emerald-100",
-    iconColor: "text-emerald-600",
+    color: "from-emerald-500 to-green-500",
   },
 ];
 
 export default function ProcessSection() {
   return (
-    <section className="bg-white px-[30px] py-[45px]">
-      <div className="mx-auto max-w-[1500px]">
+    <section
+      className="
+        relative
+        overflow-hidden
+        py-24
+        bg-gradient-to-b
+        from-[#f8fcff]
+        via-[#eef7ff]
+        to-[#f8fcff]
+      "
+    >
+      {/* Background Glow */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -top-24 -left-20 w-80 h-80 bg-cyan-200/30 blur-3xl rounded-full"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-200/20 blur-3xl rounded-full"></div>
+      </div>
 
-        {/* =========================
-            Heading
-        ========================= */}
+      <div className="relative max-w-7xl mx-auto px-6">
+
+        {/* Heading */}
+
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-10 text-center"
+          transition={{ duration: .6 }}
+          className="text-center mb-12"
         >
-          {/* Eyebrow */}
-          <div className="mb-4 flex items-center justify-center gap-3">
-            <span className="h-px w-10 bg-slate-200" />
 
-            <span className="text-[13px] font-black uppercase tracking-[0.18em] text-[#1a4d40]">
-              Admission Process
-            </span>
+          <span
+            className="
+            inline-flex
+            items-center
+            px-5
+            py-2
+            rounded-full
+            bg-cyan-100
+            text-cyan-700
+            font-semibold
+            text-sm
+            mb-5
+            "
+          >
+            Admission Process
+          </span>
 
-            <span className="h-px w-10 bg-slate-200" />
-          </div>
-
-          {/* Heading */}
-          <h2 className="text-[38px] font-black leading-tight tracking-tight text-slate-950 md:text-[46px] lg:text-[52px]">
-            Your Admission{" "}
-            <span className="text-[#131371]">Journey</span>
+          <h2
+            className="
+            text-4xl
+            md:text-5xl
+            font-extrabold
+            text-slate-900
+            "
+          >
+            Your Admission Journey
           </h2>
 
-          {/* Description */}
-          <p className="mx-auto mt-4 max-w-2xl text-[15px] font-semibold leading-7 text-slate-500 md:text-[16px]">
+          <p
+            className="
+            mt-5
+            text-lg
+            text-slate-600
+            max-w-2xl
+            mx-auto
+            "
+          >
             Complete your admission in just four simple steps with expert
             guidance from our experienced counselling team.
           </p>
+
         </motion.div>
 
-        {/* =========================
-            Process Cards
-        ========================= */}
-        <div className="relative grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Cards */}
 
-          {/* Desktop Timeline Line */}
-          <div className="absolute left-[12%] right-[12%] top-[34px] hidden h-px bg-slate-200 lg:block" />
+        <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                      {/* Timeline Line (Desktop Only) */}
+          <div className="hidden lg:block absolute top-14 left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-cyan-300 via-blue-300 to-emerald-300"></div>
 
           {steps.map((step, index) => {
             const Icon = step.icon;
@@ -105,163 +130,108 @@ export default function ProcessSection() {
                   duration: 0.5,
                   delay: index * 0.15,
                 }}
-                whileHover={{ y: -6 }}
+                whileHover={{
+                  y: -10,
+                  scale: 1.03,
+                }}
                 className="
-                  group
                   relative
                   z-10
-                  rounded-2xl
+                  rounded-3xl
+                  bg-white/80
+                  backdrop-blur-xl
                   border
-                  border-slate-200
-                  bg-white
-                  p-6
-                  text-center
-                  shadow-[0_8px_30px_rgba(15,23,42,0.05)]
+                  border-white/60
+                  shadow-lg
+                  hover:shadow-2xl
                   transition-all
                   duration-300
-                  hover:border-slate-300
-                  hover:shadow-[0_16px_40px_rgba(15,23,42,0.09)]
+                  p-8
+                  text-center
+                  group
                 "
               >
-
                 {/* Step Number */}
                 <span
                   className="
                     absolute
-                    right-5
                     top-5
-                    text-[11px]
-                    font-black
-                    tracking-widest
+                    right-5
+                    text-xs
+                    font-bold
                     text-slate-300
+                    tracking-widest
                   "
                 >
                   STEP {step.number}
                 </span>
 
-                {/* =========================
-                    Icon
-                ========================= */}
+                {/* Icon */}
                 <div
                   className={`
-                    mx-auto
-                    mb-5
-                    flex
-                    h-16
                     w-16
+                    h-16
+                    mx-auto
+                    rounded-2xl
+                    bg-gradient-to-r
+                    ${step.color}
+                    flex
                     items-center
                     justify-center
-                    rounded-2xl
-                    border
-                    ${step.iconBg}
-                    ${step.iconBorder}
-                    transition-all
+                    shadow-lg
+                    mb-6
+                    transition-transform
                     duration-300
-                    group-hover:scale-105
+                    group-hover:rotate-6
+                    group-hover:scale-110
                   `}
                 >
-                  <Icon
-                    className={`
-                      h-8
-                      w-8
-                      ${step.iconColor}
-                    `}
-                  />
+                 <Icon className="w-8 h-8 text-white" />
                 </div>
 
                 {/* Title */}
-                <h3
-                  className="
-                    mb-2
-                    text-[18px]
-                    font-black
-                    leading-tight
-                    tracking-tight
-                    text-slate-950
-                  "
-                >
+                <h3 className="text-xl font-bold text-slate-900 mb-3">
                   {step.title}
                 </h3>
 
                 {/* Description */}
-                <p
-                  className="
-                    text-[14px]
-                    font-semibold
-                    leading-6
-                    text-slate-500
-                  "
-                >
+                <p className="text-slate-600 text-sm leading-6">
                   {step.desc}
                 </p>
 
-                {/* Bottom Accent */}
-                <div
-                  className="
-                    mx-auto
-                    mt-4
-                    h-1
-                    w-8
-                    rounded-full
-                    bg-slate-200
-                    transition-all
-                    duration-300
-                    group-hover:w-12
-                    group-hover:bg-teal-700
-                  "
-                />
+                {/* Bottom Line */}
+                <div className="mt-4 h-1 w-16 mx-auto rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 group-hover:w-24 transition-all duration-300"></div>
               </motion.div>
             );
           })}
         </div>
 
-        {/* =========================
-            CTA
-        ========================= */}
+        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="mt-10 text-center"
+          className="text-center mt-10"
         >
           <button
             className="
-              inline-flex
-              items-center
-              gap-3
-              rounded-xl
-              bg-yellow-400
-              px-7
-              py-3.5
-              text-[14px]
-              font-black
-              text-black
-              shadow-sm
+              px-10
+              py-4
+              rounded-full
+              bg-gradient-to-r
+              from-cyan-600
+              to-blue-600
+              text-white
+              font-semibold
+              shadow-xl
+              hover:scale-105
+              hover:shadow-cyan-300/40
               transition-all
               duration-300
-              hover:-translate-y-0.5
-              hover:bg-yellow-300
-              hover:shadow-md
             "
           >
-            Start Your Admission Journey
-
-            <span
-              className="
-                flex
-                h-8
-                w-8
-                items-center
-                justify-center
-                rounded-full
-                bg-slate-950
-                text-sm
-                text-white
-              "
-            >
-              →
-            </span>
+            Start Your Admission Journey →
           </button>
         </motion.div>
 
@@ -269,3 +239,4 @@ export default function ProcessSection() {
     </section>
   );
 }
+      

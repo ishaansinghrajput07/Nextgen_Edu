@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_V1_URL } from "../config/api";
 
 import {
   Users,
@@ -27,7 +28,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const API_BASE_URL = "http://localhost:8000/api/v1";
+const API_BASE_URL = API_V1_URL;
 
 const Dashboard = () => {
   const token = localStorage.getItem("token");

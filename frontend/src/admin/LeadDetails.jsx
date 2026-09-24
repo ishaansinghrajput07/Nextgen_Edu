@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import AdmissionCommission from "./admissions/AdmissionCommission";
 import AdmissionPaymentModal from "./admissions/AdmissionPaymentModal";
+import api from "../services/api";
 
 export default function LeadDetails() {
   const { id } = useParams();
@@ -94,8 +95,8 @@ export default function LeadDetails() {
 
   const fetchUniversities = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/v1/university/alluniversity",
+      const res = await api.get(
+        "/university/alluniversity",
         {
           headers: {
             Authorization: `Bearer ${token}`,
