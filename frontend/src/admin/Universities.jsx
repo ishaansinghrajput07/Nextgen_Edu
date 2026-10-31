@@ -18,6 +18,67 @@ import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import api from "../services/api";
 
+const normalizeUniversityImage = async (file, imageType) => {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Please choose an image file.");
+  }
+
+  const dimensions =
+    imageType === "logo"
+      ? { width: 512, height: 512 }
+      : { width: 1600, height: 600 };
+  const image = await createImageBitmap(file);
+  const canvas = document.createElement("canvas");
+  canvas.width = dimensions.width;
+  canvas.height = dimensions.height;
+
+  const context = canvas.getContext("2d");
+  if (!context) {
+    image.close();
+    throw new Error("Could not prepare the selected image.");
+  }
+
+  context.imageSmoothingQuality = "high";
+  const scale =
+    imageType === "logo"
+      ? Math.min(
+          dimensions.width / image.width,
+          dimensions.height / image.height,
+        )
+      : Math.max(
+          dimensions.width / image.width,
+          dimensions.height / image.height,
+        );
+  const width = image.width * scale;
+  const height = image.height * scale;
+  context.drawImage(
+    image,
+    (dimensions.width - width) / 2,
+    (dimensions.height - height) / 2,
+    width,
+    height,
+  );
+  image.close();
+
+  const blob = await new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (result) =>
+        result
+          ? resolve(result)
+          : reject(new Error("Could not convert the selected image.")),
+      "image/webp",
+      0.9,
+    );
+  });
+  const extension = blob.type === "image/webp" ? "webp" : "png";
+
+  return new File(
+    [blob],
+    `${file.name.replace(/\.[^.]+$/, "")}-${imageType}.${extension}`,
+    { type: blob.type },
+  );
+};
+
 export default function UniversitiesAdmin() {
   const [universities, setUniversities] = useState([]);
   const getToken = () => localStorage.getItem("token");
@@ -100,11 +161,25 @@ export default function UniversitiesAdmin() {
         }
       });
 
-      if (formData.universityLogo) {
+      if (editingId) {
+        data.append("removeLogo", String(formData.universityLogo === null));
+        data.append(
+          "removeBanner",
+          String(formData.universityBanner === null),
+        );
+      }
+
+      if (
+        formData.universityLogo &&
+        typeof formData.universityLogo !== "string"
+      ) {
         data.append("logo", formData.universityLogo);
       }
 
-      if (formData.universityBanner) {
+      if (
+        formData.universityBanner &&
+        typeof formData.universityBanner !== "string"
+      ) {
         data.append("banner", formData.universityBanner);
       }
 
@@ -114,7 +189,6 @@ export default function UniversitiesAdmin() {
           data,
           {
             headers: {
-              "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,
             },
           },
@@ -127,7 +201,6 @@ export default function UniversitiesAdmin() {
           data,
           {
             headers: {
-              "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,
             },
             withCredentials: true,
@@ -1118,17 +1191,15 @@ export default function UniversitiesAdmin() {
                     </label>
 
                     {formData.universityLogo && (
-                      <img
-                        src={
-                          typeof formData.universityLogo ===
-                          "string"
-                            ? formData.universityLogo
-                            : URL.createObjectURL(
-                                formData.universityLogo,
-                              )
-                        }
-                        alt="logo"
-                        className="
+                      <div className="mb-3">
+                        <img
+                          src={
+                            typeof formData.universityLogo === "string"
+                              ? formData.universityLogo
+                              : URL.createObjectURL(formData.universityLogo)
+                          }
+                          alt="University logo preview"
+                          className="
                           w-full
                           h-32
                           object-contain
@@ -1137,23 +1208,43 @@ export default function UniversitiesAdmin() {
                           border
                           border-slate-200
                           p-3
-                          mb-3
                         "
-                      />
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              universityLogo: null,
+                            }))
+                          }
+                          className="mt-2 text-sm font-medium text-red-600 hover:text-red-700"
+                        >
+                          Remove logo
+                        </button>
+                      </div>
                     )}
 
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        e.target.value = "";
                         if (!file) return;
 
-                        setFormData((prev) => ({
-                          ...prev,
-                          universityLogo: file,
-                        }));
+                        try {
+                          const normalizedImage =
+                            await normalizeUniversityImage(file, "logo");
+                          setFormData((prev) => ({
+                            ...prev,
+                            universityLogo: normalizedImage,
+                          }));
+                        } catch (error) {
+                          toast.error(
+                            error.message || "Could not process the logo.",
+                          );
+                        }
                       }}
                       className="
                         w-full
@@ -1179,17 +1270,15 @@ export default function UniversitiesAdmin() {
                     </label>
 
                     {formData.universityBanner && (
-                      <img
-                        src={
-                          typeof formData.universityBanner ===
-                          "string"
-                            ? formData.universityBanner
-                            : URL.createObjectURL(
-                                formData.universityBanner,
-                              )
-                        }
-                        alt="banner"
-                        className="
+                      <div className="mb-3">
+                        <img
+                          src={
+                            typeof formData.universityBanner === "string"
+                              ? formData.universityBanner
+                              : URL.createObjectURL(formData.universityBanner)
+                          }
+                          alt="University banner preview"
+                          className="
                           w-full
                           h-32
                           object-cover
@@ -1197,23 +1286,43 @@ export default function UniversitiesAdmin() {
                           bg-white
                           border
                           border-slate-200
-                          mb-3
                         "
-                      />
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              universityBanner: null,
+                            }))
+                          }
+                          className="mt-2 text-sm font-medium text-red-600 hover:text-red-700"
+                        >
+                          Remove banner
+                        </button>
+                      </div>
                     )}
 
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        e.target.value = "";
                         if (!file) return;
 
-                        setFormData((prev) => ({
-                          ...prev,
-                          universityBanner: file,
-                        }));
+                        try {
+                          const normalizedImage =
+                            await normalizeUniversityImage(file, "banner");
+                          setFormData((prev) => ({
+                            ...prev,
+                            universityBanner: normalizedImage,
+                          }));
+                        } catch (error) {
+                          toast.error(
+                            error.message || "Could not process the banner.",
+                          );
+                        }
                       }}
                       className="
                         w-full

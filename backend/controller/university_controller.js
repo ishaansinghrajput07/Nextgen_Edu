@@ -1,11 +1,15 @@
 import University from "../models/university.model.js";
 import slugify from "slugify";
-// Add University
-import getDataUri from "../util/Datauri.js";
-import cloudinary from "../util/Cloudinary.js";
 import Activity from "../models/activity.model.js";
-console.log(getDataUri);
+import {
+  cleanupUploadedFiles,
+  deleteUniversityImage,
+  getUniversityImageUrl,
+} from "../util/localUpload.js";
+
 export const addUniversity = async (req, res) => {
+  let universityCreated = false;
+
   try {
     const {
       universityName,
@@ -57,26 +61,12 @@ export const addUniversity = async (req, res) => {
       });
     }
 
-    let universityLogo = "";
-    let universityBanner = "";
-
-    // Logo Upload
-    if (req.files?.logo?.[0]) {
-      const fileUri = getDataUri(req.files.logo[0]);
-
-      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-
-      universityLogo = cloudResponse.secure_url;
-    }
-
-    // Banner Upload
-    if (req.files?.banner?.[0]) {
-      const fileUri = getDataUri(req.files.banner[0]);
-
-      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-
-      universityBanner = cloudResponse.secure_url;
-    }
+    const universityLogo = req.files?.logo?.[0]
+      ? getUniversityImageUrl(req, req.files.logo[0])
+      : "";
+    const universityBanner = req.files?.banner?.[0]
+      ? getUniversityImageUrl(req, req.files.banner[0])
+      : "";
 
     const university = await University.create({
       universityName,
@@ -109,6 +99,7 @@ export const addUniversity = async (req, res) => {
       eligibility,
       admissionProcess,
     });
+    universityCreated = true;
 
     await Activity.create({
       action: `Added University ${university.universityName}`,
@@ -134,6 +125,10 @@ export const addUniversity = async (req, res) => {
       success: false,
       message: "Server Error",
     });
+  } finally {
+    if (!universityCreated) {
+      await cleanupUploadedFiles(req.files);
+    }
   }
 };
 
@@ -163,7 +158,6 @@ export const getAllUniversities = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-
     if (error?.code === 11000 && error?.keyPattern?.slug) {
       return res.status(409).json({
         success: false,
@@ -232,6 +226,8 @@ export const getTrustedUniversities = async (req, res) => {
 
 // Update University
 export const updateUniversity = async (req, res) => {
+  let universitySaved = false;
+
   try {
     const university = await University.findById(req.params.id);
 
@@ -242,25 +238,23 @@ export const updateUniversity = async (req, res) => {
       });
     }
 
-    console.log(req.body);
-    console.log(req.files);
+    const previousLogo = university.universityLogo;
+    const previousBanner = university.universityBanner;
+    const logoFile = req.files?.logo?.[0];
+    const bannerFile = req.files?.banner?.[0];
+    const removeLogo = req.body.removeLogo === "true";
+    const removeBanner = req.body.removeBanner === "true";
 
-    // Logo Upload
-    if (req.files?.logo?.[0]) {
-      const fileUri = getDataUri(req.files.logo[0]);
-
-      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-
-      university.universityLogo = cloudResponse.secure_url;
+    if (logoFile) {
+      university.universityLogo = getUniversityImageUrl(req, logoFile);
+    } else if (removeLogo) {
+      university.universityLogo = "";
     }
 
-    // Banner Upload
-    if (req.files?.banner?.[0]) {
-      const fileUri = getDataUri(req.files.banner[0]);
-
-      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-
-      university.universityBanner = cloudResponse.secure_url;
+    if (bannerFile) {
+      university.universityBanner = getUniversityImageUrl(req, bannerFile);
+    } else if (removeBanner) {
+      university.universityBanner = "";
     }
 
     // Remove null string values
@@ -311,6 +305,15 @@ export const updateUniversity = async (req, res) => {
     Object.assign(university, req.body);
 
     await university.save();
+    universitySaved = true;
+
+    if (logoFile || removeLogo) {
+      await deleteUniversityImage(previousLogo);
+    }
+
+    if (bannerFile || removeBanner) {
+      await deleteUniversityImage(previousBanner);
+    }
 
     await Activity.create({
       action: `Updated University ${university.universityName}`,
@@ -327,11 +330,29 @@ export const updateUniversity = async (req, res) => {
   } catch (error) {
     console.log(error);
 
+    if (error?.code === 11000 && error?.keyPattern?.slug) {
+      return res.status(409).json({
+        success: false,
+        message: "A university with this name already exists",
+      });
+    }
+
+    if (error?.name === "ValidationError" || error?.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
     return res.status(500).json({
       success: false,
 
       message: "Server Error",
     });
+  } finally {
+    if (!universitySaved) {
+      await cleanupUploadedFiles(req.files);
+    }
   }
 };
 // Delete University
@@ -349,28 +370,11 @@ export const deleteUniversity = async (req, res) => {
     // Store University Name
     const universityName = university.universityName;
 
-    // Delete Logo
-    if (university.universityLogo) {
-      const logoPublicId = university.universityLogo
-        .split("/")
-        .pop()
-        .split(".")[0];
-
-      await cloudinary.uploader.destroy(logoPublicId);
-    }
-
-    // Delete Banner
-    if (university.universityBanner) {
-      const bannerPublicId = university.universityBanner
-        .split("/")
-        .pop()
-        .split(".")[0];
-
-      await cloudinary.uploader.destroy(bannerPublicId);
-    }
-
     // Delete University
     await university.deleteOne();
+
+    await deleteUniversityImage(university.universityLogo);
+    await deleteUniversityImage(university.universityBanner);
 
     // Activity Log
     await Activity.create({

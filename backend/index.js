@@ -4,6 +4,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
+import multer from "multer";
 import { fileURLToPath } from "url";
 import connectDB from "./util/db.js";
 import contactRoute from "./Routes/contact.js";
@@ -89,6 +90,36 @@ app.use("/api/admissions", admissionRoutes);
 app.use("/api/v1/notification", notificationRoute);
 app.use("/api/v1/email", emailRoute);
 app.use("/api/commissions", commissionRoutes);
+
+app.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError) {
+    const status = error.code === "LIMIT_FILE_SIZE" ? 413 : 400;
+    const message =
+      error.code === "LIMIT_FILE_SIZE"
+        ? "Images must be 5 MB or smaller."
+        : "Invalid image upload.";
+
+    return res.status(status).json({ success: false, message });
+  }
+
+  if (error?.code === "UNSUPPORTED_FILE_TYPE") {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+
+  return next(error);
+});
+
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    dotfiles: "deny",
+    index: false,
+    maxAge: "1d",
+  }),
+);
 
 // Serve the frontend only after all API routes have been registered.
 const frontendDistCandidates = [
