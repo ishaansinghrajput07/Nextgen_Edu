@@ -263,7 +263,7 @@ export default function Footer() {
                       href="tel:+917983978462"
                       className="text-slate-700 hover:text-cyan-600 transition"
                     >
-                      +91 79839 78462
+                      +91 92173 81365
                     </a>
 
                   </div>

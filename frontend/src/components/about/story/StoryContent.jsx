@@ -92,15 +92,17 @@ export default function StoryContent() {
           text-slate-600
         "
       >
-        NextGenEdu was founded with a simple mission —
-        to make quality education accessible and admission
-        guidance transparent for every student.
-
-        Over the years, we have helped thousands of
-        students achieve their academic dreams by
-        connecting them with trusted universities,
-        experienced counsellors and complete admission
-        support.
+      About NextGen Education Institute
+      Empowering Aspirations. Guiding Futures.
+      At NextGen Education Institute, we believe that choosing the right education is not just a decision — it is the foundation of a successful future.
+      With 5+ years of experience in the education sector, we help students and working professionals navigate the journey of higher education with the right information, guidance, and support. We provide admission guidance for UG, PG, PhD, Online and Distance Education programs offered by recognized universities and institutions across India.
+      Our organization was formally registered in 2024, building on years of experience and a strong commitment to serving students in the field of higher education.
+      From choosing the right course and university to understanding eligibility, admission procedures, and enrollment, our aim is to make the entire process simple, transparent, and student-focused.
+      With an ISO-certified organization and a commitment to professional standards, we continue to build a trusted platform where students can make informed educational decisions with confidence.
+      Our Vision
+      To become a trusted and accessible education guidance platform, connecting students with the right academic opportunities and helping them move confidently toward their career goals.
+      Our Mission
+      To simplify higher education through transparent guidance, reliable information, and dedicated student support.
       </motion.p>
 
       {/* CTA */}
