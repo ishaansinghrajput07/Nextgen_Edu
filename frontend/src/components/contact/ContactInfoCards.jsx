@@ -10,7 +10,7 @@ const contactCards = [
   {
     icon: PhoneCall,
     title: "Call Us",
-    value: "+91 7983978462",
+    value: "+91 92173 81365",
     description: "Talk directly with our admission counsellors.",
     bg: "bg-cyan-100",
     color: "text-cyan-600",

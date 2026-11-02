@@ -260,7 +260,7 @@ export default function Footer() {
                     </p>
 
                     <a
-                      href="tel:+917983978462"
+                      href="tel:+9192173 81365"
                       className="text-slate-700 hover:text-cyan-600 transition"
                     >
                       +91 92173 81365
